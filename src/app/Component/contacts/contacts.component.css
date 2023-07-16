@@ -1,0 +1,13 @@
+.myForm{
+    padding: 30px;
+    /* margin: 30px; */
+    direction: rtl;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+    text-align: right;
+    background-color: aliceblue;
+}
+#btn{
+    width: 100%;
+}

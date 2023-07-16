@@ -1,0 +1,112 @@
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="form-horizontal col-lg-12 col-md-12 col-sm-12 col-xs-12"> <br />
+            <div id="HideAftrSuccess">
+                <div id="HeaderTop" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group">
+                    <h3 class="DivPad"><strong>Requisition Form</strong></h3>
+                </div>
+                <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 Specifications">Order Information </div>
+                <div class="form-group"> <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Order From:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control" value=""
+                            type="text" readonly />
+                    </div> <label class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></label> <label
+                        class="col-lg-2 col-md-2 col-sm-2 col-xs-2">PO Number:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control" value=""
+                            type="text" readonly /> </div>
+                </div>
+                <div class="form-group"> <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Confirmed To:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control" value=""
+                            type="text" readonly /> </div> <label class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></label>
+                    <label class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Facility:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control" value=""
+                            type="text" readonly /> </div>
+                </div>
+                <div class="form-group"> <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Date Required:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control"
+                            value="" type="text" readonly /> </div> <label
+                        class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></label> <label
+                        class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Ship Via:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control" value=""
+                            type="text" readonly /> </div>
+                </div>
+                <div class="form-group"> <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Deliver To:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control" value=""
+                            name="DeliverTo" type="text" readonly /> </div> <label
+                        class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></label> <label
+                        class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Requisition Date:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"> <input class="form-control" name="RequisitionDate"
+                            value="" type="text" readonly /> </div>
+                </div>
+                <div class="form-group"> <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Requisitioned by:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <p></p>
+                    </div> <label class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></label> <label
+                        class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Approver:</label>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <p>-</p>
+                    </div>
+                </div>
+                <div class="form-group"> <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Material For(Please
+                        Explain):</label>
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9"> <textarea class="form-control"
+                            readonly></textarea> </div>
+                </div>
+                <!-- <hr id="HrLine">
+                </hr> -->
+                <div class="form-group">
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8"></div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"><button type="button" (click)="savePdfSample()"
+                            class="btn btn-warning">Download pdf</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="PdfDiv" style="display:none;">  
+    <div style="width:594px;">  
+        <div><img style="text-align: left;height:20;width:90" src="/teams/mahipal/SiteAssets/Billing Form/Images/samDongLogo.jpg" /><strong style="text-align:right;border:1px solid;margin-left:350px;padding: 7px 42px">SDO</strong></div>  
+        <div style="text-align: right;padding-right: 18px;">  
+            <h3 style="text-align: center;font-family: arial;"><strong>REQUISITION</strong></h3>  
+        </div>  
+        <!-- <div style="background-color: #072a60;color: beige;padding-top: 2px;padding-bottom: 2px;">Order Information </div-->  
+        <div class="form-group">  
+            <table style="width:100%">  
+                <tr>  
+                    <td style="width:20%"><span style="font-weight:700;">Order From:</span></td>  
+                    <td style="width:20%"><label></label></td>  
+                    <td style="width:20%"><label style="font-weight:700;">PO Number:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                </tr>  
+                <tr>  
+                    <td style="width:20%"><label style="font-weight:700">Confirmed To:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                    <td style="width:20%"><label style="font-weight:700">Facility:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                </tr>  
+                <tr>  
+                    <td style="width:20%"><label style="font-weight:700">Date Required:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                    <td style="width:20%"><label style="font-weight:700">Ship Via:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                </tr>  
+                <tr>  
+                    <td style="width:20%"><label style="font-weight:700">Deliver To:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                    <td style="width:20%"><label style="font-weight:700">Requisition Date:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                </tr>  
+                <tr>  
+                    <td style="width:20%"><label style="font-weight:700">Requisitioned by:</label></td>  
+                    <td style="width:20%"><label></label></td>  
+                    <td style="width:20%"><label style="font-weight:700">Approver:</label></td>  
+                    <td style="width:20%"><label>-</label></td>  
+                </tr>  
+            </table>  
+        </div>  
+        <!--<div style="background-color: #072a60;color: beige;padding-top: 2px;padding-bottom: 2px;">Item Information </div--><input style="background-color:#ffffff;border-color:#ffffff" type="button" ng-click="addReservation()" />  
+        <!--hr></hr-->  
+        <div class="form-group"> <label style="font-weight:700">Material For:</label> <label style="width:594px;"></label> </div>  
+        <!--hr></hr-->  
+    </div>  
+</div>  

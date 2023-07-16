@@ -1,0 +1,71 @@
+<!-- <p-toast dir="rtl" position="top-center" key="tc"></p-toast>
+
+<div *ngIf='!display'>
+
+  <form style="text-align-last: center;">
+    <h4 style="color:cornflowerblue;">בחר קבוצה</h4>
+     <select name="idStudent" [(ngModel)]="idGroup">
+    <option *ngFor="let o of lGroup" [value]="o.Id">
+      {{o.Name}}
+    </option>
+  </select> -->
+
+    <!-- <p-dropdown [options]="data" name="dd" [(ngModel)]="ADate" filter="true" placeholder="בחר קבוצה ">
+
+      <ng-template let-item pTemplate="selectedItem">
+        <span style="vertical-align:middle; margin-left: .5em">{{item.label}}</span>
+      </ng-template>
+    </p-dropdown>
+    <br>
+    <h4 style=" color:cornflowerblue;">במידה וברצונך לצפות בשיעור ספציפי--בחר שיעור </h4>
+    <p-dropdown dir="rtl" name="name" class="myInput" [options]="dict" placeholder="בחר שיעור"
+      [(ngModel)]="selectLesson" filter="true"></p-dropdown>
+    <br>
+    <h4 style="color:cornflowerblue;">תאריך</h4>
+    <ngb-datepicker class="hebrew rtl" #dp name="da" [(ngModel)]="model" [startDate]="model" [displayMonths]="1"
+      [firstDayOfWeek]="7" [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+    </ngb-datepicker>
+
+    <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+      <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+
+        <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}
+          <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <br>
+
+
+    <p-button [disabled]="ADate==undefined||model==undefined" (click)="ok()">אישור</p-button>
+  </form> --> 
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>נוכחות לשיעור</th>
+          <th>תאריך</th>
+          <th>שם תלמידה</th>
+          <th>תז</th>
+          <th>קוד</th>
+        
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of presenceService.ListAttendencePerDay; let i = index">
+          <th>{{i+1}}</th>
+          <th>{{item.nochecotPerLesson}}</th>
+           <th>{{item.dateTime }}</th>
+          <th>{{item.nameStudent }}</th>
+          <th>{{item.tz }}</th> 
+         <th>{{ item.idStudent }}</th>
+          <td>
+            <button type="button">Edit</button>
+            <button type="button">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

@@ -1,0 +1,146 @@
+<div style="width: 100vw; margin-right: 40vw;">
+    <button pButton label="הורדת הקבצים" class="p-button-outlined" (click)="exportPdf()"></button>
+</div>
+
+<div id="docs">
+    <div *ngFor="let array of mat; let i = index">
+
+        <div class="frame">
+            <br>
+            <h6>בסיעתא דשמיא</h6>
+            <br><br>
+            <div class="header">
+
+                <button pButton pRipple type="button" id="editHeaderIcon" class="editIcon" icon="pi pi-pencil"
+                    tooltipPosition="top" pTooltip="עריכת כותרת ראשית" (click)="enabledEditHeader()"
+                    class="p-button-rounded p-button-text"></button>
+                <input type="text" id="header" name="header" style="font-size: 1.25em;" [defaultValue]="header"
+                    [disabled]="!editHeader" [(ngModel)]="header" #Header />
+
+                <!-- <div class="logo">
+                    <img id="logo"
+                        *ngIf="chooseLogo && currentSchool!=undefined && currentSchool.school.logo!=undefined"
+                        src="{{currentSchool.school.logo}}" />
+                    <div class="field-checkbox">
+                        <p-checkbox pTooltip="הוספת לוגו של המוסד" [(ngModel)]="chooseLogo" [binary]="true"
+                            inputId="binary"></p-checkbox>
+                    </div>
+                </div> -->
+
+                <div class="defaultHeader">
+                    <!-- <br><br> -->
+                    <label>שם המטלה: {{taskService.CurrentTask.name}}</label>
+                    <br />
+                    <label>שם המורה: {{taskExistService.CurrentTaskExsist.coordinatorName}}</label>
+                    <br>
+                    <label *ngIf="taskExistService.CurrentTaskExsist.courseName!=null">שם הקורס:
+                        {{taskExistService.CurrentTaskExsist.courseName}}</label>
+                    <br>
+                </div>
+
+            </div>
+
+            <div id="table" style="width: 94%; text-align: center; margin-right: 2%;">
+                <p-table [value]="array" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>מ.ז תלמידה</th>
+                            <th>שם תלמידה</th>
+                            <th>תאריך ומועד הגשה</th>
+                            <th>תאריך הגשה בפועל</th>
+                            <th>ציון</th>
+                            <th>ציון סופי</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-task>
+                        <tr *ngIf="task.isActiveTask==true">
+                            <td>{{ task.studentTz }}</td>
+                            <td>{{ task.studentName }}</td>
+                            <td>{{ task.dateNeedSubmitStr }}, {{ task.dateNeedSubmit | date: "dd/MM/yyyy" }}</td>
+                            <td>{{ task.dateSubmit | date: "dd/MM/yyyy"}}</td>
+                            <td>{{ task.grade }}</td>
+                            <td>{{ task.finalScore }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <div class="footer">
+                <!-- <br><br> -->
+                <button pButton pRipple type="button" id="editFooterIcon" class="editIcon" icon="pi pi-pencil"
+                    tooltipPosition="top" pTooltip="עריכת כותרת תחתונה" (click)="enabledEditFooter()"
+                    class="p-button-rounded p-button-text"></button>
+                <input type="text" id="footer" name="footer" style="font-size: 1.125em;" [defaultValue]="footer"
+                    [disabled]="!editFooter" [(ngModel)]="footer" #Footer />
+                <label class="page">עמוד {{i+1}} מתוך {{num}}</label>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- " -->
+<div id="docsToPdf" style="display: none;">
+    <div *ngFor="let array of mat; let i = index" style="text-align: center; width: 806px; height: 1120px;">
+
+        <div style="min-height: 100vh; display: flex; flex-direction: column;">
+            <h6>בסיעתא דשמיא</h6>
+            <br>
+            <h3>{{header}}</h3>
+            <!-- <img id="logo" style="width: 20%; height: auto;"
+                *ngIf="chooseLogo && currentSchool!=undefined && currentSchool.school.logo!=undefined"
+                src={{currentSchool.school.logo}} /> -->
+            <br>
+
+            <div class="defaultHeader">
+                <h6>שם המטלה: {{taskService.CurrentTask.name}}</h6>
+                <h6>שם המורה: {{taskExistService.CurrentTaskExsist.coordinatorName}}</h6>
+                <h6 *ngIf="taskExistService.CurrentTaskExsist.courseName!=null">שם הקורס:
+                    {{taskExistService.CurrentTaskExsist.courseName}}</h6>
+            </div>
+            <br>
+            <div style="width: 94%; text-align: center; margin-right: 2%;">
+                <p-table [value]="array" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>מ.ז תלמידה</th>
+                            <th>שם תלמידה</th>
+                            <th>תאריך ומועד הגשה</th>
+                            <th>תאריך הגשה בפועל</th>
+                            <th>ציון</th>
+                            <th>ציון סופי</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-task>
+                        <tr *ngIf="task.isActiveTask==true">
+                            <td>{{ task.studentTz }}</td>
+                            <td>{{ task.studentName }}</td>
+                            <td>{{ task.dateNeedSubmitStr }}, {{ task.dateNeedSubmit | date: "dd/MM/yyyy" }}</td>
+                            <td>{{ task.dateSubmit | date: "dd/MM/yyyy"}}</td>
+                            <td>{{ task.grade }}</td>
+                            <td>{{ task.finalScore }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <br>
+            <div class="row" style="margin-top: auto;">
+                <div class="col-8">
+                    <h4 *ngIf="footer!='כותרת תחתונה'">{{footer}}</h4>
+                </div>
+                <div class="col-4">
+                    <!-- <h6 style="margin-left: 10px;">עמוד {{i+1}} מתוך {{num}}</h6> -->
+
+                    <h6 style=" margin-top: -3rem;
+                    margin-right: 45vw;
+                    font-size: 1em;">עמוד {{i+1}} מתוך {{num}}</h6>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

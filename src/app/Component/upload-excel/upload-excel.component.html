@@ -1,0 +1,120 @@
+<div style="margin-bottom: 15px;text-align: center;">
+  <div class="row" >
+
+  <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+    <!-- מוסד -->
+    <div *ngIf="this.schoolService.ListSchool!= undefined && this.schoolService.ListSchool.length!=1">
+      <label class="w3-text-grey">מוסד</label><br>
+      <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+        optionLabel="school.name" placeholder="בחר מוסד" filter="true" [style]="{ width: '29%' }"
+        [(ngModel)]="CurrentSchool" required emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+        emptyMessage="אין נתונים קיימים"></p-dropdown>
+    </div>
+
+    <label class="w3-text-grey">טבלאות להעלאה</label><br>
+    <p-multiSelect name="ttables" [style]="{ width: '29%' }" [options]="optionalTables2" [(ngModel)]="tablesToRead"
+      defaultLabel="בחר טבלה להעלאה" (onChange)="IsSchedule()"></p-multiSelect>
+
+    <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display: none" /><br />
+    <br>
+
+    <div *ngIf="IsContactDis==true">
+      <label class="w3-text-grey">שימו לב כי במידה ויועלה איש קשר הקיים כבר - הנתונים של איש הקשר יתעדכנו אוטומית לנתונים החדשים</label><br />
+    </div>
+
+    <br>
+    <div *ngIf="IsScheduleDis==true">
+      <br>
+      מערכת לתאריכים:<br><br>
+      <div style=" display: inline-flex;
+      ">
+        מתאריך:
+        <p-calendar dateFormat="dd/mm/yy" [(ngModel)]="fromDate" monthNavigator="true" yearRange="1920:2030"
+          yearNavigator="true" dateFormat="dd/mm/yy" inputId="navigators"></p-calendar>
+        <p style="    white-space: break-spaces;
+     "> עד תאריך:</p>
+        <p-calendar dateFormat="dd/mm/yy" [(ngModel)]="toDate" monthNavigator="true" yearRange="1920:2030"
+          yearNavigator="true" dateFormat="dd/mm/yy" inputId="navigators"></p-calendar>
+      </div>
+
+      <br>
+      <br>
+
+      <div>
+        <!-- style=" width: 100%; place-content: center" -->
+        <label class="w3-text-grey">האם זו מערכת חדשה?</label><br />
+        <p-toggleButton [(ngModel)]="IsNew" onIcon="pi pi-check" offIcon="pi pi-times" name="isActive">
+        </p-toggleButton>
+      </div>
+
+      <br>
+      <br>
+
+      <div *ngIf="IsScheduleDis==true && IsNew == false">
+        <label class="w3-text-grey">במידה וקיימים נתונים חופפים, האם לדרוס??</label><br />
+        <p-toggleButton onIcon="pi pi-check" offIcon="pi pi-times" name="isActive" [(ngModel)]="IsOverride">
+        </p-toggleButton>
+      </div>
+
+    </div>
+
+    <!-- <div *ngIf="isPresence()">
+      נוכחות לקבוצה:<br />
+      <p-dropdown
+      dir="rtl"
+      name="group"
+      class="myInput"
+      [options]="mosadService.groups"
+      optionLabel="Name"
+      placeholder="בחר קבוצה"
+      [(ngModel)]="CurrentGroup"
+      [style]="{ width: '100%' }"
+      filter="true"
+    ></p-dropdown>
+    </div> -->
+    <br>
+    <button pButton pRipple type="button" label="בחירת קובץ" class="p-button-rounded" (click)="file.click()"
+      [disabled]="isDisable||tablesToRead.length==0||CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null||CurrentSchool.school.idschool==0"></button>
+    <div *ngIf="fileToUpload!= undefined">
+      {{
+      fileToUpload.name
+      }}
+    </div>
+    <br>
+    <br>
+    <button pButton pRipple type="button" label="העלאה" class="p-button-rounded" (click)="UploadExcelFile()"
+      [disabled]="fileToUpload== undefined|| isDisable||tablesToRead.length==0||CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null||CurrentSchool.school.idschool==0"></button>
+
+  </div>
+  <!-- <div class="col-md-4">
+    <span class="upload" *ngIf="progress > 0"> {{ progress }}% </span>
+    <span class="upload" *ngIf="message">
+      {{ message }}
+    </span>
+  </div> -->
+  <br>
+  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+    <label class="w3-text-grey">טבלאות להורדה</label><br>
+    <p-multiSelect name="ttables" [style]="{ width: '29%' }" [options]="optionalTables4" [(ngModel)]="tablesToDownload"
+      defaultLabel="בחר טבלה להורדה"></p-multiSelect>
+    <br><br>
+    <button pButton pRipple type="button" label="הורדה" class="p-button-rounded" (click)="DownloadExcelFile()"
+      [disabled]="tablesToDownload== undefined ||tablesToDownload.length==0"></button>
+  </div>
+</div>
+
+</div>
+
+<br>
+<br>
+
+<br>
+
+<a id="6" href="../../../assets/Excel/מקצועות.xlsx" target="_self" download></a>
+<a id="5" href="../../../assets/Excel/נתוני בסיס.xlsx" target="_self" download></a>
+<a id="4" href="../../../assets/Excel/אנשי קשר.xlsx" target="_self" download></a>
+<a id="3" href="../../../assets/Excel/קבוצות לימוד.xlsx" target="_self" download></a>
+<a id="2" href="../../../assets/Excel/משתמשים.xlsx" target="_self" download></a>
+<a id="1" href="../../../assets/Excel/תלמידים.xlsx" target="_self" download></a>
+
+<!-- <button (click)="downloadExcel()">export excel </button> -->

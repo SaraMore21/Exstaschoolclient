@@ -1,0 +1,29 @@
+/* You can add global styles to this file, and also import other style files */
+p-password div{
+    width: 100%;
+}
+p-password div input{
+    width: 100%;
+}
+body{
+    direction: rtl;
+    text-align: right;
+}
+p-panelMenu div{
+    width: 100% !important;
+}
+p-panelMenu div div div a{
+    border: 0 !important;
+}
+p-panelMenu div div div div{
+    border: 0 !important;
+}
+.buttonSave{
+    width: 100%;
+}
+table{
+    text-align-last: center;
+}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-empty-message{
+    text-align: center;
+  }

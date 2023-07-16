@@ -1,0 +1,174 @@
+<!-- טבלת קבוצות -->
+<div class="card row">
+
+  <h1 style="text-align: center;">קבוצות</h1>
+  <div style="text-align-last: center;">
+    <p-table #tb [value]="groupService.ListGroupsByListSchoolAndYerbook" dir="rtl" [filterDelay]="0" [scrollable]="true" scrollHeight="100vh"
+      [globalFilterFields]="['index','group.nameGroup','TypeGroup.name','AgeGroup.name','schoolName']">
+      <ng-template pTemplate="caption">
+        <button style="margin-left: 72%;" pButton label="הוספת קבוצה" (click)="AddGroup()"></button>
+
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+            placeholder="חיפוש" />
+        </span>
+
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="index"> # <p-sortIcon field="index"></p-sortIcon></th>
+          <th pSortableColumn="group.nameGroup">שם קבוצה <p-sortIcon field="group.nameGroup"></p-sortIcon>
+          </th>
+          <th pSortableColumn="AgeGroup.name">שכבת גיל <p-sortIcon field="AgeGroup.name"></p-sortIcon>
+          </th>                    
+
+          <th pSortableColumn="TypeGroup.name">סוג קבוצה <p-sortIcon field="TypeGroup.name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="schoolName">מוסד <p-sortIcon field="schoolName"></p-sortIcon>
+          </th>
+
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-group>
+        <tr>
+          <td>{{group.index}}</td>
+          <td>{{group.group.nameGroup}}</td>
+          <td >{{group.group.ageGroupName}}</td>
+          <td >{{group.group.typeGroupName}}</td>
+          <td>{{group.schoolName}}</td>
+
+          <td style="text-align: center">
+            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
+              (click)="EditDetailsGroup(group)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
+              (click)="DeleteGroup(group)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-users" tooltipPosition="top" pTooltip="תלמידות"
+              (click)="StudentPerGroup(group)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
+              (click)="GoToDocumentsPerGroup(group)" class="p-button-rounded p-button-text"></button>
+
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- פרטי קבוצה -->
+<p-dialog header="פרטי קבוצה" *ngIf="edit" [(visible)]="edit" modal="true" [style]="{ width: '30vw' }"
+  [baseZIndex]="10000" [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+  <div>
+   
+    <div *ngIf="CurrentGroup.idgroupPerYearbook==null&&schoolService.ListSchool.length!=1">
+      <label class="w3-text-grey">מוסד</label>
+      <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+        optionLabel="school.name" placeholder="בחר מוסד" [style]="{ width: '100%' }" filter="true"
+        [(ngModel)]="CurrentGroup.School" required (onChange)="ChangeSchool()"
+        emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+
+      <div *ngIf="School.invalid && (School.touched || School.dirty || flagInvalid)">
+        <div *ngIf="School.errors.required" class="w3-text-red">  שדה חובה </div>
+      </div>
+    </div>
+  
+    <label class="w3-text-grey">שם קבוצה</label>
+    <p-dropdown dir="rtl" name="name" [options]="ListGroup" optionLabel="nameGroup" placeholder="בחר שם לקבוצה"
+      appendTo="body" [(ngModel)]="SelectNameGroup" [style]="{ width: '100%' }" filter="true" [disabled]="Showedit"
+      [disabled]="CurrentGroup==null||CurrentGroup.School==null||CurrentGroup.School.school==null||CurrentGroup.School.school.idschool==null||CurrentGroup.School.school.idschool==0"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+    </p-dropdown>
+  </div>
+
+  <div   *ngIf="SelectNameGroup==null||SelectNameGroup.idgroup==0">
+    <br>
+    <label class="w3-text-grey">שם הקבוצה</label><br>
+    <input name="nameGroup" type="text" pInputText [(ngModel)]="CurrentGroup.nameGroup" style="width: 100%;" />
+    <br>
+  </div>
+  <div   *ngIf="SelectNameGroup==null||SelectNameGroup.idgroup==0||CurrentGroup.idgroupPerYearbook!=null">
+    <label class="w3-text-grey">שכבת גיל</label>
+    <p-dropdown dir="rtl" name="AgeGroup" [options]="ageGroupService.AgeGroupsPerSchool" optionLabel="name"
+      placeholder="בחר שכבת גיל" [(ngModel)]="CurrentGroup.AgeGroup" [style]="{ width: '100%' }" filter="true"
+     
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+    <br>
+    <br>
+    <br>
+    <br>
+  </div>
+  <div  *ngIf="SelectNameGroup==null||SelectNameGroup.idgroup==0||CurrentGroup.idgroupPerYearbook!=null">
+    <label class="w3-text-grey">סוג קבוצה</label>
+    <p-dropdown dir="rtl" name="TypeGroup" [options]="schoolService.TypeGroups" optionLabel="name"
+      placeholder="בחר סוג קבוצה" [(ngModel)]="CurrentGroup.TypeGroup" [style]="{ width: '100%' }" filter="true"
+   
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+    <br>
+
+  </div>
+
+
+  <ng-container *ngIf="Showedit; else elseTemplate">
+    <div *ngFor="let item1 of ListUsersPerGroup" class="row form-group">
+      <div class="col-lg-10 col-md-10 col-sm-10 col-sm-10">
+        <label class="w3-text-grey">מורה </label>
+        <p-dropdown [(ngModel)]="item1.user" filter="true" filterBy="tz,lastName,firstName"  [options]="userService.ListUserPerSY" placeholder="בחר מורה"
+          [style]="{ width: '100%' }" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+          <ng-template let-item pTemplate="selectedItem">
+            {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+          </ng-template>
+        </p-dropdown>
+        <div class="row form-group">
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <label for="navigators">מתאריך</label><br>
+            <input pInputText type="date" [(ngModel)]="item1.fromDate" style="width: 100%;">
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <label for="navigators">עד תאריך</label><br>
+            <input pInputText type="date" [(ngModel)]="item1.toDate" style="width: 100%;">
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-sm-2" style="place-self: center;">
+        <button pButton pRipple type="button" icon="pi pi-times" (click)="DeleteUserPerGroup(item)"
+          class="p-button-rounded p-button-danger p-button-outlined" pTooltip="מחיקה" tooltipPosition="top"></button>
+      </div>
+    </div>
+    <button pButton pRipple type="button" (click)="newUserPerGroup()" icon="pi pi-plus"
+      class="p-button-rounded p-button-outlined" pTooltip="הוספה" tooltipPosition="top"></button>
+  </ng-container>
+  <ng-template #elseTemplate>
+    <label class="w3-text-grey">שם אחראי קבוצה</label>
+    <p-dropdown [(ngModel)]="CurrentGroup.User" filter="true" filterBy="tz,lastName,firstName"  [options]="userService.ListUserPerSY" placeholder="בחר אחראי קבוצה"
+      appendTo="body" [autoWidth]="false" [style]="{ width: '100%' }"
+      [disabled]="CurrentGroup==null||CurrentGroup.School==null||CurrentGroup.School.school==null||CurrentGroup.School.school.idschool==null||CurrentGroup.School.school.idschool==0"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+      <ng-template let-item pTemplate="selectedItem" \>
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+    </p-dropdown>
+  </ng-template>
+
+  <br><br>
+  <button pButton icon="pi pi-save" label="שמור" (click)="SaveEditOrAdd()" class="buttonSave"
+    [disabled]="!Showedit&&((SelectNameGroup.idgroup==null||CurrentGroup.User==null)||(SelectNameGroup.idgroup==0&&(CurrentGroup.AgeGroup==null||CurrentGroup.TypeGroup==null||CurrentGroup.nameGroup==null||CurrentGroup.nameGroup=='')))"></button>
+</p-dialog>
+
+
+
+<div style="text-align: center;">
+  <p-toast position="top-center" key="tc"></p-toast>
+  <p-toast position="top-center"></p-toast>
+</div>
+
+<p-confirmDialog dir="rtl" [style]="{width: '30%'}" [baseZIndex]="10000"></p-confirmDialog>

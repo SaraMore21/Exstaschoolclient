@@ -1,0 +1,5 @@
+{
+    "csharp2ts.propertiesToCamelCase": true,
+    "appService.defaultWebAppToDeploy": "None",
+    "angular.enable-strict-mode-prompt": false
+}

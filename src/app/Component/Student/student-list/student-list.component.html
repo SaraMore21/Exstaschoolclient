@@ -1,0 +1,96 @@
+<ngx-ui-loader></ngx-ui-loader>
+
+
+<div class="card row">
+
+  <h1 style="text-align: center;">תלמידים</h1>
+  <div style="text-align: center;">
+    <p-table #tb [value]="studentService.ListStudent" dir="rtl" [scrollable]="true" scrollHeight="100vh"
+      [filterDelay]="0" [globalFilterFields]="['index','tz','firstName','lastName','TelephoneNumber1','schoolName']">
+      <ng-template pTemplate="caption">
+        <button style="margin-left: 72%;" pButton pRipple type="button" (click)="AddStudent()">הוספת תלמיד</button>
+        <p-button
+        pRipple
+        type="button"
+        label=" יצוא לקובץ EXCEL"
+        (click)="sendToExportExcel()"
+        icon="pi pi-file-excel"
+        class=" p-button-outline p-button-success"></p-button>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+            placeholder="חיפוש" />
+        </span>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr> 
+          <th pSortableColumn="index"> # <p-sortIcon field="index"></p-sortIcon></th>
+          <th pSortableColumn="tz">תז <p-sortIcon field="tz"></p-sortIcon>
+          </th>
+          <th pSortableColumn="lastName">שם משפחה <p-sortIcon field="lastName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="firstName">שם פרטי <p-sortIcon field="firstName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="schoolName">מוסד <p-sortIcon field="schoolName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="schoolName">השלמת רישום <p-sortIcon field="schoolName"></p-sortIcon>
+          </th>
+
+          <!-- <th pSortableColumn="TelephoneNumber1">טלפון <p-sortIcon field="TelephoneNumber1"></p-sortIcon></th> -->
+
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-student let-rowIntex="rowIndex">
+        <tr>
+          <td>{{student.index}}</td>
+          <td>{{student.tz}}</td>
+          <td>{{student.lastName}}</td>
+          <td>{{student.firstName}}</td>
+          <td>{{student.schoolName}}</td>
+          <td>
+            <i *ngIf="student.numExsistRequiredPerStudent>=student.numRequiredPerStudent" class="pi pi-check"></i>
+            <i *ngIf="!(student.numExsistRequiredPerStudent>=student.numRequiredPerStudent)" class="pi pi-times"></i>
+            <!-- <p-triStateCheckbox [(ngModel)]="student.numExsistRequiredPerStudent>=student.numRequiredPerStudent"  [disabled]="true" ></p-triStateCheckbox> -->
+
+            <!-- <p-inputSwitch [(ngModel)]="student.numExsistRequiredPerStudent>=student.numRequiredPerStudent"
+              [disabled]="true">
+            </p-inputSwitch> -->
+          </td>
+
+          <!-- <td>{{student.TelephoneNumber1}}</td> -->
+          <td style="text-align: center">
+            <button pButton pRipple type="button" tooltipPosition="top" icon="pi pi-pencil" pTooltip="עריכה"
+              (click)="EditDetailsStudent(student.idstudent)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
+              (click)="GoToDocumentsPerStudent(student)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" tooltipPosition="top" icon="pi pi-trash" pTooltip="מחיקה"
+              (click)="DeletStudent(student)" class="p-button-rounded p-button-text"></button>
+
+
+            <!-- <button
+                  pButton
+                  pRipple
+                  type="button"
+                  tooltipPosition="top"
+                  icon="pi pi-book"
+                  pTooltip="מסמכים"
+                  (click)="GoToDocumentsPerStudent(student.idstudent)"
+                  class="p-button-rounded p-button-text"
+                ></button> -->
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+
+
+
+<div style="text-align: center;">
+  <p-toast position="top-center"></p-toast>
+</div>
+<p-confirmDialog dir="rtl" [style]="{width: '30%'}" [baseZIndex]="10000"></p-confirmDialog>

@@ -1,0 +1,7 @@
+.Input{
+width: 100%;
+}
+
+p-dialog > div{
+ z-index: auto !important;
+}

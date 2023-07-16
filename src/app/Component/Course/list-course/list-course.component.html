@@ -1,0 +1,295 @@
+<div class="card row">
+
+  <h1 style="text-align: center;">קורסים</h1>
+  <div style="text-align-last: center;">
+    <p-table #tb [value]="ListCourse" dir="rtl" [filterDelay]="0" [scrollable]="true" scrollHeight="100vh"
+      [globalFilterFields]="['index','groupName','semesterName','fromDate','code']">
+      <ng-template pTemplate="caption">
+        <div style="margin-left: 72%">
+          <button pButton label="הוספת קורס" (click)="AddCrousePerGroup()"></button>
+
+
+
+
+
+
+
+
+
+
+          <!-- הורתי לקורס תיאום- צריך להיות -->
+          <!-- <button *ngIf="CurrentFatherCourse.coordinationCode" pButton label="הוספת קורס למוסדות תואמים" (click)="AddCoordinationsCourse()"></button> -->
+          <p-button
+        pRipple
+        type="button"
+        label=" יצוא לקובץ EXCEL"
+        (click)="exportExcel()"
+        icon="pi pi-file-excel"
+        class=" p-button-outline p-button-success"></p-button>
+          <button pButton label="חזור" (click)="GenericFunctionService.GoBackToLastPage()"></button>
+        </div>
+
+        <!-- <button
+        style="margin-left: 72%"
+        pButton
+        label="יצירת קורס"
+        (click)="AddCrouseFather()"
+      ></button> -->
+
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+            placeholder="חיפוש" />
+        </span>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="index"> # <p-sortIcon field="index"></p-sortIcon></th>
+          <th pSortableColumn="groupName">
+            קבוצה<p-sortIcon field="groupName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="semesterName">
+            סמסטר<p-sortIcon field="semesterName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="fromDate">
+            בין התאריכים<p-sortIcon field="fromDate"></p-sortIcon>
+          </th>
+          <th pSortableColumn="code">
+            קוד<p-sortIcon field="code"></p-sortIcon>
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-course let-rowIndex="rowIndex">
+        <tr>
+          <td>{{course.index}}</td>
+          <td>{{course.groupName}}</td>
+          <td>{{course.semesterName}}</td>
+          <td>{{course.fromDate| date:'dd/MM/yyyy'}}-{{course.toDate| date:'dd/MM/yyyy'}}</td>
+          <td>{{course.code}}</td>
+
+          <td style="text-align: center">
+            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
+              (click)="EditDetailsCrouse(course)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
+              (click)="DeleteCrouse(course)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
+              (click)="GoToDocumentsPerCourse(course)" class="p-button-rounded p-button-text"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+
+<!-- הוספת קורס -->
+<p-dialog header="פרטי קורס" [(visible)]="add" modal="true" [style]="{ width: '30vw' }" [baseZIndex]="10000"
+  [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+
+
+  <label class="w3-text-grey">קבוצה</label>
+  <!-- <p-dropdown dir="rtl" name="name" [options]="groupService.ListGroupPerSY" optionLabel="group.nameGroup"
+    placeholder="בחר שם קבוצה" [(ngModel)]="SelectGroup" [style]="{ width: '100%' }" filter="true" [disabled]="edit"
+    appendTo="body">
+  </p-dropdown> -->
+  <p-dropdown [(ngModel)]="SelectGroup" filter="true" filterBy="nameGroup,lastName,firstName"
+  [options]="groupService.ListGroupPerSY" placeholder="בחר קבוצה" [disabled]="edit" appendTo="body"
+  [style]="{ width: '100%' }" 
+  emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+  <ng-template let-item pTemplate="selectedItem">
+    {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+  </ng-template>
+  <ng-template let-item pTemplate="item">
+    {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+  </ng-template>
+</p-dropdown>
+  <label class="w3-text-grey">סמסטר</label>
+  <p-dropdown dir="rtl" name="name" [options]="ListSemester" optionLabel="name" placeholder="בחר סמסטר"
+    [(ngModel)]="SelectSemester" [style]="{ width: '100%' }" filter="true" [disabled]="edit" appendTo="body"
+    (onChange)="ChangeSemester()"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+  <div>
+    <label for="navigators">מתאריך</label><br>
+    <input pInputText type="date" [(ngModel)]="SFD" style="width: 100%;" [disabled]="edit">
+
+    <label for="navigators">עד תאריך</label><br>
+    <input pInputText type="date" [(ngModel)]="STD" style="width: 100%;" [disabled]="edit">
+  </div>
+  <label for="navigators">קוד</label><br>
+  <input pInputText type="text" [(ngModel)]="CurrentCourse.code" style="width: 100%;" >
+
+
+  <div *ngIf="!edit">
+    <label class="w3-text-grey">מורה </label>
+    <p-dropdown [(ngModel)]="SelectTeacher" filter="true" filterBy="tz,lastName,firstName"
+      [options]="userService.ListUserPerSY" placeholder="בחר מורה" [disabled]="edit" appendTo="body"
+      [style]="{ width: '100%' }"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+      <ng-template let-item pTemplate="selectedItem">
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+    </p-dropdown>
+  </div>
+
+  <br /><br /><br />
+
+  <div *ngIf="edit">
+    <div *ngFor="let item1 of ListUsersPerCourse" class="row form-group">
+      <div class="col-lg-10 col-md-10 col-sm-10 col-sm-10">
+        <label class="w3-text-grey">מורה </label>
+        <p-dropdown [(ngModel)]="item1.user" filter="true" filterBy="tz,lastName,firstName"
+          [options]="userService.ListUserPerSY" placeholder="בחר מורה" [style]="{ width: '100%' }">
+          <ng-template let-item pTemplate="selectedItem"
+          emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+            {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+          </ng-template>
+        </p-dropdown>
+        <div class="row form-group">
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <label for="navigators">מתאריך</label><br>
+            <input pInputText type="date" [(ngModel)]="item1.fromDate" style="width: 100%;">
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <label for="navigators">עד תאריך</label><br>
+            <input pInputText type="date" [(ngModel)]="item1.toDate" style="width: 100%;">
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-sm-2" style="place-self: center;">
+        <button pButton pRipple type="button" icon="pi pi-times" (click)="DeleteUserPerCourse(item1)"
+          class="p-button-rounded p-button-danger p-button-outlined" pTooltip="מחיקת שיוך מורה לקורס"
+          tooltipPosition="top"></button>
+      </div>
+    </div>
+    <button pButton pRipple type="button" (click)="newUserPerCourse()" icon="pi pi-plus"
+      class="p-button-rounded p-button-outlined" pTooltip="הוספת שיוך מורה לקורס" tooltipPosition="top"></button>
+  </div>
+
+  <br><br>
+  <button pButton icon="pi pi-save" label="שמור" (click)="SaveEditOrAdd()" class="buttonSave"
+    [disabled]="CurrentCourse.fromDate==null||CurrentCourse.toDate==null||SelectGroup==null||SelectGroup.group==null||SelectGroup.group.idgroup==null||SFD==''||STD==''||((SelectTeacher==null||this.SelectTeacher.iduser==null)&&edit==false)"></button>
+</p-dialog>
+
+
+
+
+
+<!-- הוספת קורס תואם -->
+<p-dialog header="פרטי קורס" [(visible)]="IsAddCoordinationsCode" modal="true" [style]="{ width: '30vw' }" [baseZIndex]="10000"
+  [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+
+ 
+
+  <label class="w3-text-grey">קבוצה</label>
+  <!-- <p-dropdown dir="rtl" name="name" [options]="groupService.ListGroupPerSY" optionLabel="group.nameGroup"
+    placeholder="בחר שם קבוצה" [(ngModel)]="SelectGroup" [style]="{ width: '100%' }" filter="true" [disabled]="edit"
+    appendTo="body">
+  </p-dropdown> -->
+  <p-dropdown [(ngModel)]="SelectGroup" filter="true" filterBy="nameGroup,lastName,firstName" 
+  [options]="groupService.listCoordinatedGroup" placeholder="בחר קבוצה" [disabled]="edit" appendTo="body"
+  [style]="{ width: '100%' }" 
+  emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+  <ng-template let-item pTemplate="selectedItem">
+    {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+  </ng-template>
+  <ng-template let-item pTemplate="item">
+    {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+  </ng-template>
+</p-dropdown>
+  <label class="w3-text-grey">סמסטר</label>
+  <p-dropdown dir="rtl" name="name" [options]="ListSemester" optionLabel="name" placeholder="בחר סמסטר"
+    [(ngModel)]="SelectSemester" [style]="{ width: '100%' }" filter="true" [disabled]="edit" appendTo="body"
+    (onChange)="ChangeSemester()"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+  <div>
+    <label for="navigators">מתאריך</label><br>
+    <input pInputText type="date" [(ngModel)]="SFD" style="width: 100%;" [disabled]="edit">
+
+    <label for="navigators">עד תאריך</label><br>
+    <input pInputText type="date" [(ngModel)]="STD" style="width: 100%;" [disabled]="edit">
+  </div>
+  <label for="navigators">קוד</label><br>
+  <input pInputText type="text" [(ngModel)]="CurrentCourse.code" style="width: 100%;" >
+
+
+  
+
+  <br><br>
+  <button (click)="log()"></button>
+  <button pButton icon="pi pi-save" label="שמור" (click)="SaveEditOrAddCoordinated()" class="buttonSave"
+    [disabled]="SelectGroup==null||SelectGroup.group==null||SelectGroup.group.idgroup==null||SFD==''||STD==''"></button>
+    <!--היה בDISABLED הוצאתי בשביל הסמסטר CurrentCourse.fromDate==null||CurrentCourse.toDate==null|| -->
+</p-dialog>
+
+
+
+
+<p-dialog [(visible)]="FatherCourse" header="פרטי קורס" modal="true" [style]="{ width: '30vw' }" [baseZIndex]="10000"
+  [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+  <!-- מוסד -->
+  <div *ngIf="edit==false&&schoolService.ListSchool.length!=1">
+    <label class="w3-text-grey">מוסד</label>
+    <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+      optionLabel="school.name" placeholder="בחר מוסד" [style]="{ width: '100%' }" filter="true"
+      [(ngModel)]="CurrentSchool" required (onChange)="ChangeSchool()"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+
+    <div *ngIf="
+      School.invalid &&
+        (School.touched || School.dirty || flagInvalid)
+      ">
+      <div *ngIf="School.errors.required" class="w3-text-red">
+        שדה חובה
+      </div>
+    </div>
+  </div>
+
+  <label>שם קורס</label>
+  <input class="Input" type="text" pInputText [(ngModel)]="Course.name"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" />
+  <label class="w3-text-grey">שם מקצוע</label>
+  <p-dropdown dir="rtl" name="name" [options]="professionService.ListProfessionPerS" optionLabel="name"
+    placeholder="בחר שם מקצוע" [(ngModel)]="SelectProfession" [style]="{ width: '100%' }" filter="true"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" appendTo="body"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+  </p-dropdown>
+  <label>מס' שעות </label>
+  <input class="Input" type="number" pInputText [(ngModel)]="Course.hours"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" />
+  <label> שעות שבועיות</label>
+  <input class="Input" type="number" pInputText [(ngModel)]="Course.hoursPerWeek"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" />
+  <label> נקודות זיכוי</label>
+  <input class="Input" type="number" pInputText [(ngModel)]="Course.credits"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" />
+  <label> מחיר</label>
+  <input class="Input" type="number" pInputText [(ngModel)]="Course.cost"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" />
+  <label> ציון מינימלי</label>
+  <input class="Input" type="number" pInputText [(ngModel)]="Course.minimumScore"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" />
+
+  <label class="w3-text-grey">סגנון למידה</label>
+  <p-dropdown dir="rtl" name="name" [options]="" optionLabel="name" placeholder="בחר סגנון למידה "
+    [(ngModel)]="SelectLearningStyle" [style]="{ width: '100%' }" filter="true"
+    [disabled]="CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null" appendTo="body"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+  </p-dropdown>
+  <br><br>
+  <button pButton icon="pi pi-save" label="שמור" (click)="SaveEditOrAdd()" class="buttonSave"></button>
+</p-dialog>
+
+<div style="text-align: center">
+  <p-toast position="top-center" key="tc"></p-toast>
+</div>
+
+<p-confirmDialog dir="rtl" [style]="{ width: '30%' }" [baseZIndex]="10000"></p-confirmDialog>

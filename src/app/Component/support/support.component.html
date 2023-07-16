@@ -1,0 +1,119 @@
+
+<div style="text-align: center;">
+  <!-- <div class="p-grid">
+    <div class="p-col-6 p-offset-3">6</div>
+</div> -->
+<!-- 
+<div class="p-grid">
+    <div class="p-col-4">4 </div>
+    <div class="p-col-4 p-offset-4">4</div>
+</div> -->
+    <h1>תמיכה</h1><br>
+    <div class="p-grid" style="place-content: center;">
+      <div class="p-col-8">
+    <p style="font-family: system-ui;">
+      לקוח יקר, <br>
+      בלשונית זו ישנם סרטוני הסבר, מדריך מפורט למשתמש וכן אפשרות יצירת קשר מהיר עם התמיכה ובקרוב בעז"ה פורום תמיכה נרחב הנותן מענה על מגוון שאלות.<br>
+       חשוב לעבור על המדריך למשתמש וכן על הסרטונים הנועדו לפשט לך את השימוש בתוכנה ולהפוך אותה לידידותית וחוייתית. <br>
+       חשוב – לשונית התמיכה כמו כל האתר מתחדשת ומתעדכנת – יש לעקוב בלשונית "לוח המודעות" על חידושים.<br><br>
+       פניה לתמיכה ExtraSchool
+       : </p>
+       <a  href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=more21service@gmail.com "
+       target="_blank" style="color: #0c91dd;">more21service@gmail.com </a><br>
+    
+  </div></div>
+</div>
+<div class="row form-group" style="place-content: center;margin: 2rem;">
+
+    <div  class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+      <div style="padding-block-end: 1rem;">
+        <p-panel header="סרטון הדכה להוספת קבוצות לימוד">
+          <ng-template pTemplate="icons">           
+               <button pButton pRipple type="button" icon=" pi pi-window-maximize" pTooltip="הצגה במסך מלא"
+                class="p-button-rounded  p-button-text" (click)="DiaplayVidio('AddGroup')"></button>
+          </ng-template>
+          <ng-container >
+            <embed id="pdf" style="width: 70%;height: 100%;" [src]=AddGroup />
+          </ng-container>
+        </p-panel>
+      </div>
+    </div>
+
+    <div  class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div style="padding-block-end: 1rem;">
+          <p-panel header="סרטון הדרכה להוספת תלמיד">
+            <ng-template pTemplate="icons">           
+                <button pButton pRipple type="button" icon=" pi pi-window-maximize" pTooltip="הצגה במסך מלא"
+                class="p-button-rounded  p-button-text" (click)="DiaplayVidio('AddStudent')"></button>
+            </ng-template>
+            <ng-container >
+                <embed id="pdf" style="width: 70%;height: 100%;" [src]=AddStudent />
+            </ng-container>
+          </p-panel>
+        </div>
+      </div>
+
+      <div  class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div style="padding-block-end: 1rem;">
+          <p-panel header="סרטון הדרכה להוספת משתמש">
+            <ng-template pTemplate="icons">           
+                <button pButton pRipple type="button" icon=" pi pi-window-maximize" pTooltip="הצגה במסך מלא"
+                class="p-button-rounded p-button-text" (click)="DiaplayVidio('AddUser')"></button>
+            </ng-template>
+            <ng-container >
+              <embed id="pdf" style="width: 70%;height: 100%;" [src]=AddUser />
+            </ng-container>
+          </p-panel>
+        </div>
+      </div>
+
+      <div  class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div style="padding-block-end: 1rem;">
+          <p-panel header="אז איך מתחילים?">
+            <ng-template pTemplate="icons">           
+                <button pButton pRipple type="button" icon=" pi pi-window-maximize" pTooltip="הצגה במסך מלא"
+                class="p-button-rounded p-button-text" (click)="DiaplayVidio('HowTobegin')"></button>
+            </ng-template>
+            <ng-container >
+              <embed id="pdf" style="width: 100%;height: 100%;" [src]=HowTobegin/>
+            </ng-container>
+          </p-panel>
+        </div>
+      </div>
+      <div  class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div style="padding-block-end: 1rem;">
+          <p-panel header="אז מה עושים?">
+            <ng-template pTemplate="icons">           
+                <button pButton pRipple type="button" icon=" pi pi-window-maximize" pTooltip="הצגה במסך מלא"
+                class="p-button-rounded p-button-text" (click)="DiaplayVidio('WhatToDo')"></button>
+            </ng-template>
+            <ng-container >
+              <embed id="pdf" style="width: 100%;height: 100%;" [src]=WhatToDo />
+            </ng-container>
+          </p-panel>
+        </div>
+      </div>
+
+
+      <div  class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div style="padding-block-end: 1rem;">
+          <p-panel header="מדריך למשתמש">
+            <ng-template pTemplate="icons">           
+                <button pButton pRipple type="button" icon=" pi pi-window-maximize" pTooltip="הצגה במסך מלא"
+                class="p-button-rounded p-button-text" (click)="DiaplayVidio('UserManual')"></button>
+            </ng-template>
+            <ng-container >
+              <embed id="pdf" style="width: 100%;height: 100%;" [src]=UserManual />
+            </ng-container>
+          </p-panel>
+        </div>
+      </div>
+
+  </div>
+
+
+  <div *ngIf="visible">
+    <p-sidebar [(visible)]="visible" [fullScreen]="true" [baseZIndex]="10000">
+      <embed id="pdf" style="width: 100%; height: 1000px" [src]="src" />
+    </p-sidebar>
+  </div>

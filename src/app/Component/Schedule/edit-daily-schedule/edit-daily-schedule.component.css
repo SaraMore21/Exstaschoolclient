@@ -1,0 +1,31 @@
+.DivWraps {
+    text-align: center;
+}
+
+.btnSave {
+    width: 100%;
+}
+.p-datepicker.p-datepicker-timeonly .p-timepicker {
+    direction: ltr !important;
+}
+.InputTime{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 1rem;
+    color: #495057;
+    background: #ffffff;
+    padding: 0.5rem 0.5rem;
+    border: 1px solid #ced4da;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 3px;
+    width: 100%;
+}
+.InputTime:enabled:focus{
+
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem #a6d5fa;
+    border-color: #2196F3;
+}

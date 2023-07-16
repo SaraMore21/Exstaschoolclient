@@ -1,0 +1,194 @@
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+
+<p-toast dir="rtl" position="top-center" key="tc"></p-toast>
+<div *ngIf='!display'>
+
+  <div class="card row" style="margin: 2rem;">
+    <h1 style="text-align: center"> נוכחות יומית לקבוצה</h1>
+    <br>
+    <div style="text-align: center">
+      <div *ngIf="schoolService.ListSchool && schoolService.ListSchool.length > 1">
+        <h5>בחר מוסד</h5>
+        <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+          optionLabel="school.name" placeholder="בחר מוסד" [style]="{ width: '30%' }" filter="true"
+          [(ngModel)]="currentSchool" required (onChange)="changeSchool()"
+          emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+      </div>
+
+      <h5>בחר קבוצה</h5>
+      <p-dropdown [disabled]="schoolId == undefined" [(ngModel)]="selectedGroup" filter="true" filterBy="nameGroup"
+        [options]="groupService.ListGroupPerSY" placeholder="בחר קבוצה" appendTo="body" [style]="{ width: '30%' }"
+        emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+        <ng-template let-item pTemplate="selectedItem">
+          {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+        </ng-template>
+      </p-dropdown>
+      <br>
+      <h4 style=" color:cornflowerblue;">במידה וברצונך לצפות בשיעור ספציפי--בחר שיעור </h4>
+      <p-dropdown dir="rtl" name="name" class="myInput" [options]="dict" placeholder="בחר שיעור"
+        [(ngModel)]="selectLesson" filter="true"></p-dropdown>
+      <br>
+
+      <h5>בחר תאריך</h5>
+      <ngb-datepicker class="hebrew rtl" #dp name="date" [(ngModel)]="model" [startDate]="model" [displayMonths]="1"
+        [firstDayOfWeek]="7" [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+      </ngb-datepicker>
+
+      <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+        <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+          <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}
+            <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}
+            </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <br>
+      <button style="width: 30%; margin-top: 2rem; margin-bottom: 1.5rem; text-align: center;" pButton pRipple
+        type="button" (click)="DisplayAttendance()" [disabled]="selectedGroup == undefined||this.model==undefined"
+        label="הצג" class="p-button-outlined btnSave"></button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="display" style="text-align-last: center;">
+
+  <h5> מעקב נוכחות לכיתה : {{selectedGroup.group.nameGroup}}</h5>
+
+  <div class="row" style="justify-content: center;">
+    <button pButton type="button" icon="pi pi-chevron-right" (click)="previousDay()" class="p-button-text"
+      dir="ltr"></button>
+    <h5> בתאריך : {{currDate}} </h5>
+    <button pButton pRipple type="button" icon="pi pi-chevron-left" (click)="nextDay()"
+      class="p-button-text"></button>
+  </div>
+
+  <br>
+ 
+  <p-dialog [modal]="true"   [(visible)]="edit"  >
+    <h5>נוכחות</h5>
+    <div class="p-field-radiobutton" *ngFor="let i of presenceTypeService.ListPresenceType">
+      <p-radioButton name="p" value="{{i.idtypePresence}}" [(ngModel)]="selectedTypePresenceId"></p-radioButton>
+      <label>{{i.typePresenceDes}}</label>
+    </div>
+
+
+    <button pButton pRipple type="button" icon="pi pi-check"
+      class="p-button-rounded p-button-text p-button-success p-mr-2"
+      (click)="save()"></button>
+
+  </p-dialog>
+
+  <!-- --------- -->
+
+  <p-scrollTop></p-scrollTop>
+  <!-- ---------------------- -->
+  <h1 *ngIf="display &&!displayPresence ">
+    אין נוכחות 
+  </h1>
+ 
+  <p-table  #tb [value]="ListAttendencePerDay" [filterDelay]="0" [scrollable]="true" scrollHeight="700px" [style]="{direction:'rtl'}" dir="rtl"
+  [globalFilterFields]="['index','nameStudent']"  *ngIf="display && displayPresence" #reportContent dataKey="tz" editMode="row">
+
+    <!-- <p-table #tb [value]="fatherCourseService.ListFatherCourse" dir="rtl" [filterDelay]="0" [scrollable]="true" scrollHeight="100vh"
+      [globalFilterFields]="['name','hours','hoursPerWeek','credits','cost','minimumScore','code','learningStyleName','professionName','schoolName']"> -->
+    <ng-template pTemplate="caption">
+      <!-- <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+          placeholder="חיפוש" />
+      </span> -->
+
+      <button type="button" pButton pRipple label="PDF" icon="pi pi-file-pdf" (click)="exportPdf()"
+        class="p-button-warning p-mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+
+
+      <button type="button" pButton pRipple label="EXCEL" icon="pi pi-file-excel" (click)="exportExcel()"
+        class="p-button-success p-mr-2" pTooltip="XLS" tooltipPosition="bottom"></button>
+
+      <button pButton pRipple (click)="display=!display" type="button" label="חזור" class="p-button-secondary"></button>
+
+      
+    </ng-template>
+
+   
+    <ng-template pTemplate="header" >
+      <tr> 
+        <!-- <th pSortableColumn="hebrewDate">{{DateHeb}}
+
+        </th> -->
+        <th pSortableColumn="index"> # <p-sortIcon field="index"></p-sortIcon></th>
+        <th pSortableColumn="nameStudent">שם התלמידה<p-sortIcon field="nameStudent"></p-sortIcon></th>
+         <th *ngFor="let item of lLesson;let i=index">
+
+          {{item.lessonName}}
+          <br>
+          {{item.lessonNumber}}
+
+           <br>
+
+
+          <button pButton pRipple type="button" icon="pi pi-pencil" (click)="EditLesson(item)"
+            class="p-button-rounded p-button-text p-button-danger"></button>
+          <button pButton pRipple icom="pi pi-trash" (click)="DeleteLesson(item)" type="button" icon="pi pi-trash"
+            class="p-button-rounded p-button-text p-button-danger"></button> <br>
+
+        </th>
+       
+       
+      </tr> 
+
+      
+    </ng-template>
+   
+    <ng-template pTemplate="body" let-AttendencePerDay let-editing="editing" let-ri="rowIndex" >
+
+      <tr [pEditableRow]="AttendencePerDay">
+        <td>{{AttendencePerDay.index}}</td>
+
+        <td >{{ AttendencePerDay.nameStudent}}</td>
+
+
+        <td *ngFor="let item of AttendencePerDay.nochecotPerLesson">
+
+        
+<div *ngIf="item.presence">
+          <button #dialogButton style="color: rgb(42, 40, 40);" pButton pRipple type="button" (click)="onRowEditInit(item,AttendencePerDay)"
+            class="p-button-rounded p-button-text" label="{{item.presence.typePresenceName}}"></button>
+          </div>
+          <div *ngIf="!item.presence">
+            אין נוכחות
+            </div>
+
+          
+
+
+
+
+        </td>
+
+
+      </tr>
+
+    </ng-template>
+
+    <!-- <ng-template #other>
+        <h1>אין נוכחות לכיתה זו בתאריך זה</h1>
+    </ng-template> -->
+
+  </p-table>
+
+
+  <button pButton pRipple (click)="display=!display" type="button" label="חזור" class="p-button-secondary"></button>
+  <button pButton pRipple (click)="save()" type="button" label="שמור שינויים" class="p-button-secondary"></button>
+  <p-scrollTop target="parent" styleClass="custom-scrolltop" [threshold]="100" icon="pi pi-arrow-up"></p-scrollTop>
+
+</div>
+

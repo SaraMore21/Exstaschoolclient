@@ -1,0 +1,242 @@
+<div *ngIf="AddSPG==false">
+  <div class="card row">
+
+    <h2 style="text-align: center;">רשימת התלמידות בקבוצת {{NameGroup}}</h2>
+    <div class=""></div>
+
+    <div style="text-align-last: center;">
+      <p-table #dt [value]="ListStudentPerGroup" dataKey="id" dir="rtl" [filterDelay]="0" [scrollable]="true" scrollHeight="100vh"
+        [globalFilterFields]="['student.firstName','student.lastName','student.tz']">
+        <ng-template pTemplate="caption">
+          <div class="table-header">
+            <button style="margin-left: 72%;" pButton label="הוספת תלמיד לקבוצה זו"
+              (click)="AddStudentPerGroup()"></button>
+
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="חיפוש" />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>#</th>
+            <th>שם פרטי</th>
+            <th> שם משפחה</th>
+            <th>מספר זהות</th>
+            <th>פעיל?</th>
+            <th></th>
+          </tr>
+
+        </ng-template>
+        <ng-template pTemplate="body" let-student let-r="rowIndex">
+          <tr>
+            <td>{{r+1}}</td>
+            <td>{{student.student.firstName}}</td>
+            <td>{{student.student.lastName}}</td>
+            <td>{{student.student.tz}}</td>
+            <td>
+              <p-inputSwitch [(ngModel)]="student.fromDate<Today&&student.toDate>Today" [disabled]="true">
+              </p-inputSwitch>
+            </td>
+            <td> <button pButton pRipple type="button" icon="pi pi-user-minus"
+                (click)="DeleteStudentInGroup(student.student.idstudent)" class="p-button-rounded p-button-text"
+                pTooltip="מחיקה" tooltipPosition="top"></button>
+
+              <button pButton pRipple type="button" icon="pi pi-user-edit" (click)="EditStudentInGroup(student)"
+                class="p-button-rounded p-button-text" pTooltip="עריכה" tooltipPosition="top"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div *ngIf="AddSPG==true">
+  <div class="card row">
+
+    <div style="text-align-last: center;">
+      <p-table #dt [value]="ListStudentNotInGroup" dataKey="id" dir="rtl" [filterDelay]="0" [scrollable]="true" scrollHeight="100vh"
+        [globalFilterFields]="['student.firstName','student.lastName','student.tz']">
+        <ng-template pTemplate="caption">
+          <div class="table-header">
+            <button style="margin-left: 72%;" pButton label="חזרה" (click)="genericFunctionService.GoBackToLastPage()()"></button>
+
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="חיפוש" />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>שם פרטי</th>
+            <th> שם משפחה</th>
+            <th>מספר זהות</th>
+            <th></th>
+          </tr>
+
+        </ng-template>
+        <ng-template pTemplate="body" let-student>
+          <tr>
+            <td>{{student.student.firstName}}</td>
+            <td>{{student.student.lastName}}</td>
+            <td>{{student.student.tz}}</td>
+            <td> <button pButton pRipple type="button" icon="pi pi-user-plus"
+                (click)="AddStudentInGroup(student.student.idstudent)" class="p-button-rounded p-button-text"
+                pTooltip="הוספה" tooltipPosition="top"></button></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div style="text-align: center;">
+  <p-toast position="top-center"></p-toast>
+  <p-toast position="top-center" key="tc"></p-toast>
+
+</div>
+
+
+<p-dialog [(visible)]="openDialog">
+  <p>האם ברצונך להזין טווח תאריכים ידני או שטווח התאריכים ילקח אוטומטי מהנתונים הקיימים לקבוצה?</p>
+  <div *ngFor="let option of options" class="p-field-checkbox">
+    <p-radioButton [inputId]="option.key" name="category" [value]="option" [(ngModel)]="selectedOption"
+      (onClick)="disabled=!disabled"></p-radioButton>
+    <label [for]="option.key">{{option.name}}</label>
+  </div>
+
+
+  <div class="row form-group" style="width: 100%;" *ngIf="disabled">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+      <label class="w3-text-grey">מתאריך</label><br>
+      <ngb-datepicker class="hebrew rtl" #dp [(ngModel)]="FromDate" [displayMonths]="1" [firstDayOfWeek]="7"
+        [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+      </ngb-datepicker>
+
+      <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+        <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+          <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}</div>
+          <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}</div>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+      <label class="w3-text-grey">עד תאריך</label><br>
+      <ngb-datepicker class="hebrew rtl" #dp [(ngModel)]="ToDate" [displayMonths]="1" [firstDayOfWeek]="7"
+        [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+      </ngb-datepicker>
+
+      <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+        <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+          <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}</div>
+          <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}</div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <br><br>
+  <button pButton pRipple (click)="AddStudentInGroup(-1)" label="שמור"
+    [disabled]="(disabled==true&&(FromDate==null||ToDate==null))||disabled==null"></button>
+</p-dialog>
+
+<p-dialog [(visible)]="EditDialog" header="עדכון טווח תאריכים " [modal]="true">
+  <div class="row form-group" style="width: 100%;">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+      <label class="w3-text-grey">מתאריך</label><br>
+      <ngb-datepicker class="hebrew rtl" #dp [(ngModel)]="FromDateEdit" [startDate]="FromDateEdit" [displayMonths]="1"
+        [firstDayOfWeek]="7" [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+      </ngb-datepicker>
+
+      <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+        <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+          <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}</div>
+          <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month)}}</div>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+      <label class="w3-text-grey">עד תאריך</label><br>
+      <ngb-datepicker class="hebrew rtl" #dp [(ngModel)]="ToDateEdit" [startDate]="ToDateEdit" [displayMonths]="1"
+        [firstDayOfWeek]="7" [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+      </ngb-datepicker>
+
+      <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+        <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+          <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}</div>
+          <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}</div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+
+  <!-- <ngb-datepicker [startDate]="model"  class="hebrew rtl" #dp name="da" [(ngModel)]="model" [displayMonths]="1" [firstDayOfWeek]="7"
+  [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+</ngb-datepicker>
+
+<ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+  <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+
+    <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}
+      <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}
+      </div>
+    </div>
+  </div>
+</ng-template>
+   -->
+  <button pButton pRipple (click)="EditStudentInGroup(null)" label="שמור"
+    [disabled]="FromDateEdit==null||ToDateEdit==null"></button>
+</p-dialog>
+
+<!-- בחירת שיוך מטלות כאשר שייכו תלמידה לקבוצה חדשה -->
+<p-dialog [(visible)]="IsExixtTask" style="width: 50%;" header="מטלות המשוייכות כבר לקבוצה זו" [modal]="true">
+  <div class="row form-group"  *ngIf="IsExixtTask">
+    <!-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" > -->
+
+  <p-table #dt [value]="ListTask" [(selection)]="selectedTask" >
+    <ng-template pTemplate="caption">
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th pSortableColumn="nameTask">
+          שם מטלה <p-sortIcon field="name"></p-sortIcon>
+        </th>
+
+
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-customer>
+      <tr class="p-selectable-row">
+        <td>
+          <p-tableCheckbox [value]="customer"></p-tableCheckbox>
+        </td>
+        <td>
+          {{ customer.nameTask }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+  <!-- </div> -->
+
+  <button pButton pRipple (click)="EditStudentInGroup(null)" label="שמור"
+    [disabled]="FromDateEdit==null||ToDateEdit==null"></button>
+</p-dialog>
+
+
+<p-confirmDialog [style]="{width: '50vw'}" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text">
+</p-confirmDialog>

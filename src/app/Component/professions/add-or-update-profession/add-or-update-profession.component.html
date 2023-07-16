@@ -1,0 +1,153 @@
+<ngx-ui-loader></ngx-ui-loader>
+
+<body class="myForm" dir="rtl">
+  <h1 style="text-align: center; background-color: cornflowerblue">מקצוע</h1>
+  <form
+    #form="ngForm"
+    id="form"
+    name="form"
+    *ngIf="CurrentProfession != undefined"
+    dir="rtl"
+  >
+    <div class="p-fluid p-formgrid p-grid">
+      <div class="p-field p-col-2"></div>
+      <div class="p-field p-col-8">
+        <div class="p-fluid p-formgrid p-grid">
+          <h5 class="p-field p-col-12" style="font-weight: bold">פרטי מקצוע</h5>
+
+          <!-- שם מקצוע -->
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey">שם המקצוע</label>
+            <input
+              class="myInput"
+              name="name"
+              id="name"
+              #name="ngModel"
+              required
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentProfession.name"
+            />
+          </div>
+
+          <!-- שם הרכז -->
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey">שם משפחה רכז</label>
+            <input
+              class="myInput"
+              name="coordinatorlastName"
+              id="coordinatorlastName"
+              #coordinatorlastName="ngModel"
+              required
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentProfession.coordinator.user.lastName"
+            />
+          </div>
+
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey">שם פרטי רכז</label>
+            <input
+              class="myInput"
+              name="coordinatorId"
+              id="coordinatorId"
+              #coordinatorId="ngModel"
+              required
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentProfession.coordinator.user.firstName"
+            />
+          </div>
+
+          <br />
+          <p-button
+          style="width: 100%;"
+            icon="pi pi-save"
+            label="שמור"
+            class="p-button-text"
+            (click)="
+              form.valid != true ? (flagInvalid = true) : SaveProfession()
+            "
+          ></p-button>
+        </div>
+      </div>
+
+      <!-- אייקונים בצד שמאל -->
+      <div class="p-field p-col-2">
+        <div class="p-fluid p-formgrid p-grid" style="margin-top: 30%">
+          <div class="p-field p-col-4"></div>
+          <div class="p-field p-col-4">
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded"
+              icon="pi pi-users"
+              pTooltip="כרטיס משפחה"
+            ></button
+            ><br /><br />
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded"
+              icon="pi pi-cloud-upload"
+              pTooltip="צרף מסמך"
+            ></button
+            ><br /><br />
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded"
+              icon="pi pi-briefcase"
+              pTooltip="הצג כרטיס לימודים"
+            ></button
+            ><br /><br />
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded"
+              icon="pi pi-trash"
+              pTooltip="מחיקה"
+            ></button
+            ><br /><br />
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded"
+              icon="pi pi-user-edit"
+              pTooltip="עריכה"
+            ></button
+            ><br /><br />
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded"
+              icon="pi pi-directions-alt"
+              pTooltip="הצג הסטורית תלמיד"
+            ></button
+            ><br /><br />
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-rounded"
+              icon="pi pi-list"
+              pTooltip="הצג קבוצות תלמיד"
+            ></button>
+          </div>
+        </div>
+        <!-- <div class="p-field p-col-4"></div> -->
+      </div>
+    </div>
+  </form>
+  <!-- </div> -->
+
+  <!-- </div> -->
+</body>
+
+‏

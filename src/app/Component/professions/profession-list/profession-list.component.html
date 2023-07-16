@@ -1,0 +1,196 @@
+<ngx-ui-loader></ngx-ui-loader>
+<div class="card row">
+  <h1 style="text-align: center">מקצועות</h1>
+  <div style="text-align: center">
+    <p-table #tb [(value)]="professionService.ListProfession" dir="rtl" [filterDelay]="0" [scrollable]="true"
+      scrollHeight="100vh"
+      [globalFilterFields]="['index','name','coordinator.fullName','professionCategory.name','schoolName']">
+      <!-- הוספת מקצוע -->
+      <ng-template pTemplate="caption">
+        <button style="margin-left: 72%" pButton pRipple type="button" (click)="OpenAdd()"> הוספת מקצוע</button>
+        <button *ngIf="schoolService.isCoordinationSchools" style="margin-left: 72%" pButton
+          label="הוספת מקצוע למוסדות תואמים" (click)="OpenAddCoordinationsProfession()"></button>
+
+          <p-button
+          pRipple
+          type="button"
+          label=" יצוא לקובץ EXCEL"
+          (click)="sendToExportExcel()"
+          icon="pi pi-file-excel"
+          class=" p-button-outline p-button-success"></p-button>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search;"></i>
+          <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+            placeholder="חיפוש" />
+        </span>
+      </ng-template>
+
+      <!-- ראשי העמודות -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="index"> #
+            <p-sortIcon field="index">
+            </p-sortIcon>
+          </th>
+          <th pSortableColumn="name"> מקצוע
+            <p-sortIcon field="name">
+            </p-sortIcon>
+          </th>
+          <th pSortableColumn="coordinator.fullName"> שם רכז
+            <p-sortIcon field="coordinator.fullName">
+            </p-sortIcon>
+          </th>
+          <th pSortableColumn="professionCategory.name"> קטגוריה
+            <p-sortIcon field="professionCategory.name">
+            </p-sortIcon>
+          </th>
+          <th pSortableColumn="schoolName"> מוסד
+            <p-sortIcon field="schoolName">
+            </p-sortIcon>
+          </th>
+
+          <th></th>
+        </tr>
+      </ng-template>
+
+      <!-- גוף הטבלה -->
+      <ng-template pTemplate="body" let-profession >
+        <tr>
+         <td>{{profession.index}}</td>
+          <td>{{profession.name }}</td>
+          <td>{{profession && profession.coordinator?profession.coordinator.firstName+'
+            '+profession.coordinator.lastName:""}}</td>
+          <td>{{profession && profession.professionCategory?profession.professionCategory.name:""}}</td>
+          <td>{{profession.schoolName}}</td>
+
+          <td style="text-align: center">
+            <button pButton pRipple type="button" icon="pi pi-pencil" (click)="OpenUpdate(profession)"
+              class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
+              (click)="GoToDocumentsPerProfession(profession)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-trash" (click)="DeletProfession(profession.idprofession)"
+              class="p-button-rounded p-button-text"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+
+<!-- עריכה/הוספת מקצוע -->
+<p-dialog header="פרטי מקצוע" icon="pi pi pi-send" (onHide)="IsAddCoordinationsCode=false" [(visible)]="displayModal"
+  [modal]="true" [style]="{ width: '30vw'}" [draggable]="false" [resizable]="false">
+
+  <div style="color: red;"
+    *ngIf="(schoolService.IsCustomer == false && CurrentProfession != null && CurrentProfession.uniqueCodeId!=null&&CurrentProfession.idprofession!=null)">
+    אין אפשרות לערוך מקצוע זו כיוון שנפתחה ע"י הלקוח
+  </div>
+
+  <ng-container *ngIf="IsAddCoordinationsCode; else elseTemplate">
+
+    <!-- קוד תאום -->
+    <div *ngIf="CurrentProfession.idprofession!=0&&schoolService.ListSchool.length!=1">
+      <label class="w3-text-grey">קוד תאום</label>
+      <p-dropdown dir="rtl" name="CoordinationsCode" id="CoordinationsCode" #CoordinationsCode="ngModel"
+        [options]="schoolService.listCoordinationsCode" placeholder="בחר קוד תאום" [style]="{ width: '100%' }"
+        filter="true" [(ngModel)]="CoordinationCode" required (onChange)="ChangeCoordinationCode()"
+        emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+
+      <div *ngIf=" CoordinationsCode.invalid && (CoordinationsCode.touched || CoordinationsCode.dirty || flagInvalid) ">
+        <div *ngIf="CoordinationsCode.errors.required" class="w3-text-red">
+          שדה חובה
+        </div>
+      </div>
+    </div>
+
+
+    <!-- מורה -->
+    <label class="w3-text-grey">מורה </label>
+    <p-dropdown [(ngModel)]="CurrentProfession.coordinator" filter="true" filterBy="tz,lastName,firstName"
+      [options]="ListUserPerCoordination" placeholder="בחר מורה" [style]="{ width: '100%' }" appendTo="body"
+      [disabled]="CoordinationCode==null||CoordinationCode==''||(schoolService.IsCustomer == false && CurrentProfession != null && CurrentProfession.uniqueCodeId!=null&&CurrentProfession.idprofession!=null)"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+      <ng-template let-item pTemplate="selectedItem">
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+    </p-dropdown>
+
+  </ng-container>
+
+
+  <ng-template #elseTemplate>
+    <!-- מוסד -->
+    <div
+      *ngIf="(CurrentProfession==null|| CurrentProfession.idprofession==null|| CurrentProfession.idprofession==0)&&schoolService.ListSchool!= null &&schoolService.ListSchool.length != 1">
+      <label class="w3-text-grey">מוסד</label>
+      <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+        optionLabel="school.name" placeholder="בחר מוסד" [style]="{ width: '100%' }" filter="true" appendTo="body"
+        [(ngModel)]="CurrentSchool" required (onChange)="ChangeSchool()"
+        [disabled]="(schoolService.IsCustomer == false && CurrentProfession != null && CurrentProfession.uniqueCodeId!=null&&CurrentProfession.idprofession!=null)"
+        emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+      </p-dropdown>
+
+      <div *ngIf="School.invalid && (School.touched || School.dirty || flagInvalid)">
+        <div *ngIf="School.errors.required" class="w3-text-red">
+          שדה חובה
+        </div>
+      </div>
+    </div>
+
+    <!-- מורה -->
+    <label class="w3-text-grey">מורה </label>
+    <p-dropdown [(ngModel)]="CurrentProfession.coordinator" filter="true" filterBy="tz,lastName,firstName"
+      [options]="userService.ListUserPerSY" placeholder="בחר מורה" [style]="{ width: '100%' }" appendTo="body"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+      [disabled]="(schoolService.IsCustomer == false && CurrentProfession != null && CurrentProfession.uniqueCodeId!=null&&CurrentProfession.idprofession!=null)||(CurrentProfession==null||CurrentProfession.idprofession==null||CurrentProfession.idprofession==0)&&(CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null||CurrentSchool.school.idschool==0)">
+      <ng-template let-item pTemplate="selectedItem">
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+      </ng-template>
+    </p-dropdown>
+  </ng-template>
+
+
+
+  <!-- מקצוע -->
+  <label class="w3-text-grey"> מקצוע</label><br />
+  <input type="text" class="form-control" [(ngModel)]="CurrentProfession.name"
+    [disabled]="(CurrentProfession==null||CurrentProfession.idprofession==null||CurrentProfession.idprofession==0)&&(CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null||CurrentSchool.school.idschool==0)&&(CoordinationCode==null||CoordinationCode=='')||(schoolService.IsCustomer == false && CurrentProfession != null && CurrentProfession.uniqueCodeId!=null&&CurrentProfession.idprofession!=null)">
+
+  <!-- קטגוריה -->
+  <label class="w3-text-grey">קטגוריה</label>
+  <p-dropdown name="ProfessionCategory" id="ProfessionCategory" #ProfessionCategory="ngModel"
+    [options]="schoolService.ProfessionCategories" optionLabel="name" placeholder="בחר קטגוריה"
+    [style]="{ width: '100%' }" filterBy="name" filter="true" appendTo="body" [(ngModel)]="CurrentProfessionCategory"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+    [disabled]="(CurrentProfession==null||CurrentProfession.idprofession==null||CurrentProfession.idprofession==0)&&(CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null||CurrentSchool.school.idschool==0)&&(CoordinationCode==null||CoordinationCode=='')||(schoolService.IsCustomer == false && CurrentProfession != null && CurrentProfession.uniqueCodeId!=null&&CurrentProfession.idprofession!=null)">
+  </p-dropdown>
+
+  <br>
+
+  <!-- פעיל -->
+  <div class="p-field p-col-3">
+    <label class="w3-text-grey">פעיל?</label><br />
+    <p-triStateCheckbox name="isActive" [style]="{ width: '100%' }" [(ngModel)]="CurrentProfession.isActive"
+      [disabled]="schoolService.IsCustomer == false && CurrentProfession != null && CurrentProfession.uniqueCodeId!=null&&CurrentProfession.idprofession!=null">
+    </p-triStateCheckbox>
+  </div>
+
+
+  <button type="button" pButton pRipple icon="pi pi-save" (click)="SaveProfession()" label="שמור" class="buttonSave"
+    [disabled]="CurrentProfession.name==null||CurrentProfession==null||CurrentProfession.coordinator==null||CurrentProfession.coordinator.iduser==null||CurrentProfession.coordinator.iduser==0||CurrentProfessionCategory==null||CurrentProfessionCategory.value==0"></button>
+</p-dialog>
+
+<div style="text-align: center">
+  <p-toast position="top-center" [style]="{'white-space': 'pre-line'}"></p-toast>
+  <p-toast key="tc" position="top-center" [style]="{'white-space': 'pre-line'}"></p-toast>
+</div>
+<p-confirmDialog dir="rtl" [style]="{ width: '30%' }" [baseZIndex]="10000"></p-confirmDialog>

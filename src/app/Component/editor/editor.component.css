@@ -1,0 +1,15 @@
+.ql-toolbar, .ql-container {
+    margin: auto !important;
+    width: 50% !important;
+}
+
+.ql-editor {
+    margin: auto !important;
+    width: 50% !important;
+    height: 400px !important;
+}
+
+#save {
+    margin-left: 45%;
+    font-size: 20px;
+}

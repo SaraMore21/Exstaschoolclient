@@ -1,0 +1,266 @@
+<div class="card row" style="margin: 2rem;">
+    <h1 style="text-align: center">מערכת שעות</h1>
+    <br>
+    <div style="text-align: center" *ngIf="!choose">
+        <div *ngIf="schoolService.ListSchool && schoolService.ListSchool.length > 1">
+            <h5>בחר מוסד</h5>
+            <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+                optionLabel="school.name" placeholder="בחר מוסד" [style]="{ width: '30%' }" filter="true"
+                [(ngModel)]="currentSchool" required (onChange)="changeSchool()"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+        </div>
+
+        <h5>בחר קבוצה</h5>
+        <p-dropdown [disabled]="regularScheduleService.schoolId == undefined"
+            [(ngModel)]="regularScheduleService.selectedGroup" filter="true" filterBy="nameGroup"
+            [options]="groupService.ListGroupPerSY" placeholder="בחר קבוצה" appendTo="body" [style]="{ width: '30%' }"
+            emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+            <ng-template let-item pTemplate="selectedItem">
+                {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+                {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+            </ng-template>
+        </p-dropdown>
+
+        <h5>בחר תאריך</h5>
+        <ngb-datepicker class="hebrew rtl" #dp name="date" [(ngModel)]="model" [startDate]="model" [displayMonths]="1"
+            [firstDayOfWeek]="7" [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+        </ngb-datepicker>
+
+        <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+            <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+                <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}
+                    <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+        <br>
+        <button style="width: 30%; margin-top: 2rem; margin-bottom: 1.5rem; text-align: center;" pButton pRipple
+            type="button" (click)="open()" [disabled]="regularScheduleService.selectedGroup == undefined||IsClick==true" label="אישור"
+            class="p-button-outlined btnSave"></button>
+    </div>
+
+    <div *ngIf="choose" style="text-align: center;">
+        <h3 style="text-align: center;">מערכת שעות - {{regularScheduleService.selectedGroup.group.nameGroup}}</h3>
+
+        <!-- <div style="text-align-last: center;">
+            <p-table #tb [value]="regularScheduleService.listRegularSchedulePerGroup" dir="rtl">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="">מספר שיעור </th>
+                        <th pSortableColumn="">שעות </th>
+                        <th pSortableColumn="">קורס </th>
+                        <th pSortableColumn="">מורה </th>
+                        <th pSortableColumn="">סוג למידה </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-regularSchedule>
+                    <tr>
+                        <td>{{regularSchedule.numLesson}}</td>
+                        <td></td>
+                        <td>{{regularSchedule.courseName}}</td>
+                        <td>{{regularSchedule.teacherName}}</td>
+                        <td>{{regularSchedule.typeLearningName}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <br>
+            <button pButton label="חזרה לבחירת קבוצה" class="p-button-outlined" style="margin-bottom: 1.5rem;"
+                (click)="goBack()"></button>
+            <br>
+        </div> -->
+        <p-button
+        pRipple
+        type="button"
+        label=" יצוא לקובץ EXCEL"
+        (click)="exportExcel()"
+        icon="pi pi-file-excel"
+        class=" p-button-outline p-button-success"></p-button>
+        <div *ngIf="listWeek.length>0">
+            <p-table [value]="listLength" [resizableColumns]="true" styleClass="p-datatable-gridlines">
+                <ng-template pTemplate="header" style="direction:rtl">
+                    <tr>
+                        <th>#</th>
+                        <th pResizableColumn>ראשון</th>
+                        <th pResizableColumn>שני</th>
+                        <th pResizableColumn>שלישי</th>
+                        <th pResizableColumn>רביעי</th>
+                        <th pResizableColumn>חמישי</th>
+                        <th pResizableColumn>שישי</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-obj let-r="rowIndex">
+                    <tr>
+                        <td>{{r+1}}</td>
+                        <td *ngIf="listWeek[0]!=null && listWeek[0][obj.index]!=null">
+                            <!-- {{listWeek[0][obj.index].endTime.minutes}}
+                            <label style="margin: -1px;" *ngIf="listWeek[0][obj.index].endTime.minutes==0">0</label>
+                            :{{listWeek[0][obj.index].endTime.hours}}
+                            -
+                            {{listWeek[0][obj.index].startTime.minutes}}
+                            <label style="margin: -1px;" *ngIf="listWeek[0][obj.index].startTime.minutes==0">0</label>
+                            :{{listWeek[0][obj.index].startTime.hours}} -->
+
+                            {{listWeek[0][obj.index].endTime}} - {{listWeek[0][obj.index].startTime}}
+                            <br>
+                            {{listWeek[0][obj.index].courseName}}<br>{{listWeek[0][obj.index].teacherName}}
+                            <!-- <button *ngIf=" ListFriday[row].DayOfWeek!=-1" pButton pRipple type="button"
+                                icon="pi pi-pencil" (click)="onRowEditInit(ListFriday[rowIndex])"
+                                class="p-button-rounded p-button-text"></button> -->
+
+                                <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top"
+                                pTooltip="עריכה" (click)="EditScheduleRegular(listWeek[0][obj.index])"
+                                class="p-button-rounded p-button-text">
+                            </button>
+                        </td>
+                        <td *ngIf="listWeek[0]==null || listWeek[0][obj.index]==null">
+                            <br><br><br>
+                        </td>
+
+                        <td *ngIf="listWeek[1]!=null && listWeek[1][obj.index]!=null">
+                            <!-- {{listWeek[1][obj.index].endTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[1][obj.index].endTime.minutes==0">0</label>
+                            :{{listWeek[1][obj.index].endTime.hours}}
+                            -
+                            {{listWeek[1][obj.index].startTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[1][obj.index].startTime.minutes==0">0</label>
+                            :{{listWeek[1][obj.index].startTime.hours}} -->
+                            {{listWeek[1][obj.index].endTime}} - {{listWeek[1][obj.index].startTime}}
+
+                            <br>
+                            {{listWeek[1][obj.index].courseName}}<br>{{listWeek[1][obj.index].teacherName}}
+
+                            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top"
+                            pTooltip="עריכה" (click)="EditScheduleRegular(listWeek[1][obj.index])"
+                            class="p-button-rounded p-button-text">
+                        </button>
+                        </td>
+                        <td *ngIf="listWeek[1]==null || listWeek[1][obj.index]==null">
+                            <br><br><br>
+                        </td>
+
+                        <td *ngIf="listWeek[2]!=null && listWeek[2][obj.index]!=null">
+                            <!-- {{listWeek[2][obj.index].endTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[2][obj.index].endTime.minutes==0">0</label>
+                            :{{listWeek[2][obj.index].endTime.hours}}
+                            -
+                            {{listWeek[2][obj.index].startTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[2][obj.index].startTime.minutes==0">0</label>
+                            :{{listWeek[2][obj.index].startTime.hours}} -->
+                            {{listWeek[2][obj.index].endTime}} - {{listWeek[2][obj.index].startTime}}
+
+                            <br>
+                            {{listWeek[2][obj.index].courseName}}<br>{{listWeek[2][obj.index].teacherName}}
+                            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top"
+                            pTooltip="עריכה" (click)="EditScheduleRegular(listWeek[2][obj.index])"
+                            class="p-button-rounded p-button-text">
+                        </button>
+                        </td>
+                        <td *ngIf="listWeek[2]==null || listWeek[2][obj.index]==null">
+                            <br><br><br>
+                        </td>
+
+                        <td *ngIf="listWeek[3]!=null && listWeek[3][obj.index]!=null">
+                            <!-- {{listWeek[3][obj.index].endTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[3][obj.index].endTime.minutes==0">0</label>
+                            :{{listWeek[3][obj.index].endTime.hours}}
+                            -
+                            {{listWeek[3][obj.index].startTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[3][obj.index].startTime.minutes==0">0</label>
+                            :{{listWeek[3][obj.index].startTime.hours}} -->
+                            {{listWeek[3][obj.index].endTime}} - {{listWeek[3][obj.index].startTime}}
+
+                            <br>
+                            {{listWeek[3][obj.index].courseName}}<br>{{listWeek[3][obj.index].teacherName}}
+
+                            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top"
+                            pTooltip="עריכה" (click)="EditScheduleRegular(listWeek[3][obj.index])"
+                            class="p-button-rounded p-button-text">
+                        </button>
+                        </td>
+                        <td *ngIf="listWeek[3]==null || listWeek[3][obj.index]==null">
+                            <br><br><br>
+                        </td>
+
+                        <td *ngIf="listWeek[4]!=null && listWeek[4][obj.index]!=null">
+                            <!-- {{listWeek[4][obj.index].endTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[4][obj.index].endTime.minutes==0">0</label>
+                            :{{listWeek[4][obj.index].endTime.hours}}
+                            -
+                            {{listWeek[4][obj.index].startTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[4][obj.index].startTime.minutes==0">0</label>
+                            :{{listWeek[4][obj.index].startTime.hours}} -->
+                            {{listWeek[4][obj.index].endTime}} - {{listWeek[4][obj.index].startTime}}
+
+                            <br>
+                            {{listWeek[4][obj.index].courseName}}<br>{{listWeek[4][obj.index].teacherName}}
+
+                            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top"
+                            pTooltip="עריכה" (click)="EditScheduleRegular(listWeek[4][obj.index])"
+                            class="p-button-rounded p-button-text">
+                        </button>
+                        </td>
+                        <td *ngIf="listWeek[4]==null || listWeek[4][obj.index]==null">
+                            <br><br><br>
+                        </td>
+
+                        <td *ngIf="listWeek[5]!=null && listWeek[5][obj.index]!=null">
+                            <!-- {{listWeek[5][obj.index].endTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[5][obj.index].endTime.minutes==0">0</label>
+                            :{{listWeek[5][obj.index].endTime.hours}}
+                            -
+                            {{listWeek[5][obj.index].startTime.minutes}}
+                            <label style="margin: 0;" *ngIf="listWeek[5][obj.index].startTime.minutes==0">0</label>
+                            :{{listWeek[5][obj.index].startTime.hours}} -->
+                            {{listWeek[5][obj.index].endTime}} - {{listWeek[5][obj.index].startTime}}
+
+                            <br>
+                            {{listWeek[5][obj.index].courseName}}<br>{{listWeek[5][obj.index].teacherName}}
+
+                            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top"
+                            pTooltip="עריכה" (click)="EditScheduleRegular(listWeek[5][obj.index])"
+                            class="p-button-rounded p-button-text">
+                        </button>
+                        </td>
+                        <td *ngIf="listWeek[5]==null || listWeek[5][obj.index]==null">
+                            <br><br><br>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+        </div>
+        <div *ngIf="listWeek.length==0" style="width: 100%; height: 5rem; font-size: 10rem;">אין נתונים מתאימים</div>
+        <br>
+        <button pButton label="חזרה לבחירת קבוצה" class="p-button-outlined" style="margin-bottom: 1.5rem;"
+            (click)="goBack()"></button>
+
+    </div>
+</div>
+
+<p-dialog *ngIf="displayDialog" [(visible)]="displayDialog" header="עריכת שיעור" modal="true" [style]="{ 'width': '30vw'}"
+   [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+
+  <h5>בחר קורס</h5>
+  <p-dropdown appendTo="body" [options]="ListCourses" [(ngModel)]="selectedCourse" placeholder="בחר קורס"
+      optionLabel="courseName" [filter]="true" filterBy="courseName"
+      (onChange)="GetTeacherBySelectCourse()" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+      emptyMessage="אין נתונים קיימים" [style]="{'width':'100%'}">
+  </p-dropdown>
+  <br>
+  <h5>מורה</h5>
+  <input style="width: 100%" type="text" pInputText [(ngModel)]="selectTeacher" disabled> 
+
+  <br><br>
+  <button pButton pRipple type="button" label="שמור" class="p-button-outlined btnSave" (click)="SaveScheduleRegular()" style="width: 100%;"
+  [disabled]=" selectedCourse==null||selectedCourse.idgroupSemesterPerCourse==0||selectedCourse.idgroupSemesterPerCourse==null">
+</button>
+</p-dialog>
+
+<div style="text-align: center;">
+<p-toast position="top-center" key="tc"></p-toast>
+</div>

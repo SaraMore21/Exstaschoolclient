@@ -1,0 +1,476 @@
+<h5 style="text-align: center; border-bottom: groove; font-weight: lighter; content-visibility:auto">
+  מסמכים של הקבוצה {{GroupService.NameGroup}}
+  <!-- <button pButton label="הוספת מטלה" (click)="AddTask()"></button> -->
+  <div style="    display: inline-grid;
+  float: left;">
+    <button pButton pRipple type="button" label="חזור" class="p-button-outlined"
+      (click)="GenericFunctionService.GoBackToLastPage()"></button>
+    <button pButton pRipple type="button" label="פתיחת קובץ חדש" class="p-button-outlined"
+      (click)="AddNewDocumentsPerGroup()"></button>
+    <!-- ---------- -->
+    <button *ngIf="IsFieldDisplay" pButton pRipple type="button" label="לתצוגה מקובצת" class="p-button-outlined"
+      (click)="IsFieldDisplay=!IsFieldDisplay"></button>
+    <button *ngIf="!IsFieldDisplay" pButton pRipple type="button" label="לתצוגה מפורטת" class="p-button-outlined"
+      (click)="IsFieldDisplay=!IsFieldDisplay"></button>
+    <button *ngIf="collapsed && IsFieldDisplay" pButton pRipple type="button" label="לתצוגה פתוחה"
+      class="p-button-outlined" (click)="collapsed=!collapsed"></button>
+    <button *ngIf="!collapsed && IsFieldDisplay" pButton pRipple type="button" label="לתצוגה סגורה"
+      class="p-button-outlined" (click)="collapsed=!collapsed"></button>
+  </div>
+
+</h5>
+
+<div style="font-size: x-large; text-align-last: center; flex: content">
+
+  <!-- ---------- -->
+  <br>
+  <!-- מעבר על המסמכים הקיימים והנדרשים -->
+  <div class="p-grid p-ai-stretch" *ngFor="let item of ListDocuments">
+    <!-- אם זה תיקיה או קובץ קיים כבר -->
+    <ng-container *ngIf="
+        item.length > 1 || (item.length == 1 && item[0].path != undefined);
+        else elseTemplate
+      ">
+      <!-- אם זה תיקיה -->
+      <ng-container *ngIf="item.length > 1; else elseTemplate2">
+        <!-- (SchoolService.IsCustomer == false && item[0].folderCreated == SchoolService.ListSchool[0].userId) -->
+        <!-- תצוגה מקובצת -->
+        <div *ngIf="!IsFieldDisplay" class="p-col-12 p-md-6 p-lg-3 vertical-container" id="tooltip" #tooltip
+          [tooltipDisabled]="!(SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item))"
+          tooltipPosition="top" pTooltip="אין אפשרות לשנות מסמכים אלו כיוון שנפתחו על ידי משתמש אחר">
+          <div style="border: outset; border-color: cornflowerblue" class="box box-stretched">
+            {{ item[0].folderName }}
+            <div style="text-align: left">
+              <!-- הורדת הקבצים -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת כל הקבצים"
+                icon="pi pi-download" (click)="DownloadFewDoc(item)" class="p-button-rounded p-button-text"></button>
+              <!-- מחיקת כל הקבצים -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת כל הקבצים" icon="pi pi-trash"
+                (click)="confirmFolder(item)" class="p-button-rounded p-button-text"
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item)) ? 'none': 'inline'}"></button>
+
+              <!-- פתיחת התיקיה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="פתיחת התיקיה"
+                icon="pi pi-folder-open" (click)="OpenFolder(item)" class="p-button-rounded p-button-text"></button>
+
+              <!-- [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].folderCreated != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}" -->
+              <!-- הוספת קובץ לתיקיה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הוספת קובץ לתיקיה"
+                icon="pi pi-cloud-upload" (click)="ChangeDoc(item[0], true, item.length)"
+                class="p-button-rounded p-button-text"></button>
+            </div>
+          </div>
+        </div>
+        <!-- ---------- -->
+        <!-- תצוגה מפורטת -->
+        <div *ngIf="IsFieldDisplay"
+          [tooltipDisabled]="!(SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item))" id="tooltip"
+          #tooltip tooltipPosition="top" pTooltip="אין אפשרות לשנות מסמכים אלו כיוון שנפתחו על ידי משתמש אחר">
+
+          <p-fieldset [collapsed]="collapsed" class="fieldset2 box box-stretched" [toggleable]="true">
+            <ng-template class=" p-fieldset-toggleable	Toggleable fieldset element
+                    p-fieldset-legend	Legend element.
+                    p-fieldset-content" pTemplate="header">
+              <div class="row">
+                <!-- <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9"> -->
+                <div style="margin-left: 30vw;">
+                  תיקיה {{item[0].folderName}}
+                </div>
+                <!-- </div> -->
+                <!-- <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"> -->
+                <!-- style="text-align: left" -->
+                <!-- class=" col-xs-3 col-sm-3 col-md-3 col-lg-3" -->
+                <div>
+                  <!-- הורדת הקבצים -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת כל הקבצים"
+                    icon="pi pi-download" (click)="DownloadFewDoc(item)"
+                    class="p-button-rounded p-button-text"></button>
+                  <!-- מחיקת כל הקבצים -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת כל הקבצים"
+                    icon="pi pi-trash" (click)="confirmFolder(item)" class="p-button-rounded p-button-text"
+                    [ngStyle]="{'display' : (SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item)) ? 'none': 'inline'}"></button>
+
+                  <!-- פתיחת התיקיה -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="פתיחת התיקיה"
+                    icon="pi pi-folder-open" (click)="OpenFolder(item)" class="p-button-rounded p-button-text"></button>
+
+                  <!-- [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].folderCreated != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}" -->
+                  <!-- הוספת קובץ לתיקיה -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הוספת קובץ לתיקיה"
+                    icon="pi pi-cloud-upload" (click)="ChangeDoc(item[0], true, item.length)"
+                    class="p-button-rounded p-button-text"></button>
+                </div>
+                <!-- </div> -->
+              </div>
+            </ng-template>
+
+            <div *ngFor="let file of item; let i=index">
+              <div class="row" style="border: solid; border-width: thin; border-style: inset;">
+                <div class=" col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <label><i class="pi pi-file"></i> </label>
+                  <ng-container *ngIf="
+                      !(IsEditName && idfile == file.iddocumentPerGroup);
+                      else elseTemplate
+                    ">
+                    {{ file.name }}
+                  </ng-container>
+                  <ng-template #elseTemplate>
+                    <span style="padding: inherit; ">
+                      <button type="button" id='EditBtn' pButton pRipple icon="pi pi-check"
+                        styleClass="p-button-success" tooltipPosition="top" pTooltip="שמירה"
+                        (click)="SaveNameFile(file)"></button>
+                      <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                      <button type="button" id='EditBtn' pButton pRipple tooltipPosition="top" pTooltip="ביטול"
+                        icon="pi pi-times" styleClass="p-button-danger" (click)="IsEditName = false"></button>
+                    </span>
+                  </ng-template>
+                  <i class="pi pi-arrow-left"></i>
+
+                </div>
+                <div style="text-align: left" class=" col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <!-- {{ file.name }} -->
+                  <!-- כפתורי האפשרויות -->
+                  <!-- הורדה -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת הקובץ"
+                    icon="pi pi-download" (click)="DownloadDoc(file)" class="p-button-rounded p-button-text"></button>
+
+                  <!-- הצגה -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ" icon="pi pi-eye"
+                    (click)="DisplayDoc(file)" class="p-button-rounded p-button-text"></button>
+
+                  <!-- הצגה בחלון חדש -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ בחלון חדש"
+                    icon="pi pi-external-link" (click)="DisplayDocInNewWindow(file)"
+                    class="p-button-rounded p-button-text"></button>
+
+                  <!-- החלפה -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת הקובץ" icon="pi pi-upload"
+                    (click)="ChangeDoc(file, false,item.length, true)" class="p-button-rounded p-button-text"
+                    [ngStyle]="{'display' : (SchoolService.IsCustomer == false && file.userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+
+                  <!-- מחיקה -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת הקובץ" icon="pi pi-trash"
+                    (click)="confirmDeleteFile(file, true)" class="p-button-rounded p-button-text"
+                    [ngStyle]="{'display' : (SchoolService.IsCustomer == false && file.userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+
+                  <!-- החלפת שם -->
+                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת שם לקובץ"
+                    icon="pi pi-pencil" (click)="ChangeNameDoc(file)" class="p-button-rounded p-button-text"
+                    [ngStyle]="{'display' : (SchoolService.IsCustomer == false && file.userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+                </div>
+              </div>
+              <!-- <br> -->
+            </div>
+          </p-fieldset>
+          <br>
+        </div>
+      </ng-container>
+
+      <!-- אם זה קובץ קיים כבר -->
+      <ng-template #elseTemplate2>
+        <!-- תצוגה מקובצת -->
+        <div *ngIf="!IsFieldDisplay" class="p-col-12 p-md-6 p-lg-3 vertical-container" id="tooltip" #tooltip
+          [tooltipDisabled]="!(SchoolService.IsCustomer == false && item[0].userCreatedId != SchoolService.ListSchool[0].userId)"
+          tooltipPosition="top" pTooltip="אין אפשרות לשנות מסמכים אלו כיוון שנפתחו על ידי משתמש אחר">
+          <div style="border: outset; border-color: cornflowerblue" class="box box-stretched">
+            <!-- הצגת שם המסמך -->
+            <!-- ---------- -->
+            <ng-container *ngIf="
+                !(IsEditName && idfile == item[0].iddocumentPerGroup);
+                else elseTemplate
+              ">
+              {{ item[0].name }}
+            </ng-container>
+            <ng-template #elseTemplate>
+              <div style="width: 100%" class="p-col-12 p-md-4">
+                <div class="p-inputgroup">
+                  <button id='EditBtn' type="button" pButton pRipple icon="pi pi-check" styleClass="p-button-success"
+                    tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item[0])"></button>
+                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                  <button id='EditBtn' type="button" pButton pRipple tooltipPosition="top" pTooltip="ביטול"
+                    icon="pi pi-times" styleClass="p-button-danger" (click)="IsEditName = false"></button>
+                </div>
+              </div>
+            </ng-template>
+
+            <!-- כפתורי האפשרויות -->
+            <div style="text-align: left">
+              <!-- הורדה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת הקובץ" icon="pi pi-download"
+                (click)="DownloadDoc(item[0])" class="p-button-rounded p-button-text"></button>
+              <!-- הצגה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ" icon="pi pi-eye"
+                (click)="DisplayDoc(item[0])" class="p-button-rounded p-button-text"></button>
+              <!-- הצגה בחלון חדש -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ בחלון חדש"
+                icon="pi pi-external-link" (click)="DisplayDocInNewWindow(item[0])"
+                class="p-button-rounded p-button-text"></button>
+              <!-- החלפת קובץ -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת הקובץ" icon="pi pi-upload"
+                (click)="ChangeDoc(item[0],false,0, true)" class="p-button-rounded p-button-text"
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+              <!-- מחיקה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת הקובץ" icon="pi pi-trash"
+                (click)="confirmDeleteFile(item[0])" class="p-button-rounded p-button-text"
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+              <!-- החלפת שם -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת שם לקובץ" icon="pi pi-pencil"
+                (click)="ChangeNameDoc(item[0])" class="p-button-rounded p-button-text"
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+            </div>
+          </div>
+        </div>
+        <!-- ---------- -->
+        <!-- תצוגה מפורטת -->
+        <div *ngIf="IsFieldDisplay" id="tooltip" #tooltip
+          [tooltipDisabled]="!(SchoolService.IsCustomer == false && item[0].userCreatedId != SchoolService.ListSchool[0].userId)"
+          tooltipPosition="top" pTooltip="אין אפשרות לשנות מסמכים אלו כיוון שנפתחו על ידי משתמש אחר">
+
+          <p-fieldset class="fieldset2 box box-stretched" [collapsed]="collapsed" [toggleable]="true">
+            <ng-template class=" p-fieldset-toggleable	Toggleable fieldset element
+                          p-fieldset-legend	Legend element.
+                          p-fieldset-content" pTemplate="header">
+              <div class="row">
+                <!-- <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9"> -->
+                <div style="margin-left: 40vw;">
+                  קובץ קיים
+                </div>
+
+              </div>
+            </ng-template>
+
+            <div class="row" style="border: solid; border-width: thin; border-style: inset;">
+              <div class=" col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <label><i class="pi pi-file"></i> </label>
+                <!-- ---------- -->
+                <ng-container *ngIf="
+                            !(IsEditName && idfile == item[0].iddocumentPerGroup);
+                            else elseTemplate
+                          ">
+                  {{ item[0].name }}
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <span style="padding: inherit; ">
+                    <button type="button" id='EditBtn' pButton pRipple icon="pi pi-check" styleClass="p-button-success"
+                      tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item[0])"></button>
+                    <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                    <button type="button" id='EditBtn' pButton pRipple tooltipPosition="top" pTooltip="ביטול"
+                      icon="pi pi-times" styleClass="p-button-danger" (click)="IsEditName = false"></button>
+                  </span>
+                </ng-template>
+                <i class="pi pi-arrow-left"></i>
+
+              </div>
+              <!-- כפתורי האפשרויות -->
+              <div style="text-align: left" class=" col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <!-- הורדה -->
+                <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת הקובץ" icon="pi pi-download"
+                  (click)="DownloadDoc(item[0])" class="p-button-rounded p-button-text"></button>
+                <!-- הצגה -->
+                <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ" icon="pi pi-eye"
+                  (click)="DisplayDoc(item[0])" class="p-button-rounded p-button-text"></button>
+                <!-- הצגה בחלון חדש -->
+                <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ בחלון חדש"
+                  icon="pi pi-external-link" (click)="DisplayDocInNewWindow(item[0])"
+                  class="p-button-rounded p-button-text"></button>
+                <!-- החלפת קובץ -->
+                <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת הקובץ" icon="pi pi-upload"
+                  (click)="ChangeDoc(item[0],false,0, true)" class="p-button-rounded p-button-text"
+                  [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+                <!-- מחיקה -->
+                <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת הקובץ" icon="pi pi-trash"
+                  (click)="confirmDeleteFile(item[0])" class="p-button-rounded p-button-text"
+                  [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+                <!-- החלפת שם -->
+                <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת שם לקובץ"
+                  icon="pi pi-pencil" (click)="ChangeNameDoc(item[0])" class="p-button-rounded p-button-text"
+                  [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item[0].userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+              </div>
+            </div>
+          </p-fieldset>
+          <br>
+        </div>
+      </ng-template>
+
+    </ng-container>
+
+    <!-- אם זה קובץ מהדרושים וטרם קיים -->
+    <ng-template #elseTemplate>
+      <!-- תצוגה מקובצת -->
+      <div *ngIf="!IsFieldDisplay" class="p-col-12 p-md-6 p-lg-3 vertical-container">
+        <div style="border: outset" class="box box-stretched">
+          {{ item[0].name }}
+          <div style="text-align: center">
+            <button #blk pButton pRipple type="button" tooltipPosition="top" pTooltip="העלאת קובץ" icon="pi pi-upload"
+              (click)="ChangeDoc(item[0])" class="p-button-rounded p-button-text"></button>
+          </div>
+        </div>
+      </div>
+      <!-- ---------- -->
+      <!-- תצוגה מפורטת -->
+      <div *ngIf="IsFieldDisplay">
+
+        <p-fieldset [collapsed]="collapsed" class="fieldset2 box box-stretched" [toggleable]="true">
+          <ng-template class=" p-fieldset-toggleable	Toggleable fieldset element
+                                  p-fieldset-legend	Legend element.
+                                  p-fieldset-content" pTemplate="header">
+            <div class="row">
+              <!-- <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9"> -->
+              <div style="margin-left: 40vw;">
+                קובץ דרוש
+              </div>
+
+            </div>
+          </ng-template>
+
+          <div class="row" style="border: solid; border-width: thin; border-style: inset;">
+            <div class=" col-xs-6 col-sm-6 col-md-6 col-lg-6">
+              <label><i class="pi pi-file"></i> </label>
+              {{item[0].name}}
+              <i class="pi pi-arrow-left"></i>
+
+            </div>
+            <div style="text-align: left" class=" col-xs-6 col-sm-6 col-md-6 col-lg-6">
+              <!-- כפתורי האפשרויות -->
+              <div style="text-align: left">
+                <button #blk pButton pRipple type="button" tooltipPosition="top" pTooltip="העלאת קובץ"
+                  icon="pi pi-upload" (click)="ChangeDoc(item[0])" class="p-button-rounded p-button-text"></button>
+              </div>
+            </div>
+          </div>
+        </p-fieldset>
+        <br>
+      </div>
+    </ng-template>
+  </div>
+
+  <div *ngIf="visible">
+    <p-sidebar [(visible)]="visible" [fullScreen]="true" [baseZIndex]="10000">
+      <embed id="pdf" style="width: 100%; height: 1000px" [src]="path" />
+    </p-sidebar>
+  </div>
+
+  <ngx-ui-loader></ngx-ui-loader>
+  <div style="text-align: center">
+    <p-toast position="top-center" key="tc"></p-toast>
+  </div>
+
+  <!-- פתיחת תיקיה בעלת קבצים מרובים -->
+  <div *ngIf="IsFolder">
+    <p-sidebar [(visible)]="IsFolder" [fullScreen]="true">
+      <h5 style="text-align: center; border-bottom: groove; font-weight: lighter">
+        קבצים של התיקיה {{ ListFilesOnFolder[0].folderName }}
+      </h5>
+      <div class="p-grid p-ai-stretch" *ngFor="let item of ListFilesOnFolder">
+        <div class="p-col-12 p-md-6 p-lg-3 vertical-container" id="tooltip" #tooltip
+          [tooltipDisabled]="!(SchoolService.IsCustomer == false && item.userCreatedId != SchoolService.ListSchool[0].userId)"
+          tooltipPosition="top" pTooltip="אין אפשרות לשנות מסמכים אלו כיוון שנפתחו על ידי משתמש אחר">
+          <div style="border: outset; border-color: cornflowerblue" class="box box-stretched">
+            <!-- הצגת שם המסמך -->
+            <ng-container *ngIf="
+                !(IsEditName && idfile == item.iddocumentPerGroup);
+                else elseTemplate
+              ">
+              {{ item.name }}
+            </ng-container>
+            <ng-template #elseTemplate>
+              <div style="width: 100%" class="p-col-12 p-md-4">
+                <div class="p-inputgroup">
+                  <button id='EditBtn' type="button" pButton pRipple icon="pi pi-check" styleClass="p-button-success"
+                    tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item,item.folderId)"></button>
+                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                  <button id='EditBtn' type="button" pButton pRipple tooltipPosition="top" pTooltip="ביטול"
+                    icon="pi pi-times" styleClass="p-button-danger" (click)="IsEditName = false"></button>
+                </div>
+              </div>
+            </ng-template>
+
+            <!-- כפתורי האפשרויות -->
+            <div style="text-align: left">
+              <!-- הורדה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת הקובץ" icon="pi pi-download"
+                (click)="DownloadDoc(item)" class="p-button-rounded p-button-text"></button>
+
+              <!-- הצגה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ" icon="pi pi-eye"
+                (click)="DisplayDoc(item)" class="p-button-rounded p-button-text"></button>
+
+              <!-- הצגה בחלון חדש -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הצגת הקובץ בחלון חדש"
+                icon="pi pi-external-link" (click)="DisplayDocInNewWindow(item)"
+                class="p-button-rounded p-button-text"></button>
+
+              <!-- החלפה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת הקובץ" icon="pi pi-upload"
+                (click)="ChangeDoc(item, false,ListFilesOnFolder.length, true)" class="p-button-rounded p-button-text"
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item.userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+
+              <!-- מחיקה -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת הקובץ" icon="pi pi-trash"
+                (click)="confirmDeleteFile(item, true)" class="p-button-rounded p-button-text"
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item.userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+
+              <!-- החלפת שם -->
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="החלפת שם לקובץ" icon="pi pi-pencil"
+                (click)="ChangeNameDoc(item)" class="p-button-rounded p-button-text"
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && item.userCreatedId != this.SchoolService.ListSchool[0].userId) ? 'none': 'inline'}"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-sidebar>
+  </div>
+
+
+
+
+  <p-confirmDialog [style]="{ width: '40%' }" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text">
+  </p-confirmDialog>
+</div>
+
+<p-toast></p-toast>
+
+<!-- accept=".xlsx,.xls,image/png, image/jpeg,.doc, .docx,.ppt, .pptx,.txt,.pdf" -->
+<input type="file" id="files_input_field" name="files" #file placeholder="Choose file"
+  (change)="uploadDocument(file.files)" style="display: none" multiple />
+
+<input type="file" id="files_input_field2" name="files2" #file2 placeholder="Choose file"
+  (change)="uploadDocument(file2.files, true)" style="display: none" />
+
+<input type="file" id="files_input_field3" name="file3" #files3 placeholder="Choose file" style="display: none"
+  (change)="setFiles(files3.files)" multiple />
+
+<p-dialog *ngIf="displayDialog" [(visible)]="displayDialog" header="פרטי מסמך" modal="true" [style]="{ width: '30vw' }"
+  [baseZIndex]="10000" [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+  <div style="width: 100%;">
+
+
+    <button style="width: -webkit-fill-available;" pButton pRipple type="button"
+      label="   לחץ כאן על מנת לבחור קבצים להעלאה " class="p-button-raised p-button-text" (click)="files3.click()">
+      <i class="pi pi-upload"></i> </button>
+    <br>
+    <br>
+    <div *ngIf="filesLst != undefined && filesLst.length > 1 ">
+      <label>שם תיקיה</label><label class="w3-text-red"> * </label>
+      <br>
+      <input style="width: -webkit-fill-available;" class="Input" type="text" pInputText [pKeyFilter]="blockSpecial"
+        [(ngModel)]="CurrentDocumentsPerGroup.name">
+      <br>
+      <br>
+    </div>
+    <div *ngIf="filesLst!=undefined &&  filesLst.length > 0" dir="rtl">
+      <p-fieldset legend="הקבצים שנבחרו" [toggleable]="true">
+        <div *ngFor="let item of filesLst; let i=index">
+          <label>שם הקובץ המקורי:</label> {{item.name}}
+          <button pButton pRipple type="button" icon="pi pi-times" (click)="deleteCurrentFile(files3.files,i)"
+            class="p-button-rounded p-button-danger p-button-text"></button>
+          <br>
+        </div>
+      </p-fieldset>
+    </div>
+    <br>
+    <button
+      [disabled]="filesLst == undefined || filesLst.length == 0 || (filesLst.length > 1 && (CurrentDocumentsPerGroup.name == undefined|| CurrentDocumentsPerGroup.name==''))"
+      pButton icon="pi pi-save" label="שמור" class="buttonSave" (click)="GetIdExsistDocument()"></button>
+  </div>
+</p-dialog>

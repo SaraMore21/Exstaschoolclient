@@ -1,0 +1,34 @@
+
+
+<div class="container-fluid" style="padding-top: 2%;">
+
+  <div style="width: max-content; margin-right: 16%;">
+    <!-- <label style="width: max-content; margin-right: 16%;"> -->
+    <label>שנת לימודים</label><br>
+    <p-dropdown [options]="SchoolService.ListYearbook" [(ngModel)]="SchoolService.SelectYearbook" editable="true"
+      optionLabel="name" (onChange)="ChangeYearbook()" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+    <!-- </label> -->
+    <!-- <label> -->
+
+    <button pButton pRipple type="button" label="חזור" class="p-button-outlined p-button-secondary"
+      (click)="GenericFunctionService.GoBackToLastPage()"></button>
+    <!-- </label> -->
+  </div>
+  <div class="row form-group">
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+      <p-panelMenu class="sidenav" [model]="items" [style]="{'width':'300px','hight':'100%'}">
+        <!-- <div style="bottom: 10px; position: fixed;">
+        <button>rgfd</button>
+      </div> -->
+      </p-panelMenu>
+
+    </div>
+    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+      <!-- <h2 >
+        {{SchoolService.School.name}}
+      </h2> -->
+      <br>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

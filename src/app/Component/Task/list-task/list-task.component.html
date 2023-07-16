@@ -1,0 +1,240 @@
+<!-- תצוגת הטבלה -->
+<div class="card row">
+  <h1 style="text-align: center">רשימת מטלות אב</h1>
+  <div style="text-align-last: center">
+    <p-table #tb id='tb' [(value)]="taskService.ListTask" dir="rtl" [filterDelay]="0" [scrollable]="true"
+      scrollHeight="100vh" [globalFilterFields]="[
+      'index',
+        'codeTask',
+        'name',
+        'nameEnglish',
+        'typeTaskName',
+        'checkTypeName',
+        'typeOfTaskCalculationName',
+        'coordinatorName',
+        'schoolName'
+        
+      ]">
+      <ng-template pTemplate="caption">
+        <button style="margin-left: 72%" pButton label="הוספת מטלה" (click)="AddTask()"></button>
+        <button *ngIf="isCoordinationSchools" style="margin-left: 72%" pButton label="הוספת מטלה למוסדות תואמים"
+          (click)="AddTaskToCoordinationScools()"></button>
+          <p-button
+          pRipple
+          type="button"
+          label=" יצוא לקובץ EXCEL"
+          (click)="exportExcel()"
+          icon="pi pi-file-excel"
+          class=" p-button-outline p-button-success"></p-button>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+            placeholder="חיפוש" />
+        </span>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="index"> # <p-sortIcon field="index"></p-sortIcon></th>
+          <th pSortableColumn="codeTask">
+            קוד מטלה <p-sortIcon field="codeTask"></p-sortIcon>
+          </th>
+          <th pSortableColumn="name">
+            שם מטלה <p-sortIcon field="name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="nameEnglish">
+            שם מטלה באנגלית <p-sortIcon field="nameEnglish"></p-sortIcon>
+          </th>
+          <th pSortableColumn="coordinatorName">
+            אחראי מטלה <p-sortIcon field="coordinatorName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="typeTaskName">
+            סוג מטלה <p-sortIcon field="typeTaskName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="checkTypeName">
+            סוג בדיקה <p-sortIcon field="checkTypeName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="typeOfTaskCalculationName">
+            סוג חישוב מטלה <p-sortIcon field="typeOfTaskCalculationName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="schoolName">
+            מוסד <p-sortIcon field="schoolName"></p-sortIcon>
+          </th>
+          <!-- <th pSortableColumn="nameGroup"> קבוצה<p-sortIcon field="nameGroup"></p-sortIcon></th> -->
+
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-task let-r="rowIndex">
+        <tr>
+          <td>{{task.index}}</td>
+          <td>{{ task.codeTask }}</td>
+          <td>{{ task.name }}</td>
+          <td>{{ task.nameEnglish }}</td>
+          <td>{{ task.coordinatorName }}</td>
+          <td>{{ task.typeTaskName }}</td>
+          <td>{{ task.checkTypeName }}</td>
+          <td>{{ task.typeOfTaskCalculationName }}</td>
+          <td>{{ task.schoolName }}</td>
+          
+
+          <!-- <td>{{course.course.GroupName}}</td> -->
+
+          <td style="text-align: center">
+            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
+              (click)="EditDetailsTask(task)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-calendar-times" tooltipPosition="top"
+              pTooltip="מטלות משוייכות למטלה זו" (click)="GoToListTaskExsist(task)"
+              class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
+              (click)="GoToDocumentsPerTask(task)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
+              (click)="confirmDeleteFile(task)" class="p-button-rounded p-button-text"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+
+<!-- עריכת והוספת מטלה -->
+<p-dialog #dial header="פרטי מטלה" [(visible)]="displayModal" [modal]="true" [style]="{ width: '30vw' }"
+  [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+
+  <div style="color: red;"
+    *ngIf="(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)">
+    אין אפשרות לערוך מטלה זו כיוון שנפתחה ע"י הלקוח
+  </div>
+  <br>
+  <!-- מוסד -->
+  <div *ngIf="((CurrentTask==null||CurrentTask.idtask==null) && schoolService.ListSchool.length!=1) && isCoordinationOrSchool == false">
+    <label class="w3-text-grey">מוסד</label>
+    <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+      optionLabel="school.name" placeholder="בחר מוסד" [style]="{ width: '100%' }" filter="true"
+      [(ngModel)]="CurrentSchool" required (onChange)="ChangeSchool()"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+    </p-dropdown>
+    <div *ngIf=" School.invalid && (School.touched || School.dirty || flagInvalid)">
+      <div *ngIf="School.errors.required" class="w3-text-red">
+        שדה חובה
+      </div>
+    </div>
+  </div>
+
+  <!-- קוד תאום -->
+  <div *ngIf=" (CurrentTask==null||CurrentTask.idtask==null) && isCoordinationOrSchool==true ">
+    <label class="w3-text-grey">קוד תאום מוסד</label>
+    <p-dropdown dir="rtl" name="coordinationCode1" id="coordinationCode1" #coordinationCode1="ngModel"
+      [options]="listCoordinationsCode" placeholder="בחר קוד תאום" [style]="{ width: '100%' }" filter="true"
+      [(ngModel)]="CoordinationCode" required (onChange)="SetListUserToCoordinationScools()"
+      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+    <div *ngIf="
+    coordinationCode1.invalid &&
+                  (coordinationCode1.touched || coordinationCode1.dirty || flagInvalid)
+                ">
+      <div *ngIf="coordinationCode1.errors.required" class="w3-text-red">
+        שדה חובה
+      </div>
+    </div>
+  </div>
+
+  <!-- <div > -->
+  <label>קוד מטלה</label>
+  <input class="Input" type="text" pInputText [(ngModel)]="CurrentTask.codeTask"
+    [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)" />
+  <label>שם מטלה</label>
+  <input class="Input" type="text" pInputText [(ngModel)]="CurrentTask.name"
+    [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)" />
+  <label>שם מטלה באנגלית</label>
+  <input class="Input" type="text" pInputText [(ngModel)]="CurrentTask.nameEnglish"
+    [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)" />
+  <label class="w3-text-grey">סוג מטלה</label>
+  <p-dropdown appendTo="body" dir="rtl" #TypeTask id="TypeTask" name="TypeTask" [options]="schoolService.TypeTask"
+    optionLabel="name" placeholder="בחר סוג מטלה" [(ngModel)]="typeTask" [styleClass]="'squ-primeng-dropdowlist'"
+    [style]="{ width: '100%' }" filter="true"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+    [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)">
+  </p-dropdown>
+
+  <label class="w3-text-grey">סוג בדיקה</label>
+  <p-dropdown appendTo="body" dir="rtl" id="checkType" name="checkType" [options]="checkTypeService.ListCheckType"
+    optionLabel="name" placeholder="בחר סוג בדיקה" [(ngModel)]="checkType" [styleClass]="'squ-primeng-dropdowlist'"
+    [style]="{ width: '100%' }" filter="true"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+    [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)">
+  </p-dropdown>
+  
+
+
+  <label class="w3-text-grey">אחראי מטלה</label>
+  <p-dropdown appendTo="body" filter="true" filterBy="tz,lastName,firstName" [(ngModel)]="coordinator"
+    [options]="ListUserOfCoordinationCode" placeholder="בחר מורה" [style]="{ width: '100%' }"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+    [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)">
+    <ng-template let-item pTemplate="selectedItem">
+      {{ item.lastName }} {{ item.firstName }} ,{{ item.tz }}
+    </ng-template>
+    <ng-template let-item pTemplate="item">
+      {{ item.lastName }} {{ item.firstName }} ,{{ item.tz }}
+    </ng-template>
+  </p-dropdown>
+
+  <label class="w3-text-grey">סוג חישוב מטלה</label>
+  <p-dropdown appendTo="body" dir="rtl" #TypeOfTaskCalculation id="TypeOfTaskCalculation" name="TypeOfTaskCalculation"
+    [options]="schoolService.TypeOfTaskCalculations" optionLabel="name" placeholder="בחר סוג חישוב מטלה"
+    [(ngModel)]="typeOfTaskCalculation" [styleClass]="'squ-primeng-dropdowlist'" [style]="{ width: '100%' }"
+    filter="true" (onChange)="ChangeTypeOfTaskCalculation()"
+    [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+  </p-dropdown>
+  <div *ngIf="typeOfTaskCalculation!=null && typeOfTaskCalculation.value==2">
+    <div *ngFor="let item of taskService.ListQuestionsOfTasks ;let i=index">
+      <div class="row form-group">
+      <div class="col-lg-10 col-md-10 col-sm-10 col-sm-10" style="place-self: center;">
+        <label class="w3-text-grey">מספר שאלה</label>
+        <input class="Input" type="text" pInputText  value="{{i+1}}" [disabled]="true" />
+        <br>
+        <label class="w3-text-grey">שם שאלה</label>
+        <input class="Input" type="text" pInputText [(ngModel)]="item.name"
+          [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)" />
+        <label class="w3-text-grey">אחוזי שאלה</label>
+        <input class="Input" type="number" pInputText [(ngModel)]="item.percent"
+          [disabled]="((CurrentTask==null||CurrentTask.idtask==null) && (((CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null) && isCoordinationOrSchool == false)|| (isCoordinationOrSchool == true &&(CoordinationCode == null ||CoordinationCode ==''))))||(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)" />
+      </div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-sm-2" style="place-self: center;">
+        <button pButton pRipple type="button" icon="pi pi-times" (click)="DeleteQuestion(i)"
+          class="p-button-rounded p-button-danger p-button-outlined" pTooltip="מחיקת שאלה"
+          tooltipPosition="top"></button>
+      </div>
+      <br>
+    </div><br>
+    </div>
+    <button pButton pRipple type="button" (click)="newQuestion()" icon="pi pi-plus"
+      class="p-button-rounded p-button-outlined" pTooltip="הוספת שאלה" tooltipPosition="top"></button>
+  </div>
+
+
+  <ng-template pTemplate="footer">
+    <button style="width: 100%" pButton icon="pi pi-save" label="שמור" (click)="CheckIfCustomerAndTaskOpenByCustomer()"
+      [disabled]="(schoolService.IsCustomer == false && CurrentTask != null && CurrentTask.uniqueCodeId!=null)">
+    </button>
+
+  </ng-template>
+</p-dialog>
+
+
+<div style="text-align: center">
+  <p-toast position="top-center" key="tc"></p-toast>
+</div>
+<p-toast position="top-center"></p-toast>
+
+<p-confirmDialog [style]="{ width: '40%' }" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text">
+</p-confirmDialog>
+
+<p-dialog #dial header="פרטי מטלה" [(visible)]="DisplayModelTheNewUsersToCustomer" [modal]="true"
+  [style]="{ width: '30vw' }" [draggable]="false" [resizable]="false" class="p-rtl" dir="rtl">
+  {{stringNewUsers}}
+</p-dialog>

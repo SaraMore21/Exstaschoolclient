@@ -1,0 +1,127 @@
+<div class="card row">
+    <h1 style="text-align: center">מערכת שעות יומית</h1>
+    <br>
+    <div style="text-align: center" *ngIf="!openSchedule">
+        <div *ngIf="schoolService.ListSchool && schoolService.ListSchool.length>1">
+            <h5>בחר מוסד</h5>
+            <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+                optionLabel="school.name" placeholder="בחר מוסד" [style]="{ width: '30%' }" filter="true"
+                [(ngModel)]="currentSchool" required (onChange)="changeSchool()"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+            </p-dropdown>
+        </div>
+
+        <h5>בחר קבוצה</h5>
+        <p-dropdown [disabled]="dailyScheduleService.schoolId == undefined"
+            [(ngModel)]="dailyScheduleService.selectedGroup" filter="true" filterBy="nameGroup"
+            [options]="groupService.ListGroupPerSY" placeholder="בחר קבוצה" appendTo="body" [style]="{ width: '30%' }"
+            emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+            <ng-template let-item pTemplate="selectedItem">
+                {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+                {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+            </ng-template>
+        </p-dropdown>
+
+        <h5>בחר תאריך</h5>
+        <ngb-datepicker class="hebrew rtl" #dp name="date" [(ngModel)]="model" [startDate]="model" [displayMonths]="1"
+            [firstDayOfWeek]="7" [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+        </ngb-datepicker>
+
+        <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+            <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+                <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}
+                    <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+        <br>
+        <button style="width: 30%; margin-top: 2rem; margin-bottom: 1.5rem; text-align: center;" pButton pRipple
+            type="button" (click)="open()" [disabled]="dailyScheduleService.selectedGroup == undefined||openSchedule==true" label="אישור"
+            class="p-button-outlined btnSave"></button>
+        <br>
+    </div>
+
+    <div *ngIf="openSchedule">
+        <h3 style="text-align: center;">מערכת שעות יומית - {{dailyScheduleService.selectedGroup.group.nameGroup}},
+            {{dateHebrew}}
+        </h3>
+
+        <div style="text-align-last: center;">
+            <button pButton label="הוספת שיעור למערכת" class="p-button-outlined" (click)="AddDailyShcedule()"></button>
+            <p-button
+        pRipple
+        type="button"
+        label=" יצוא לקובץ EXCEL"
+        (click)="exportExcel()"
+        icon="pi pi-file-excel"
+        class=" p-button-outline p-button-success"></p-button>
+            <div *ngIf="list==null||list.length == 0">לא נמצאה מערכת מתאימה</div>
+            <p-table #tb [value]="list" dir="rtl" *ngIf="list==null||list.length > 0">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="">שעות </th>
+                        <th pSortableColumn="">קורס </th>
+                        <th pSortableColumn="">מורה </th>
+                        <th pSortableColumn="">סוג למידה </th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-dailySchedule>
+                    <tr *ngIf="dailySchedule!=null">
+                        <!-- <td>{{dailySchedule.endTime.hours}}:{{dailySchedule.endTime.minutes}} -
+                            {{dailySchedule.startTime.hours}}:{{dailySchedule.startTime.minutes}}</td> -->
+                            <td>{{dailySchedule.endTime}} - {{dailySchedule.startTime}}</td>
+                        <td>{{dailySchedule.courseName}}</td>
+                        <td>{{dailySchedule.teacherName}}</td>
+                        <td>{{dailySchedule.learningStyleName}}</td>
+                        <td style="text-align: center">
+                            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top"
+                                pTooltip="עריכה" (click)="editDailySchedule(dailySchedule)"
+                                class="p-button-rounded p-button-text">
+                            </button>
+                        </td>
+                        <td style="text-align: center">
+                            <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top"
+                                pTooltip="מחיקה" (click)="DeleteDailySchedule(dailySchedule.iddailySchedule)"
+                                class="p-button-rounded p-button-text">
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="dailySchedule==null" class="emptyRow">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <br>
+            <button pButton label="חזרה לבחירת קבוצה" class="p-button-outlined" style="margin-bottom: 1.5rem;"
+                (click)="goBack()"></button>
+
+        </div>
+    </div>
+
+    <!-- דיאלוג עריכת מערת יומית -->
+    <p-dialog *ngIf="edit" [(visible)]="edit" modal="true" [style]="{ width: '30vw' }" [baseZIndex]="10000"
+        [draggable]="false" [resizable]="false" class="p-rtl dialog" dir="rtl">
+        <app-edit-daily-schedule (messageEvent)="UpdateList($event)"></app-edit-daily-schedule>
+    </p-dialog>
+
+
+    <div style="text-align: center;">
+        <p-toast position="top-center" key="tc"></p-toast>
+        <p-toast position="top-center"></p-toast>
+    </div>
+
+    <p-confirmDialog dir="rtl" [style]="{width: '30%'}" [baseZIndex]="10000"></p-confirmDialog>
+
+</div>

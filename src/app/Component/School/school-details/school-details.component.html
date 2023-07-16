@@ -1,0 +1,50 @@
+
+
+<p-dialog [(visible)]="schoolService.SetYearbook" header="הוספת שנתון"  [closable]="false" [modal]="true">
+
+    <label  for="user" class="w3-text-grey">שם </label>
+    <span class="ui-float-label">
+      <input
+        class="form-control w3-input"
+        type="text"
+        size="30"
+        [(ngModel)]='Name'
+        name="name"
+        id="name"
+        #name="ngModel"
+        pInputText />
+    </span>
+  
+    <div class="row form-group" style="width: 100%;" >
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+          <label class="w3-text-grey">מתאריך</label><br>
+          <ngb-datepicker class="hebrew rtl" #dp [(ngModel)]="FromDate" [displayMonths]="1" [firstDayOfWeek]="7"
+            [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+          </ngb-datepicker>
+    
+          <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+            <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+              <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}</div>
+              <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month)}}</div>
+            </div>
+          </ng-template>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+          <label class="w3-text-grey">עד תאריך</label><br>
+          <ngb-datepicker class="hebrew rtl" #dp [(ngModel)]="ToDate" [displayMonths]="1" [firstDayOfWeek]="7"
+            [dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+          </ngb-datepicker>
+    
+          <ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+            <div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+              <div class="hebrew-num">{{ i18n.getDayNumerals(date) }}</div>
+              <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}</div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <button pButton pRipple (click)="AddYearbook()" label="שמור" [disabled]="FromDate==null||ToDate==null||Name==null||Name==''"></button>
+
+  
+  </p-dialog>

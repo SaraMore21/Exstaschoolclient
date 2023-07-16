@@ -1,0 +1,184 @@
+<!-- <div style="text-align-last: center;">
+  <a style="    font-weight: bold;"> AD, שלום רב</a><br>
+  <a>הופק עבורך שם משתמש וסיסמא לאתר ניהול המוסד <span style='font-weight: bold'>extraschool</span><br>
+    שם המשתמש הינו אישי ואין להעבירו לאחר.
+    </a><br><br>
+  <a style='font-weight: bold'> שם משתמש: </a>
+  <a > 030306 </a>
+  <br> <a style='font-weight: bold'> סיסמא </a>
+  <a > 1234 </a> <br>
+  <a> יש לשמור קוד זה על מנת לאפשר כניסה לתוכנה </a> <br><br>
+
+    <a style="color: dodgerblue; text-decoration: underline;" href='https://extraschoolclient2.azurewebsites.net'> לכניסה לאתר </a><br>
+    <a style="color: dodgerblue; text-decoration: underline;" href='https://drive.google.com/file/d/17_zSq8HERuXRBzB2zGGYt1dSACiw1wNV/view?usp=sharing'> לסרטון הסבר על השימוש באתר </a> <br> <br>
+
+  <a> על כל שאלה או תקלה ניתן לפנות לתמיכה </a> <br>
+  <a>   <span style='font-weight: bold'>טלפון:</span> 0733638688</a> <br>
+  <a style='font-weight: bold'> מייל: </a>
+  <a  href='mailto:more21service@gmail.com'> more21service@gmail.com </a> <br>
+  <br>
+  <a> בהצלחה רבה </a> <br>
+
+  <img src='../../../assets/Image/LogoMail.jpg'
+    style='width: 15% ; height: 15% ' />
+</div> -->
+
+<!-- <a  href='mailto:more21service@gmail.com'> more21service@gmail.com </a> <br> -->
+
+
+
+<ngx-ui-loader></ngx-ui-loader>
+<!-- <a  target="_blank"[href]="src" download="img.png">Download</a> -->
+<!-- <a [href]="fileUrl" download="file.txt">DownloadFile</a> -->
+<section class="w3-display-middle w3-round w3-card-4" style="
+  border-style: double;
+  width: 26%;
+  height: 50%;
+  border-color: #414040;
+  min-height: 450px;
+
+  min-width: 125px">
+  <div class="w3-round siteColor2 w3-header w3-center" style="height: 9%">
+    <img class="w3-margin" height="90%" src="../../../assets/Image/logo.GIF">
+  </div>
+
+  <div class="w3-content" style="padding: 5%">
+    <form (ngSubmit)="CheckIfExsist(UserCode, UserPassword)" #LoginForm="ngForm">
+      <div class="form-group">
+        <label for="user" class="w3-text-grey">שם משתמש</label>
+        <span class="ui-float-label">
+          <input class="form-control w3-input" type="text" size="30" [(ngModel)]="UserCode" name="user" id="user"
+            #user="ngModel" required pInputText />
+          <!-- minlength="3"
+    maxlength="9"
+    pattern="[0-9]*" -->
+        </span>
+
+        <div style="height: 40px; padding-top: 8px">
+          <div *ngIf="user.invalid && (user.dirty || user.touched)">
+            <div *ngIf="user.errors.required" class="w3-text-red">
+              שדה חובה
+            </div>
+            <!-- <div *ngIf="user.errors.minlength" class="w3-text-red">
+        אורך מינימום 3 תווים
+      </div>
+      <div *ngIf="user.errors.maxlength" class="w3-text-red">
+        אורך מקסימום 9 תווים
+      </div> -->
+            <!-- <div *ngIf="user.errors.pattern" class="w3-text-red">
+        הקוד מכיל ספרות בלבד
+      </div> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="pass1" class="w3-text-grey">סיסמא</label>
+
+        <span class="ui-float-label">
+
+          <div>
+            <p-password class="w3-input form-control" [(ngModel)]="UserPassword" [feedback]="false" [toggleMask]="true"
+              size="30" name="Password" id="Password" #Password="ngModel" required></p-password>
+          </div>
+
+        </span>
+        <div style="height: 40px; padding-top: 8px">
+          <div *ngIf="Password.invalid && (Password.dirty || Password.touched)">
+            <div *ngIf="Password.errors.required" class="w3-text-red">
+              שדה חובה
+            </div>
+            <!-- <div *ngIf="pass1.errors.minlength" class="w3-text-red">
+        אורך מינימום 4 תווים
+      </div>
+      <div *ngIf="pass1.errors.maxlength" class="w3-text-red">
+        אורך מקסימום 10 תווים
+      </div> -->
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="p-field-checkbox">
+        <p-checkbox id='checkbox' name="name" #name="ngModel" [(ngModel)]="schoolService.IsCustomer" binary="true" inputId="binary"></p-checkbox>
+        <label for="pass1" class="w3-text-grey"> כניסה כלקוח </label>
+      </div>
+
+      <div *ngIf="IsFailed" class="w3-panel w3-pale-red w3-rightbar w3-border-red w3-text-red">
+        <p>שם משתמש ו/או סיסמא שגויים</p>
+      </div>
+      <!-- <h5>Single</h5>
+<p-dropdown [options]="cities" [(ngModel)]="selectedCity1" placeholder="Select a City" optionLabel="NameS"
+  [showClear]="true"></p-dropdown> -->
+
+      <div style="text-align: center;">
+
+        <p-dropdown
+    *ngIf="IsChooseSchool"
+    name="School"
+    class="Pdropdown"
+    #School="ngModel"
+    [options]="schoolService.ListSchool"
+    [(ngModel)]="school"
+    placeholder="בחר מוסד"
+    optionLabel="school.name"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+    ></p-dropdown>
+
+        <!-- <p-multiSelect class="Pdropdown" name="School" #School="ngModel" *ngIf="IsChooseSchool"
+          [options]="schoolService.ListSchool" [(ngModel)]="school" defaultLabel="בחר מוסד" optionLabel="school.name">
+        </p-multiSelect> -->
+
+        <!-- <p-multiSelect class="PmultiSelect" name="select" #select="ngModel" *ngIf="IsChooseSchool" [options]="Schools" [(ngModel)]="selectedScools" defaultLabel="בחר מוסד/ות" optionLabel="name" display="chip"></p-multiSelect> -->
+
+        <a *ngIf="!IsChooseSchool" style="color:steelblue; " [routerLink]="" (click)="ForgetPassword()"> שכחתי סיסמא</a>
+
+      </div><br>
+
+      <p class="w3-center">
+        <button pButton pRipple type="submit" label="כניסה" class="p-button-raised"
+          [disabled]="isDisable||!LoginForm.valid||(IsChooseSchool&& (school==null|| school.length==0))"></button>
+        <!-- <button  pButton pRipple type="submit" label="כניסה" class="p-button-raised"  [disabled]="isDisable||!LoginForm.valid||(IsChooseSchool&& (school==null|| school.school==null||school.school.idschool==null))"  ></button> -->
+
+      </p>
+
+    </form>
+  </div>
+</section>
+
+<div style="text-align: center;">
+  <p-toast position="top-center" key="tc"></p-toast>
+</div>
+
+<p-dialog [(visible)]="DisplaySelectEmail" *ngIf="DisplaySelectEmail" [style]="{ width: '30vw' }" header="מייל לשליחת הסיסמא"  [modal]="true">
+  <p-dropdown appendTo="body" class="Pdropdown" [options]="ListEmail" [(ngModel)]="SelectEmail"
+    placeholder="בחר מייל לשליחה" optionLabel=""
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown><br><br>
+    <button pButton pRipple type="button" label="שלח" (click)="ForgetPassword()" dir="ltr" style="float: left;" icon="pi pi-send"> </button>
+
+</p-dialog>
+
+
+
+
+<!-- <router-outlet></router-outlet> -->
+<!-- <p-dialog [(visible)]="IsChooseSchool">
+
+  <h5>Single</h5>
+  <p-dropdown [options]="Schools" [(ngModel)]="selectSchool" placeholder="Select a City" optionLabel="name"
+    [showClear]="true"></p-dropdown>
+
+</p-dialog> -->
+
+<!-- <input #someInput placeholder="Your favorite sea creature"> -->
+<!-- <input #someInput placeholder="Your favorite sea creature"> -->
+
+<!-- <fieldset style="position:relative">
+  <legend>Title</legend>
+     <input type="text"/>
+    <button style="position: absolute;right:10px;top:-5px;outline:5px solid #fff">
+        <img src="http://icons.iconarchive.com/icons/hopstarter/sleek-xp-basic/16/Close-2-icon.png"/>
+    </button>
+</fieldset> -->
+

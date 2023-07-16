@@ -1,0 +1,388 @@
+<!-- תצוגת הטבלה -->
+<div class="card row">
+  <h1 style="text-align: center">רשימת מטלות משוייכות למטלה {{taskService.CurrentTask.name}} </h1>
+  <div style="text-align-last: center">
+    <p-table #tb [value]="TaskExsistService.listTaskExsist" dir="rtl" [filterDelay]="0" [scrollable]="true"
+      scrollHeight="100vh" [globalFilterFields]="[
+       'index',
+       'codeTaskExsist',
+        'name',
+        'dateSubmitA',
+        'dateSubmitB',
+        'dateSubmitC',
+        'percents',
+        'passingGrade',
+        'cost',
+        'coordinatorId',
+        'courseId',
+        'codeTaskExsist'
+      ]">
+      <ng-template pTemplate="caption">
+        <div style="margin-left: 72%">
+          <!-- <button pButton pRipple type="button"  label="הוספת מטלה" (click)="AddTask()"
+            class="p-mr-2 p-mb-2"></button>
+            <button pButton pRipple type="button" label="חזור" (click)="GenericFunctionService.GoBackToLastPage()"
+            class="p-mb-2"></button> -->
+
+          <button pButton label="הוספת מטלה" (click)="AddTask()"></button>
+          <p-button
+        pRipple
+        type="button"
+        label=" יצוא לקובץ EXCEL"
+        (click)="exportExcel()"
+        icon="pi pi-file-excel"
+        class=" p-button-outline p-button-success"></p-button>
+
+          <button pButton label="חזור" (click)="GenericFunctionService.GoBackToLastPage()"></button>
+        </div>
+
+
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+            placeholder="חיפוש" />
+        </span>
+
+
+
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="index">
+            #<p-sortIcon field="idex"></p-sortIcon>
+          </th>
+          <th pSortableColumn="codeTaskExsist">
+            קוד מטלה <p-sortIcon field="codeTaskExsist"></p-sortIcon>
+          </th>
+          <th pSortableColumn="name">
+            שם מטלה <p-sortIcon field="name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="courseId">
+            קורס <p-sortIcon field="courseId"></p-sortIcon>
+          </th>
+          <th pSortableColumn="coordinatorId">
+            אחראי מטלה <p-sortIcon field="coordinatorId"></p-sortIcon>
+          </th>
+          <th pSortableColumn="dateSubmitA">
+            מועד א'<p-sortIcon field="dateSubmitA"></p-sortIcon>
+          </th>
+          <th pSortableColumn="dateSubmitB">
+            מועד ב' <p-sortIcon field="dateSubmitB"></p-sortIcon>
+          </th>
+          <th pSortableColumn="dateSubmitC">
+            מועד ג'<p-sortIcon field="dateSubmitC"></p-sortIcon>
+          </th>
+          <th pSortableColumn="percents">
+            אחוזים <p-sortIcon field="percents"></p-sortIcon>
+          </th>
+          <th pSortableColumn="passingGrade">
+            ציון עובר<p-sortIcon field="passingGrade"></p-sortIcon>
+          </th>
+          <th pSortableColumn="cost">
+            מחיר <p-sortIcon field="cost"></p-sortIcon>
+          </th>
+
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-task>
+        <tr>
+          <td>{{task.index}}</td>
+          <td>{{ task.codeTaskExsist }}</td>
+          <td>{{ task.name }}</td>
+          <td>{{ task.courseName }}</td>
+          <td>{{ task.coordinatorName }}</td>
+          <td>{{ task.dateSubmitA | date: "dd/MM/yyyy" }}</td>
+          <td>{{ task.dateSubmitB | date: "dd/MM/yyyy" }}</td>
+          <td>{{ task.dateSubmitC | date: "dd/MM/yyyy" }}</td>
+          <td>{{ task.percents }}</td>
+          <td>{{ task.passingGrade }}</td>
+          <td>{{ task.cost }}</td>
+
+          <td style="text-align: center">
+            <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
+              (click)="EditDetailsTask(task)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-users" tooltipPosition="top"
+              pTooltip="תלמידות המשוייכות למטלה זו" (click)="GoToListTaskToStudent(task)"
+              class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
+              (click)="GoToDocumentsPerTaskExsist(task)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
+              (click)="confirmDeleteFile(task)" class="p-button-rounded p-button-text"></button>
+
+            <button pButton pRipple type="button" icon="pi pi-external-link" tooltipPosition="top"
+              pTooltip="הוספת/עריכת ציוני בנות הקבוצה" (click)="showDialogBasic(task)"
+              class="p-button-rounded p-button-text"></button>
+
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- עריכת מטלה -->
+<p-dialog header="פרטי מטלה" [(visible)]="displayModal" [modal]="true" [style]="{ width: '30vw' }" [draggable]="false"
+  [resizable]="false" class="p-rtl" dir="rtl">
+  <form #form="ngForm" id="form" name="form" dir="rtl">
+    <label>קוד מטלה</label>
+    <input class="Input" type="text" pInputText name="codeTaskExsist" [(ngModel)]="CurrentTask.codeTaskExsist" />
+    <label>שם מטלה</label>
+    <input class="Input" type="text" pInputText name="name" [(ngModel)]="CurrentTask.name" />
+    <label class="w3-text-grey">שם קורס </label>
+    <p-dropdown appendTo="body" [(ngModel)]="course" filter="true" filterBy="courseName,groupName,semesterName"
+      [options]="CourseService.ListCoursePerSY" placeholder="בחר קורס" [style]="{ width: '100%' }" name="course"
+      [disabled]="isEdit" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+      <ng-template let-item pTemplate="selectedItem">
+        {{ item.courseName }}, {{ item.groupName }}, {{ item.semesterName }}
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        {{ item.courseName }}, {{ item.groupName }}, {{ item.semesterName }}
+      </ng-template>
+    </p-dropdown>
+    <label class="w3-text-grey">אחראי מטלה</label>
+    <p-dropdown appendTo="body" name="coordinator" filter="true" filterBy="tz,lastName,firstName"
+      [(ngModel)]="coordinator" [options]="userService.ListUserPerSY" placeholder="בחר מורה"
+      [style]="{ width: '100%' }" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+      <ng-template let-item pTemplate="selectedItem">
+        {{ item.lastName }} {{ item.firstName }} ,{{ item.tz }}
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        {{ item.lastName }} {{ item.firstName }} ,{{ item.tz }}
+      </ng-template>
+    </p-dropdown>
+
+    <div>
+      <label for="navigators">מועד א'</label><br />
+      <input class="Input" #dateSubmitA1="ngModel" id="dateSubmitA1" name="dateSubmitA1" type="date" pInputText required
+        [(ngModel)]="dateSubmitA" />
+      <div *ngIf=" dateSubmitA1.invalid && (dateSubmitA1.touched || dateSubmitA1.dirty || flagInvalid) ">
+        <div *ngIf="dateSubmitA1.errors.required" class="w3-text-red">
+          שדה חובה
+        </div>
+      </div>
+    </div>
+
+    <label for="navigators">מועד ב'</label><br />
+    <input pInputText type="date" [(ngModel)]="dateSubmitB" class="Input" name="dateSubmitB1" />
+    <label for="navigators">מועד ג'</label><br />
+    <input pInputText type="date" [(ngModel)]="dateSubmitC" class="Input" name="dateSubmitC1" />
+    <div>
+      <label>אחוזים</label>
+      <input class="Input" #percents1="ngModel" id="percents1" name="percents1" type="number" pInputText
+        pattern="^$|^([0-9]|[1-9][0-9]|[1][0][0])?" min="0" max="100" [(ngModel)]="CurrentTask.percents" />
+      <div *ngIf="
+          percents1.invalid &&
+          (percents1.touched || percents1.dirty || flagInvalid)">
+        <div *ngIf="percents1.errors.pattern" class="w3-text-red">
+          האחוזים צריכים להיות מספר שלם
+          ולא גדול מ-100
+        </div>
+      </div>
+    </div>
+    <label>ציון עובר</label>
+    <input class="Input" type="number" pInputText pattern="^$|^([0-9]|[1-9][0-9]|[1][0][0])?" min="0" max="100"
+      [(ngModel)]="CurrentTask.passingGrade" name="passingGrade" />
+    <label>מחיר</label>
+    <input class="Input" type="number" pInputText [(ngModel)]="CurrentTask.cost" name="cost" />
+    <br>
+    <br>
+    <button style="width: 100%;" pButton icon="pi pi-save" name="save" label="שמור"
+      (click)="form.valid != true ? (flagInvalid = true) : CheckDates()"></button>
+  </form>
+</p-dialog>
+
+
+<!-- הצגה ואפשרות עריכת ציוני התלמידות במטלה/בשאלה למטלה -->
+<p-dialog header="פרטי ציוני המטלה" [resizable]="false" [modal]="true" [maximizable]="true" appendTo="body"
+  [(visible)]="dialogVisible" [style]="{width: '75vw'}" [contentStyle]="{height: '350px'}">
+  <form #form1="ngForm" name="form1" style="text-align: center;">
+    <ng-container *ngIf="CurrentQuestion!=null&&CurrentQuestion.number!=0; else elseTemplate">
+      <h4>ציוני בנות הקבוצה לשאלה {{CurrentQuestion.number+', '+CurrentQuestion.name}}</h4>
+      <p-table [value]="ListScoreStudent" [scrollable]="true" scrollHeight="flex">
+        <ng-template pTemplate="header">
+          <tr>
+            <th *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">שם התלמידה</th>
+            <th style="min-width:200px">מספר נבחנת</th>
+            <th *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">תז</th>
+            <th style="min-width:200px">ציון</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ScoreToStudent>
+          <tr>
+            <td *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">{{ScoreToStudent.studentName}}</td>
+            <td style="min-width:200px">{{ScoreToStudent.code}}</td>
+            <td *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">{{ScoreToStudent.studentTz}}</td>
+            <td pEditableColumn>
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <div>
+                    <input pInputText class="Input" #score="ngModel" id="score" name="score" type="number"
+                      pattern="^$|^([0-9]|[1-9][0-9]|[1][0][0])?" [max]="100" [min]="0"
+                      [(ngModel)]="ScoreToStudent.score">
+                    <div *ngIf="score.invalid && (score.touched || score.dirty || flagInvalid) ">
+                      <div *ngIf="score.errors.pattern" class="w3-text-red">
+                        הציון צריך להיות מספר שלם
+                        ולא גדול מ-100
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{ScoreToStudent.score}}
+                </ng-template>
+              </p-cellEditor>
+            </td>
+
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-container>
+    <ng-template #elseTemplate>
+      <p-table [value]="listTaskToStudent"  >
+
+        <!-- <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+            placeholder="חיפוש" />
+        </span> -->
+        <ng-template pTemplate="header">
+
+          <tr>
+            <th pSortableColumn="studentName" *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">שם התלמידה <p-sortIcon field="studentName"></p-sortIcon></th>
+            <th pSortableColumn="code" style="min-width:200px">מספר נבחנת<p-sortIcon field="code"></p-sortIcon></th>
+            <th pSortableColumn="studentTz" *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">תז <p-sortIcon field="studentTz"></p-sortIcon></th>
+            <th pSortableColumn="grade" style="min-width:200px">ציון <p-sortIcon field="grade"></p-sortIcon></th>
+            <th pSortableColumn="f" style="min-width:200px">ציון סופי <p-sortIcon field="f"></p-sortIcon></th>
+            <th pSortableColumn="status" style="min-width:200px">סטטוס בחינה  <p-sortIcon field="status"></p-sortIcon></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-taskToStudent>
+          <tr *ngIf="taskToStudent.isActiveTask==true">
+            <td *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">{{taskToStudent.studentName}}</td>
+            <td style="min-width:200px">{{taskToStudent.code}}</td>
+            <td *ngIf="this.taskService.CurrentTask.checkTypeId==1" style="min-width:200px">{{taskToStudent.studentTz}}</td>
+            <ng-container *ngIf="taskToStudent.isEdit==false; else elseTemplate">
+              <td style="min-width:200px">{{taskToStudent.grade}}</td>
+            </ng-container>
+            <ng-template #elseTemplate>
+              <td pEditableColumn>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <div>
+                      <input pInputText class="Input" #grade="ngModel" id="grade" name="grade" type="number"
+                        pattern="^$|^([0-9]|[1-9][0-9]|[1][0][0])?" [max]="100" [min]="0"
+                        [(ngModel)]="taskToStudent.grade">
+                      <div *ngIf="grade.invalid && (grade.touched || grade.dirty || flagInvalid) ">
+                        <div *ngIf="grade.errors.pattern" class="w3-text-red">
+                          הציון צריך להיות מספר שלם
+                          ולא גדול מ-100
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{taskToStudent.grade}}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+            </ng-template>
+
+            <ng-container *ngIf="schoolService.IsCustomer!=true; else elseTemplate1">
+              <td style="min-width:200px">{{taskToStudent.finalScore}}</td>
+            </ng-container>
+            <ng-template #elseTemplate1>
+              <td pEditableColumn>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <div>
+                      <input pInputText class="Input" #finalScore="ngModel" id="finalScore" name="finalScore"
+                        type="number" pattern="^$|^([0-9]|[1-9][0-9]|[1][0][0])?" [max]="100" [min]="0"
+                        [(ngModel)]="taskToStudent.finalScore">
+                      <div *ngIf="finalScore.invalid && (finalScore.touched || finalScore.dirty || flagInvalid) ">
+                        <div *ngIf="finalScore.errors.pattern" class="w3-text-red">
+                          הציון צריך להיות מספר שלם
+                          ולא גדול מ-100
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{taskToStudent.finalScore}}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+            </ng-template>
+
+           <td> 
+
+         
+            
+            <ng-container *ngIf="schoolService.IsCustomer!=true; else elseTemplate5">
+              <td style="min-width:200px">{{taskToStudent.statusTaskPerformance.displayName}}</td>
+            </ng-container>
+
+
+          <ng-template #elseTemplate5>
+            <!-- {{taskToStudent.statusTaskPerformance.displayName}} -->
+            <!-- <button pButton type="button" label="לשינוי" class="p-button-text" (click)="show(taskToStudent)"></button> -->
+            <p-dropdown dir="rtl"  class="Input" id="StatusTask" name="StatusTask" #StatusTask="ngModel" [options]="ListStatusTaskP" 
+             [style]="{ width: '100%' }" [(ngModel)]="taskToStudent.statusTaskPerformance">
+             <ng-template let-item pTemplate="selectedItem">
+              {{taskToStudent.statusTaskPerformance.displayName}}
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+              {{ item.displayName }}
+            </ng-template>
+          
+            </p-dropdown>
+          </ng-template>
+            
+            <!-- <select>
+            <option *ngFor="let item of ListStatusTaskP">{{item.status}}</option>
+
+          </select> -->
+        </td>
+
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-template>
+    <br>
+    <br>
+    <button style="width: 50%;" type="button" pButton pRipple (click)="dialogVisible=false;SaveEditScoreToStudents()"
+      label="שמור" class="p-button-text" [disabled]="form1.valid==false"></button>
+  </form>
+</p-dialog>
+
+<!-- בחירת שאלה לעריכת ציוניים -->
+<p-dialog header="צינוי מטלה" [modal]="true" [(visible)]="flag" [style]="{'text-align':'center'}">
+  <h5>לאיזה שאלה ברצונך להזין את ציוני התלמידות</h5><br>
+  <p-dropdown name="CurrentQuestion1" #CurrentQuestion1="ngModel" [(ngModel)]="CurrentQuestion" filter="true"
+    filterBy="name,number" [options]="ListQuestionsOfTasks" placeholder="בחר שאלה" appendTo="body"
+    [style]="{ width: '70%' }" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+    <ng-template let-item pTemplate="selectedItem">
+      {{ item.number!=0?'שאלה מספר : ' +item.number+',':''}} {{item.name}}
+    </ng-template>
+    <ng-template let-item pTemplate="item">
+      {{ item.number!=0?'שאלה מספר : ' +item.number+',':''}} {{item.name}}
+    </ng-template>
+  </p-dropdown>
+  <br><br>
+  <button style="width: 70%;" type="button" pButton pRipple (click)="dialogVisible=false;
+      showDialog()" label="הצג" class="p-button-text"></button>
+</p-dialog>
+
+<div style="text-align: center">
+  <p-toast position="top-center" key="tc"></p-toast>
+</div>
+<p-toast position="top-center"></p-toast>
+
+<p-confirmDialog key="myDialog" [style]="{ width: '40%' }" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text">
+</p-confirmDialog>
+
+<p-confirmDialog key="myDialog2" [style]="{ width: '40%' }" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text">
+</p-confirmDialog>

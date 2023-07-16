@@ -1,0 +1,79 @@
+body {
+    align-items: center;
+    text-align: center !important;
+    direction: rtl;
+}
+
+.frame {
+    text-align: center;
+    margin: 2rem 5vw 2rem 5vw;
+    /* padding: 3vw; */
+    border: solid 1px black;
+    /* width: 62.2vw !important;
+    height: 88vw !important; */
+    width: 806px;
+    height: 1120px;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* 210×297 */
+
+/* 1240 × 1754 */
+
+/* .logo {
+    margin-right: 38vw;
+    margin-top: -6vw;
+    margin-bottom: -5vw;
+}
+
+#logo {
+    border: 1px solid black;
+    width: 10vw;
+    height: auto;
+} */
+
+input[type='text'] {
+    height: 4rem;
+    /* padding: 1rem 1.5rem; */
+    direction: rtl;
+    border: none;
+    width: 60%;
+    text-align: center;
+    outline: none !important;
+    margin-top: -2rem;
+}
+
+.editIcon {
+    margin-bottom: -2rem;
+}
+
+.header {
+    /* margin: 1rem; */
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.defaultHeader {
+    text-align: center !important;
+    font-size: 1em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.footer {
+    margin-top: 3vw;
+    margin-bottom: 3vw;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: center;
+    position: sticky;
+}
+
+.page {
+    margin-top: -3rem;
+    margin-right: 45vw;
+    font-size: 1em;
+}

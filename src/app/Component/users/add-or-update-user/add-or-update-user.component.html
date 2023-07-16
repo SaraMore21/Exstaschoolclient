@@ -1,0 +1,419 @@
+<ngx-ui-loader></ngx-ui-loader>
+
+<body class="myForm" dir="rtl">
+  <div [ngStyle]="{ 'pointer-events': lockForm() }">
+    <h1 style="text-align: center">משתמש</h1>
+    <!-- (ngSubmit)="SaveUser()" -->
+    <form #form="ngForm" id="form" name="form" *ngIf="CurrentUser != undefined" dir="rtl">
+      <div class="p-fluid p-formgrid p-grid">
+        <div class="p-field p-col-2"></div>
+        <div class="p-field p-col-8">
+          <div class="p-fluid p-formgrid p-grid">
+            <h5 class="p-field p-col-12" style="font-weight: bold">
+              פרטי משתמש
+            </h5>
+            <!-- מוסד -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3"
+              *ngIf="this.schoolService.ListSchool.length!=1 ">
+              <!-- && (this.CurrentUser.iduserPerSchool==null||this.CurrentUser.iduserPerSchool==0) -->
+              <label class="w3-text-grey">מוסד</label>
+              <label class="w3-text-red"> * </label>
+              <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" class="myInput"
+                [options]="schoolService.ListSchool" optionLabel="school.name" placeholder="בחר מוסד"
+                [style]="{ width: '100%' }" filter="true" [(ngModel)]="CurrentUser.School" required
+                [disabled]="UserId!=0"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+
+              <div *ngIf="
+              School.invalid &&
+                (School.touched || School.dirty || flagInvalid)
+              ">
+                <div *ngIf="School.errors.required" class="w3-text-red">
+                  שדה חובה
+                </div>
+              </div>
+            </div>
+
+            <!-- תעודת זהות -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label for="Tz" class="w3-text-grey">מספר זהות</label>
+              <label class="w3-text-red"> * </label>
+              <br />
+              <input class="myInput" name="Tz" id="Tz" type="text" #Tz="ngModel" required pInputText
+                [disabled]="UserId != 0" (change)="ExitTz()" [(ngModel)]="CurrentUser.user.tz"  [pKeyFilter]="blockSpecial" maxlength="9"/>
+              <!-- בדיקת תקינות תז -->
+              <div *ngIf="
+                  (Tz.invalid && (Tz.touched || Tz.dirty || flagInvalid)) ||
+                  flag == true
+                ">
+                <div *ngIf="flag" class="w3-text-red">
+                  תז זו כבר קיימת במוסד
+                </div>
+                <div *ngIf="Tz!= null&&Tz.errors!= null && Tz.errors.required" class="w3-text-red">
+                  שדה חובה
+                </div>
+              </div>
+            </div>
+
+            <!-- סוג זיהוי -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">סוג זיהוי</label>
+              <p-dropdown dir="rtl" name="TypeIdentityId" id="TypeIdentityId" #TypeIdentityId class="myInput"
+                [options]="schoolService.TypeIdentitys" optionLabel="name" [(ngModel)]="CurrentUser.TypeIdentity"
+                [style]="{ width: '100%' }" filter="true" [disabled]="UserId != 0"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+              </p-dropdown>
+            </div>
+
+            <!-- שם פרטי -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">שם פרטי</label>
+              <label class="w3-text-red"> * </label>
+              <input required #FirstName="ngModel" class="myInput" name="FirstName" type="text" pInputText
+                [(ngModel)]="CurrentUser.firstName" />
+              <div *ngIf="
+                  FirstName.invalid &&
+                  (FirstName.touched || FirstName.dirty || flagInvalid)
+                ">
+                <div *ngIf="FirstName.errors.required" class="w3-text-red">
+                  שדה חובה
+                </div>
+              </div>
+            </div>
+            <!-- שם משפחה -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">שם משפחה</label>
+              <label class="w3-text-red"> * </label>
+              <input class="myInput" name="LastName" id="LastName" #LastName="ngModel" required type="text" pInputText
+                [(ngModel)]="CurrentUser.lastName" />
+              <div *ngIf="
+                  LastName.invalid &&
+                  (LastName.touched || LastName.dirty || flagInvalid)
+                ">
+                <div *ngIf="LastName.errors.required" class="w3-text-red">
+                  שדה חובה
+                </div>
+              </div>
+            </div>
+
+            <!-- מין -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">מין </label>
+              <p-dropdown dir="rtl" name="gender" class="myInput" [options]="schoolService.Genders" optionLabel="name"
+                placeholder="בחר מין" [(ngModel)]="CurrentUser.Gender" [style]="{ width: '100%' }" filter="true"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+              </p-dropdown>
+            </div>
+
+            <!-- תאריך לידה -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">תאריך לידה</label>
+              <label class="w3-text-red"> * </label>
+              <p-calendar [(ngModel)]="CurrentUser.birthDate" name="birthDate" #birthDate="ngModel" required
+                monthNavigator="true" yearRange="1920:2030" yearNavigator="true" dateFormat="dd/mm/yy"
+                inputId="dateformat"></p-calendar>
+
+              <div *ngIf="
+                birthDate.invalid &&
+                (birthDate.touched || birthDate.dirty || flagInvalid)
+              ">
+                <div *ngIf="birthDate.errors.required" class="w3-text-red">
+                  שדה חובה
+                </div>
+              </div>
+            </div>
+
+            <!-- ארץ לידה -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">ארץ לידה </label>
+              <p-dropdown dir="rtl" name="BirthCountry" class="myInput" [options]="schoolService.Countries"
+                optionLabel="name" placeholder="בחר ארץ לידה " [(ngModel)]="CurrentUser.Country"
+                [style]="{ width: '100%' }" filter="true"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+            </div>
+
+            <!-- אזרחות -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey"> אזרחות </label>
+              <p-dropdown dir="rtl" name="citizenshipId" class="myInput" [options]="schoolService.Countries"
+                optionLabel="name" placeholder="בחר ארץ  " [(ngModel)]="CurrentUser.CitizenshipId"
+                [style]="{ width: '100%' }" filter="true"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+            </div>
+
+            <!-- ארץ עליה -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey"> ארץ עליה </label>
+              <p-dropdown dir="rtl" name="CountryIdofImmigration" class="myInput" [options]="schoolService.Countries"
+                optionLabel="name" placeholder="בחר ארץ  " [(ngModel)]="CurrentUser.CountryIdofImmigration"
+                [style]="{ width: '100%' }" filter="true"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+            </div>
+
+            <!-- תאריך עליה -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">תאריך עליה</label>
+              <p-calendar [(ngModel)]="CurrentUser.DateOfImmigration" monthNavigator="true" yearRange="1920:2030"
+                yearNavigator="true" dateFormat="dd/mm/yy" inputId="navigators" name="DateOfImmigration"></p-calendar>
+            </div>
+
+            <!-- עיר מגורי -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">עיר מגורים</label><label class="w3-text-red"> * </label>
+              <p-dropdown required dir="rtl" name="city" id="city" #city="ngModel" class="myInput" [options]="schoolService.Cities" optionLabel="name"
+                placeholder="בחר עיר" [(ngModel)]="CurrentUser.City" [style]="{ width: '100%' }" filter="true"
+                (onChange)="ChangeCity()"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+
+                <div *ngIf="
+                city.invalid &&
+                (city.touched || city.dirty || flagInvalid)
+              ">
+              <div *ngIf="city.errors.required" class="w3-text-red">
+                שדה חובה
+              </div>
+            </div>
+            </div>
+
+            <!-- רחוב -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">רחוב</label><label class="w3-text-red"> * </label>
+              <p-dropdown required dir="rtl" name="street" id="street" #street="ngModel" class="myInput" [options]="streetService.StreetsPerCity"
+                optionLabel="name" placeholder="בחר רחוב" [style]="{ width: '100%' }" filter="true"
+                [(ngModel)]="CurrentUser.Street" [disabled]="
+                  CurrentUser.City == null ||
+                  CurrentUser.City.value == undefined"
+                  emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"></p-dropdown>
+                  <div *ngIf="street.invalid && (street.touched || street.dirty || flagInvalid)">
+                <div *ngIf="street.errors.required" class="w3-text-red">
+                  שדה חובה
+                </div>
+              </div>
+            </div>
+
+            <!-- מס בית -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">מס' בית</label><label class="w3-text-red"> * </label>
+              <input required class="myInput" name="houseNumber" id="houseNumber" #houseNumber="ngModel" type="text" pInputText
+                [(ngModel)]="CurrentUser.address.houseNumber" [pKeyFilter]="blockSpecial" maxlength="10"/>
+                <div *ngIf=" houseNumber.invalid && (houseNumber.touched || houseNumber.dirty || flagInvalid) ">
+                 <div *ngIf="houseNumber.errors.required" class="w3-text-red"> שדה חובה</div>
+            </div>
+            </div>
+
+            <!-- מס דירה -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">מס' דירה</label>
+              <input class="myInput" name="apartmentNumber" type="text" pInputText
+                [(ngModel)]="CurrentUser.address.apartmentNumber" [pKeyFilter]="blockSpecial" maxlength="10"/>
+            </div>
+
+            <!-- מיקוד -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">מיקוד</label>
+              <input class="myInput" name="zipCode" type="number" pInputText [(ngModel)]="CurrentUser.address.zipCode" />
+
+              <!-- <p-inputNumber name="zipCode" [(ngModel)]="CurrentUser.address.zipCode" mode="decimal"
+                inputId="withoutgrouping" [useGrouping]="false">
+              </p-inputNumber> -->
+
+              <!-- <input class="myInput" name="zipCode" type="text" pInputText
+                [(ngModel)]="CurrentUser.address.zipCode" /> -->
+            </div>
+
+            <!-- תיבת דואר -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">תיבת דואר</label>
+              <input class="myInput" name="poBox" type="number" pInputText [(ngModel)]="CurrentUser.address.poBox" />
+            </div>
+
+            <!--הערה כללית -->
+            <div class="p-field col-xs-12 col-sm-12 col-md-6 col-lg-6">
+              <label class="w3-text-grey"> הערה </label>
+              <textarea type="text" pInputText autoResize="autoResize" class="myInput" name="note"
+                [(ngModel)]="CurrentUser.note"></textarea>
+            </div>
+
+            <!-- פעיל? -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">פעיל?</label><br />
+              <p-triStateCheckbox name="isActive" [style]="{ width: '100%' }" [(ngModel)]="CurrentUser.isActive">
+              </p-triStateCheckbox>
+            </div>
+
+            <h5 class="p-field p-col-12" style="font-weight: bold">
+              פרטי יצירת קשר
+              <label class="w3-text-red"> * </label>
+            </h5>
+
+
+            <div *ngIf="contactInformationValidaition==true" class="w3-text-red p-field p-col-12"> חובה למלאות לפחות אחד
+              מפרטי הקשר</div>
+
+            <!-- טלפון 1 -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">טלפון 1</label>
+              <input class="myInput" name="telephoneNumber1" #telephoneNumber1="ngModel" type="text" pInputText
+                [(ngModel)]="CurrentUser.contactInformation.telephoneNumber1" (change)="OnChangeContact()"
+                pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9"/>
+                <div *ngIf="telephoneNumber1.errors &&(telephoneNumber1.touched || telephoneNumber1.dirty)" class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+            </div>
+
+            <!-- טלפון 2 -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">טלפון 2</label>
+              <input class="myInput" name="telephoneNumber2" #telephoneNumber2="ngModel" type="text" pInputText
+                [(ngModel)]="CurrentUser.contactInformation.telephoneNumber2" (change)="OnChangeContact()"
+                pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9"/>
+                <div *ngIf="telephoneNumber2.errors &&(telephoneNumber2.touched || telephoneNumber2.dirty)" class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+            </div>
+
+            <!-- נייד 1 -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">נייד 1</label>
+              <input class="myInput" name="phoneNumber1" #phoneNumber1="ngModel" type="text" pInputText
+                [(ngModel)]="CurrentUser.contactInformation.phoneNumber1" (change)="OnChangeContact()" 
+                pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9"/>
+                <div *ngIf="phoneNumber1.errors &&(phoneNumber1.touched || phoneNumber1.dirty)" class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+            </div>
+
+            <!-- נייד 2 -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">נייד 2</label>
+              <input class="myInput" name="phoneNumber2" #phoneNumber2="ngModel" type="text" pInputText
+                [(ngModel)]="CurrentUser.contactInformation.phoneNumber2" (change)="OnChangeContact()"
+                pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9"/>
+                <div *ngIf="phoneNumber2.errors &&(phoneNumber2.touched || phoneNumber2.dirty)" class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+            </div>
+
+            <!-- נייד 3 -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey">נייד 3</label>
+              <input class="myInput" name="phoneNumber3" #phoneNumber3="ngModel" type="text" pInputText
+                [(ngModel)]="CurrentUser.contactInformation.phoneNumber3" (change)="OnChangeContact()"
+                pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9"/>
+                <div *ngIf="phoneNumber3.errors &&(phoneNumber3.touched || phoneNumber3.dirty)" class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+            </div>
+
+            <!-- פקס -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey"> פקס</label>
+              <input class="myInput" name="faxNumber" #faxNumber="ngModel" type="text" pInputText id="faxNumber"
+                [(ngModel)]="CurrentUser.contactInformation.faxNumber" [pKeyFilter]="blockSpecial"/>
+                <div *ngIf="faxNumber.errors && (faxNumber.touched || faxNumber.dirty)" class="text-danger">
+                  <div>פקס לא תקין</div>
+                </div>
+            </div>
+
+            <!-- מייל -->
+            <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label class="w3-text-grey"> מייל</label>
+              <input class="myInput" name="email" #email="ngModel" id="email" type="email" pInputText
+                [(ngModel)]="CurrentUser.contactInformation.email" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}$"/>
+                <div *ngIf="email.errors && (email.touched || email.dirty)" class="text-danger">
+                  <div>מייל לא תקין</div>
+                </div>
+            </div>
+
+
+            <!--הערה על יצירת קשר -->
+            <div class="p-field col-xs-12 col-sm-12 col-md-6 col-lg-6">
+              <label class="w3-text-grey"> הערה </label>
+              <textarea type="text" pInputText autoResize="autoResize" class="myInput" name="comment"
+                [(ngModel)]="CurrentUser.contactInformation.comment"></textarea>
+            </div>
+            <div class="p-field col-xs-0 col-sm-0 col-md-6 col-lg-6"></div>
+
+            <!-- בדיקת תקינות יצירת קשר-DIALOG -->
+            <!-- <p-dialog
+              header="שים לב!"
+              icon="pi pi pi-send"
+              [(visible)]="displayModal2"
+              [modal]="true"
+              [style]="{ width: '30vw' }"
+              [draggable]="false"
+              [resizable]="false"
+            >
+              <p>חובה למלא לפחות אחד מפרטי הקשר</p>
+              <ng-template pTemplate="footer">
+                <button
+                  type="button"
+                  pButton
+                  pRipple
+                  icon="pi pi-check"
+                  (click)="Ok()"
+                  label="הבנתי"
+                ></button>
+              </ng-template>
+            </p-dialog> -->
+
+            <br />
+          </div>
+          <p-button icon="pi pi-save" label="שמור" class="p-button-text"
+          (click)="form.valid != true ? (flagInvalid = true) : SaveUser()"></p-button>
+        </div>
+
+        <!-- אייקונים בצד שמאל -->
+        <div class="p-field p-col-2">
+          <div class="p-fluid p-formgrid p-grid" style="margin-top: 30%">
+            <div class="p-field p-col-4"></div>
+            <div class="p-field p-col-4">
+              <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-users"
+                pTooltip="כרטיס משפחה"></button><br /><br />
+              <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-cloud-upload"
+                pTooltip="צרף מסמך"></button><br /><br />
+              <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-briefcase"
+                pTooltip="הצג כרטיס לימודים"></button><br /><br />
+              <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-trash"
+                pTooltip="מחיקה"></button><br /><br />
+              <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-user-edit"
+                pTooltip="עריכה"></button><br /><br />
+              <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-directions-alt"
+                pTooltip="הצג הסטורית תלמיד"></button><br /><br />
+              <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-list"
+                pTooltip="הצג קבוצות תלמיד"></button>
+            </div>
+          </div>
+          <!-- <div class="p-field p-col-4"></div> -->
+        </div>
+      </div>
+    </form>
+    <!-- </div> -->
+
+    <!-- </div> -->
+  </div>
+</body>
+
+<div class="p-text-center">
+  <p-toast position="top-center"></p-toast>
+  <p-toast position="top-center" (onClose)="onClose()" key="tl"> </p-toast>
+  <p-toast position="top-center" key="tc"></p-toast>
+</div>
+
+<!-- Dialog -->
+<p-dialog header="משתמש יקר!" icon="pi pi pi-send" [(visible)]="displayModal" [modal]="true" [style]="{ width: '30vw' }"
+  [draggable]="false" [resizable]="false">
+  <p class="p-m-0">לאן לשלוח לך את הסיסמא?</p>
+  <input type="email" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" id="email" name="email"
+    [(ngModel)]="emailAddress" required #email="ngModel" placeholder="כתובת מייל" />
+  <div *ngIf="email.errors && (email.touched || email.dirty)" class="aler alert-danger">
+    <!-- [hidden]="!email.errors?.pattern.valid" -->
+    <div>מייל לא תקין</div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <!-- [disabled]="email.errors || (email.touched && email.dirty)" -->
+    <button type="button" pButton pRipple [disabled]="email.errors" icon="pi pi-send" (click)="AddUserAndSendMail()"
+      label="שלח"></button>
+  </ng-template>
+</p-dialog>

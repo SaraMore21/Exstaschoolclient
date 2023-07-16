@@ -1,0 +1,58 @@
+.box {
+  background-color: var(--surface-e);
+  text-align: right;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+}
+
+.box-stretched {
+  height: 100%;
+}
+
+/* ---------------- */
+.p-fieldset.p-fieldset-toggleable .p-fieldset-legend a .p-fieldset-toggler {
+  margin-left: auto;
+}
+
+#filesLst
+{
+  width: 100% !important;
+
+}
+.fieldset2 .p-fieldset{
+  width: 80vw !important;
+}
+
+.p-fieldset{
+  text-align-last: initial;
+  font-size: large;
+
+}
+
+a:hover {
+  text-decoration: auto;
+}
+
+#EditBtn{
+  background-color: currentcolor;
+
+}
+#EditBtn .pi-times{
+  color: #2196f3;
+
+}
+#EditBtn .pi-check
+{
+  color: #2196f3;
+}
+
+/* p-sidebar > div{
+  z-index: auto !important;
+} */
+/*
+.ng-trigger ng-trigger-panelState ng-tns-c27-72 p-sidebar p-sidebar-active p-sidebar-full ng-star-inserted
+{
+  z-index: auto !important;
+} */

@@ -1,0 +1,90 @@
+<div class="DivWraps">
+
+    <ng-container *ngIf="dailyScheduleService.currentDailySchedule.iddailySchedule!=undefined; else elseTemplate">
+        <h3> עריכת שיעור</h3>
+    </ng-container>
+    <ng-template #elseTemplate>
+        <h3> הוספת שיעור</h3>
+    </ng-template>
+
+    <br>
+
+    <div *ngIf="dailyScheduleService.currentDailySchedule.iddailySchedule==undefined">
+        <h5>בחר שיעור</h5>
+        <p-dropdown appendTo="body" [options]="ListLessonsNumbers" [(ngModel)]="SelectedLessonPerGroup"
+            placeholder="בחר שיעור" [showClear]="true" [filter]="true" (onChange)="ChangeNumLesson()"
+            emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+            [style]="{width:'100%'}">
+
+            <ng-template let-item pTemplate="selectedItem">
+                <ng-container *ngIf="item.idlessonPerGroup==0; else elseTemplate">
+                    שיעור {{item.numLesson}}
+                </ng-container>
+                <ng-template #elseTemplate>
+                    שיעור {{item.numLesson}} - {{item.endTime}} - {{item.startTime}}
+                </ng-template>
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+                <ng-container *ngIf="item.idlessonPerGroup==0; else elseTemplate">
+                    שיעור {{item.numLesson}}
+                </ng-container>
+                <ng-template #elseTemplate>
+                    שיעור {{item.numLesson}} - {{item.endTime}} - {{item.startTime}}
+                </ng-template>
+            </ng-template>
+        </p-dropdown>
+        <div *ngIf="SelectedLessonPerGroup&&SelectedLessonPerGroup.idlessonPerGroup==0">
+
+            <h5 for="timeonly">משעה</h5>
+            <!-- <p-calendar (onClickOutside)="ChangeTime()" [style]="{width:'100%'}" [(ngModel)]="FromTime" [timeOnly]="true" [hourFormat]="24"
+                inputId="timeonly" ></p-calendar> -->
+            <input class="InputTime"  type="time" id="startTime" name="startTime" (blur)="ChangeTime()"
+                [(ngModel)]="SelectedLessonPerGroup.startTime" required>
+            <!-- (change)="ChangeTime()" -->
+            <h5 for="timeonly">עד שעה</h5>
+            <!-- <p-calendar (onClickOutside)="ChangeTime()"  [style]="{width:'100%'}" [(ngModel)]="ToTime" [timeOnly]="true" [hourFormat]="24"
+                inputId="timeonly" ></p-calendar> -->
+            <input class="InputTime" type="time" id="endTime" name="endTime" [(ngModel)]="SelectedLessonPerGroup.endTime"
+                required (blur)="ChangeTime()">
+            <!-- (change)="focusTrap==false? a(focusTrap): b(focusTrap)" -->
+            <!-- min="09:00" max="18:00" -->
+        </div>
+    </div>
+    <h5>בחר קורס</h5>
+    <p-dropdown appendTo="body" [options]="ListCourses" [(ngModel)]="selectedCourse" placeholder="בחר קורס"
+        optionLabel="courseName" [showClear]="true" [filter]="true" filterBy="courseName"
+        (onChange)="GetTeacherBySelectCourse()" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+        emptyMessage="אין נתונים קיימים" [style]="{width:'100%'}">
+    </p-dropdown>
+
+    <h5>בחר מורה</h5>
+    <p-dropdown appendTo="body" [options]="ListTeachers" [(ngModel)]="selectedTeacher" placeholder="בחר מורה"
+        [showClear]="true" [filter]="true" filterBy="tz,lastName,firstName"
+        emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים" [style]="{width:'100%'}"
+        [disabled]="dailyScheduleService.currentDailySchedule.iddailySchedule==undefined&&(selectedCourse==undefined||selectedCourse.idgroupSemesterPerCourse==undefined||(SelectedLessonPerGroup.idlessonPerGroup!=0&& dailyScheduleService.currentDailySchedule.numLesson==undefined&&SelectedLessonPerGroup==undefined)||(SelectedLessonPerGroup.idlessonPerGroup==0&&(SelectedLessonPerGroup.startTime==null||SelectedLessonPerGroup.endTime==null)))">
+        <ng-template let-item pTemplate="selectedItem">
+            {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+            {{item.lastName}} {{item.firstName}} ,{{item.tz}}
+        </ng-template>
+    </p-dropdown>
+
+    <h5>בחר סוג למידה</h5>
+    <p-dropdown appendTo="body" [options]="schoolService.LearningStyle" [(ngModel)]="selectedLearningStyle"
+        placeholder="בחר סוג למידה" optionLabel="name" [showClear]="true" [filter]="true" filterBy="name"
+        emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים" [style]="{width:'100%'}">
+    </p-dropdown>
+    <br><br>
+    <button pButton pRipple type="button" label="שמור" class="p-button-outlined btnSave" (click)="SaveDailySchedule()"
+        [disabled]="
+    selectedCourse==null||selectedCourse.idgroupSemesterPerCourse==0||selectedCourse.idgroupSemesterPerCourse==null||
+    selectedTeacher==null||selectedTeacher.userPerSchoolID==0||selectedTeacher.userPerSchoolID==null||
+    selectedLearningStyle==null||selectedLearningStyle.value==0||selectedLearningStyle.value==null">
+    </button>
+
+</div>
+
+<div class="p-text-center">
+    <p-toast position="top-center"> </p-toast>
+</div>

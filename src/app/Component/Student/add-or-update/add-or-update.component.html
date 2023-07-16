@@ -1,0 +1,903 @@
+<ngx-ui-loader></ngx-ui-loader>
+
+<body class="myForm" dir="rtl">
+  <div [ngStyle]="{ 'pointer-events': lockForm() }">
+    <h1 style="text-align: center; background-color: cornflowerblue">תלמיד</h1>
+
+    <div class="p-fluid p-formgrid p-grid">
+      <form *ngIf="CurrentStudent != undefined" id="form" name="form" dir="rtl" #form="ngForm">
+
+        <div class="p-fluid p-formgrid p-grid">
+          <!--ופוספורט צד ימין-RADIOBUTTON -->
+          <div class="p-field p-col-2">
+            <!-- פוספורט -->
+            <ng-container *ngIf="CurrentStudent.passportPicture == null; else elseTemplate">
+              <input [disabled]="id == 0" type="button" pButton pRipple class="p-button-rounded p-button-text" style="
+                  background-repeat: round;
+                  background-image: url(../../../assets/Image/user.jpg);
+                  height: 250px; width: 90%; margin-top: 30%
+                " (click)="file.click()" />
+            </ng-container>
+            <ng-template #elseTemplate>
+              <input [disabled]="id == 0" type="button" pButton pRipple class="p-button-rounded p-button-text"
+                style=" background-repeat:round; background-image: url({{CurrentStudent.passportPicture}}); height: 250px; width: 90%; margin-top: 30%"
+                (click)="file.click()" />
+            </ng-template>
+            k
+            <input [disabled]="id == 0" type="file" #file placeholder="Choose file" (change)="setFile(file.files)"
+              accept="image/png, image/jpeg" style="display: none" />
+            <!-- radioButton -->
+            <div style="margin-top: 50%; font-size: larger; font-family: system-ui">
+              <!-- כללי -->
+              <div class="p-field-radiobutton">
+                <p-radioButton name="generalDetails" id="generalDetails" #generalDetails="ngModel" value="Chicago"
+                  [(ngModel)]="city" inputId="generalDetails" (click)="generalDetailsFunc()">
+                </p-radioButton>
+                <label for="generalDetails">כללי</label>
+              </div>
+              <!-- כתובת -->
+              <div class="p-field-radiobutton">
+                <p-radioButton name="address" id="address" #addressD="ngModel" value="da" [(ngModel)]="city"
+                  inputId="address" (click)="addressDetailsFunc()">
+                </p-radioButton>
+                <label for="address">כתובת</label>
+              </div>
+              <!-- יצירת קשר -->
+              <div class="p-field-radiobutton">
+                <p-radioButton name="contact" id="contact" #contact="ngModel" value="contact" [(ngModel)]="city"
+                  inputId="contact" (click)="contactDetailsFunc()">
+                </p-radioButton>
+                <label for="contact">יצירת קשר</label>
+              </div>
+              <!-- משפחה -->
+              <div class="p-field-radiobutton">
+                <p-radioButton name="family" #family="ngModel" value="Los Angeles" [(ngModel)]="city" inputId="family"
+                  (click)="familyDetailsFunc()">
+                </p-radioButton>
+
+                <label for="city2">משפחה</label>
+              </div>
+              <!-- לימודים -->
+              <div class="p-field-radiobutton">
+                <p-radioButton name="city3" #city3="ngModel" value="New York" [(ngModel)]="city" inputId="city3"
+                  [disabled]="id==0" (onClick)="GoToGroupPerStudent()">
+                </p-radioButton>
+                <label for="city3">לימודים</label>
+              </div>
+              <!-- מסמכים -->
+              <div class="p-field-radiobutton">
+                <p-radioButton name="city4" #city4="ngModel" value="San Francisco" [(ngModel)]="city" [disabled]="id==0"
+                  (onClick)="GoToDocumentsPerStudent()" inputId="city4"></p-radioButton>
+                <label for="city4">מסמכים</label>
+              </div>
+              <!-- משימות -->
+              <div class="p-field-radiobutton">
+                <p-radioButton name="city5" #city5="ngModel" value="gh" [(ngModel)]="city" inputId="city5"
+                  [disabled]="id==0">
+                </p-radioButton>
+                <label for="city5">משימות</label>
+              </div>
+            </div>
+          </div>
+          <!--אמצע--radioButton  פתיחת ה  -->
+          <div class="p-field p-col-8">
+            <!-- כללי -->
+
+            <div [ngStyle]="{'display':general == true ? 'flex' : 'none'}">
+              <div class="p-fluid p-formgrid p-grid">
+                <h5 class="p-field p-col-12" style="font-weight: bold; margin-top: 7%">
+                  פרטי תלמיד
+                </h5>
+                <div class="row">
+                  <!-- מוסד -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                    *ngIf="this.schoolService.ListSchool.length!=1 ">
+                    <!-- && (this.CurrentStudent.schoolId==null||this.CurrentStudent.schoolId==0) -->
+                    <label class="w3-text-grey">מוסד</label><label class="w3-text-red"> * </label><br />
+                    <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" class="myInput"
+                      [options]="schoolService.ListSchool" optionLabel="school.name" placeholder="בחר מוסד"
+                      [style]="{ width: '100%' }" filter="true" [(ngModel)]="CurrentStudent.School" required
+                      [disabled]="id!=0" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                      emptyMessage="אין נתונים קיימים" (onChange)="ExitTz()" ></p-dropdown>
+
+                    <div *ngIf="
+                           School.invalid &&
+                             (School.touched || School.dirty || flagInvalid)
+                           ">
+                      <div *ngIf="School.errors.required" class="w3-text-red">
+                        שדה חובה
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- תז -->
+                  <!-- [disabled]="id != 0 || (id ==0 &&(this.schoolService.ListSchool.length > 1 && CurrentStudent.School== null))" -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label for="Tz" class="w3-text-grey"> מספר זיהוי</label><label class="w3-text-red"> * </label><br />
+                    <input class="myInput" name="Tz" id="Tz" required type="text" #Tz="ngModel" pInputText
+                       (change)="ExitTz()" [(ngModel)]="CurrentStudent.tz"
+                      [pKeyFilter]="blockSpecial" maxlength="9" />
+                    <div *ngIf="
+                      (Tz.invalid && (Tz.touched || Tz.dirty || flagInvalid)) ||
+                      flag == true  ">
+                      <div *ngIf="Tz.errors!= undefined && Tz.errors.required" class="w3-text-red">
+                        שדה חובה
+                      </div>
+                      
+                      <div *ngIf="flag" class="w3-text-red">
+                        תז זו כבר קיימת במוסד
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- סוג זיהוי; -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">סוג זיהוי</label>
+                    <p-dropdown dir="rtl" name="TypeIdentityId" class="myInput" [options]="schoolService.TypeIdentitys"
+                      optionLabel="name" [disabled]="id != 0" [(ngModel)]="CurrentStudent.typeIdentity"
+                      [style]="{ width: '100%' }" filter="true" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                      emptyMessage="אין נתונים קיימים">
+                    </p-dropdown>
+                  </div>
+                  <!-- קוד -->
+                  <!-- <div class="p-field col-xs-3 col-sm-3 col-md-6 col-lg-12">
+            <label for="Code" class="w3-text-grey">קוד</label>
+            <input class="myInput" id="Code" name="Code" type="text" pInputText [(ngModel)]="CurrentStudent.code" />
+          </div> -->
+
+                  <!-- שם משפחה -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שם משפחה</label><label class="w3-text-red"> * </label>
+                    <input #LastName="ngModel" class="myInput" name="LastName" type="text" required pInputText
+                      [(ngModel)]="CurrentStudent.lastName" />
+                    <div *ngIf="
+                      LastName.invalid &&
+                      (LastName.touched || LastName.dirty || flagInvalid)
+                    ">
+                      <div *ngIf="LastName.errors.required" class="w3-text-red">
+                        שדה חובה
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- שם פרטי -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שם פרטי</label><label class="w3-text-red"> * </label>
+                    <input #FirstName="ngModel" class="myInput" name="FirstName" type="text" required pInputText
+                      [(ngModel)]="CurrentStudent.firstName" />
+
+                    <div *ngIf="
+                      FirstName.invalid &&
+                      (FirstName.touched || FirstName.dirty || flagInvalid)
+                    ">
+                      <div *ngIf="FirstName.errors.required" class="w3-text-red">
+                        שדה חובה
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- קוד נבחנת  -->
+                  <div *ngIf="schoolService.IsCustomer == true" class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">קוד נבחנת</label>
+                    <input class="myInput" name="code" type="text" pInputText
+                      [(ngModel)]="CurrentStudent.code" />
+                  </div>
+
+                  <!-- שם קודם -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שם קודם</label>
+                    <input class="myInput" name="PreviusName" type="text" pInputText
+                      [(ngModel)]="CurrentStudent.previusName" />
+                  </div>
+
+                  <!-- שם משפחה לועזי -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">משפחה-לועזי</label>
+                    <input class="myInput" name="ForeignLastName" type="text" pInputText
+                      [(ngModel)]="CurrentStudent.foreignLastName" />
+                  </div>
+
+                  <!-- שם פרטי לועזי -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שם פרטי לועזי</label>
+                    <input class="myInput" name="ForeignFirstName" type="text" pInputText
+                      [(ngModel)]="CurrentStudent.foreignFirstName" />
+                  </div>
+
+                  <!-- מין -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">מין </label>
+                    <p-dropdown dir="rtl" name="gender" class="myInput" [options]="schoolService.Genders"
+                      optionLabel="name" placeholder="בחר מין" [(ngModel)]="CurrentStudent.Gender"
+                      [style]="{ width: '100%' }" filter="true" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                      emptyMessage="אין נתונים קיימים">
+                    </p-dropdown>
+                  </div>
+
+                  <!-- אזרחות -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">אזרחות </label>
+                    <p-dropdown dir="rtl" name="citizenship" class="myInput" [options]="schoolService.Countries"
+                      optionLabel="name" placeholder="בחר אזרחות" [(ngModel)]="CurrentStudent.Citizenship"
+                      [style]="{ width: '100%' }" filter="true" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                      emptyMessage="אין נתונים קיימים"></p-dropdown>
+                  </div>
+
+                  <!-- תאריך לידה -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">תאריך לידה</label><label class="w3-text-red"> * </label>
+                    <p-calendar required [(ngModel)]="CurrentStudent.birthDate" [monthNavigator]="true"
+                      yearRange="1920:2030" [yearNavigator]="true" inputId="navigators" id="birthDate" name="birthDate"
+                      #birthDate="ngModel" dateFormat="dd/mm/yy">
+                    </p-calendar>
+                    <div *ngIf="
+                      birthDate.invalid &&
+                      (birthDate.touched || birthDate.dirty || flagInvalid)
+                    ">
+                      <div *ngIf="birthDate.errors.required" class="w3-text-red">
+                        שדה חובה
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ארץ לידה -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">ארץ לידה </label>
+                    <p-dropdown dir="rtl" name="CountryIDOfImmigration" class="myInput"
+                      [options]="schoolService.Countries" optionLabel="name" placeholder="בחר ארץ לידה "
+                      [(ngModel)]="CurrentStudent.Country" [style]="{ width: '100%' }" filter="true"
+                      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+                    </p-dropdown>
+                  </div>
+
+                  <!-- <div class="p-field col-xs-3 col-sm-3 col-md-6 col-lg-12">
+    <label class="w3-text-grey">טלפון</label>
+    <input
+      class="myInput"
+      name="phone"
+      type="text"
+      pInputText
+      [(ngModel)]="CurrentStudent.phone"
+    />
+  </div>
+  <div class="p-field col-xs-3 col-sm-3 col-md-6 col-lg-12">
+    <label class="w3-text-grey">נייד 1</label>
+    <input
+      class="myInput"
+      name="mobile1"
+      type="text"
+      pInputText
+      [(ngModel)]="CurrentStudent.mobile1"
+    />
+  </div>
+  <div class="p-field col-xs-3 col-sm-3 col-md-6 col-lg-12">
+    <label class="w3-text-grey">נייד 2</label>
+    <input
+      class="myInput"
+      name="mobile2"
+      type="text"
+      pInputText
+      [(ngModel)]="CurrentStudent.mobile2"
+    />
+  </div>
+  <div class="p-field p-col-3">
+    <label class="w3-text-grey">נייד 3</label>
+    <input
+      class="myInput"
+      name="mobile3"
+      type="text"
+      pInputText
+      [(ngModel)]="CurrentStudent.mobile3"
+    />
+  </div>
+  <div class="p-field p-col-3">
+    <label class="w3-text-grey">פקס</label>
+    <input
+      class="myInput"
+      name="fax"
+      type="text"
+      pInputText
+      [(ngModel)]="CurrentStudent.fax"
+    />
+  </div>
+  <div class="p-field p-col-3">
+    <label class="w3-text-grey">מייל</label>
+    <input
+      class="myInput"
+      name="mail"
+      type="text"
+      pInputText
+      [(ngModel)]="CurrentStudent.mail"
+    />
+  </div> -->
+
+                  <!-- <div class="p-field p-col-3">
+            <label class="w3-text-grey">טלפון 1</label>
+            <input
+              class="myInput"
+              name="telephoneNumber1"
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentStudent.contactInformation.telephoneNumber1"
+            />
+          </div>
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey">טלפון 2</label>
+            <input
+              class="myInput"
+              name="telephoneNumber2"
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentStudent.contactInformation.telephoneNumber2"
+            />
+          </div>
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey">נייד 1</label>
+            <input
+              class="myInput"
+              name="phoneNumber1"
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentStudent.contactInformation.phoneNumber1"
+            />
+          </div>
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey">נייד 2</label>
+            <input
+              class="myInput"
+              name="phoneNumber2"
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentStudent.contactInformation.phoneNumber2"
+            />
+          </div>
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey">נייד 3</label>
+            <input
+              class="myInput"
+              name="phoneNumber3"
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentStudent.contactInformation.phoneNumber3"
+            />
+          </div>
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey"> פקס</label>
+            <input
+              class="myInput"
+              name="faxNumber"
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentStudent.contactInformation.faxNumber"
+            />
+          </div>
+          <div class="p-field p-col-3">
+            <label class="w3-text-grey"> מייל</label>
+            <input
+              class="myInput"
+              name="email"
+              type="text"
+              pInputText
+              [(ngModel)]="CurrentStudent.contactInformation.email"
+            />
+          </div> -->
+
+                  <!-- ארץ עליה -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">ארץ עליה </label>
+                    <p-dropdown dir="rtl" name="BirthCountry" class="myInput" [options]="schoolService.Countries"
+                      optionLabel="name" placeholder="בחר ארץ עליה " [(ngModel)]="CurrentStudent.CountryIdofImmigration"
+                      [style]="{ width: '100%' }" filter="true" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                      emptyMessage="אין נתונים קיימים"></p-dropdown>
+                  </div>
+
+                  <!-- תאריך עליה -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">תאריך עליה</label>
+                    <p-calendar [(ngModel)]="CurrentStudent.DateOfImmigration" [monthNavigator]="true"
+                      yearRange="1920:2030" [yearNavigator]="true" inputId="navigators" name="dateOfImmigration"
+                      dateFormat="dd/mm/yy"></p-calendar>
+                  </div>
+
+                  <!-- שם אב -->
+                  <!-- <div class="p-field p-col-3">
+              <label class="w3-text-grey">שם אב</label>
+              <input
+                #FatherName="ngModel"
+                class="myInput"
+                name="FatherName"
+                type="text"
+                required
+                pInputText
+                [(ngModel)]="CurrentStudent.FatherName"
+              />
+            </div> -->
+
+                  <!-- [disabled]="id != 0" -->
+                  <!-- תז אבא -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label for="FatherTz" class="w3-text-grey">
+                      מ.ז אב</label><br />
+                    <input class="myInput" name="FatherTz" id="FatherTz" type="text" #FatherTz="ngModel" pInputText
+                      (change)="ExitTz()" [(ngModel)]="CurrentStudent.fatherTz" [pKeyFilter]="blockSpecial"
+                      maxlength="9" />
+
+                  </div>
+                  <!-- סוג זיהוי; -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">סוג זיהוי</label>
+                    <p-dropdown dir="rtl" id="TypeIdentityId" #TypeIdentityId class="myInput" name="FatherTypeIdentity"
+                      [options]="schoolService.TypeIdentitys" optionLabel="name"
+                      [(ngModel)]="CurrentStudent.fatherTypeIdentity" [style]="{ width: '100%' }" filter="true"
+                      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+                    </p-dropdown>
+                  </div>
+                  <!-- תז אם -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label for="MotherTz" class="w3-text-grey">
+                      מ.ז אם</label><br />
+                    <input class="myInput" name="MotherTz" id="MotherTz" type="text" #MotherTz="ngModel" pInputText
+                      (change)="ExitTz()" [(ngModel)]="CurrentStudent.motherTz" [pKeyFilter]="blockSpecial"
+                      maxlength="9" />
+                  </div>
+                  <!-- סוג זיהוי; -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">סוג זיהוי</label>
+                    <p-dropdown dir="rtl" name="MotherTypeIdentity" class="myInput"
+                      [options]="schoolService.TypeIdentitys" optionLabel="name"
+                      [(ngModel)]="CurrentStudent.motherTypeIdentity" [style]="{ width: '100%' }" filter="true"
+                      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+                    </p-dropdown>
+                  </div>
+                  <!-- תז אפוטרופוס -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label for="ApotropusTz" class="w3-text-grey">
+                      מ.ז אפוטרופוס</label><br />
+                    <input class="myInput" name="ApotropusTz" id="ApotropusTz" type="text" #ApotropusTz="ngModel"
+                      pInputText [disabled]="id != 0" (change)="ExitTz()" [(ngModel)]="CurrentStudent.apotropusTz"
+                      [pKeyFilter]="blockSpecial" maxlength="9" />
+                  </div>
+
+                  <!-- סוג אפוטרופוס; -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">סוג זיהוי</label>
+                    <p-dropdown dir="rtl" id="ApotropusTypeIdentity" #ApotropusTypeIdentity class="myInput"
+                      name="ApotropusTypeIdentity" [options]="schoolService.TypeIdentitys" optionLabel="name"
+                      [(ngModel)]="CurrentStudent.apotropusTypeIdentity" [style]="{ width: '100%' }" filter="true"
+                      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+                    </p-dropdown>
+                  </div>
+
+                  <!-- ציון תיל -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">ציון מבחן תיל</label>
+                    <!-- <label class="w3-text-grey">שדה 1</label> -->
+                    <input class="myInput" name="field1" type="text" pInputText [(ngModel)]="CurrentStudent.field1" />
+                  </div>
+                  <!-- שדה 1; -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שדה 2</label>
+                    <input class="myInput" name="field2" type="text" pInputText [(ngModel)]="CurrentStudent.field2" />
+                  </div>
+                  <!-- שדה 2 -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שדה 3</label>
+                    <input class="myInput" name="field3" type="text" pInputText [(ngModel)]="CurrentStudent.field3" />
+                  </div>
+                  <!-- שדה 3 -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שדה 4</label>
+                    <input class="myInput" name="field4" type="text" pInputText [(ngModel)]="CurrentStudent.field4" />
+                  </div>
+                  <!-- שדה 4 -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">שדה 5</label>
+                    <input class="myInput" name="field5" type="text" pInputText [(ngModel)]="CurrentStudent.field5" />
+                  </div>
+                  <!-- סטטוס  -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">סטטוס </label>
+                    <p-dropdown dir="rtl" id="statusId" #statusId class="myInput" name="statusId"
+                      placeholder=" בחר סטטוס" [options]="schoolService.Status" optionLabel="name"
+                      [(ngModel)]="CurrentStudent.status" [style]="{ width: '100%' }" filter="true"
+                      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+                    </p-dropdown>
+                  </div>
+                  <!-- סטטוס תלמיד -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">סטטוס תלמיד </label>
+                    <p-dropdown dir="rtl" id="statusStudentId" #statusStudentId class="myInput" name="statusStudentId"
+                      [options]="schoolService.StatusStudent" optionLabel="name" [disabled]="!schoolService.IsCustomer||CurrentStudent==null||CurrentStudent.School==null||CurrentStudent.School.school==null||CurrentStudent.School.school.idschool==null||CurrentStudent.School.school.idschool==0"
+                      [(ngModel)]="CurrentStudent.statusStudent" [style]="{ width: '100%' }" filter="true"
+                      emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+                     (onChange)="GetReasonForLeavingPerSchool()" >
+                    </p-dropdown>
+                    <div *ngIf="(FirstName.touched || FirstName.dirty) &&(
+                    CurrentStudent==null||CurrentStudent.School==null||CurrentStudent.School.school==null||CurrentStudent.School.school.idschool==null||CurrentStudent.School.school.idschool==0)" class="w3-text-red">
+                      עלייך לבחור קודם כל מוסד
+                    </div>
+                  </div>
+
+                  <!--סיבת עזיבה; -->
+
+                  <div *ngIf="
+                    CurrentStudent.statusStudent &&
+                    CurrentStudent.statusStudent.value == 2
+                  " class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">סיבת עזיבה </label>
+                    <p-dropdown dir="rtl" id="reasonForLeavingId" #reasonForLeavingId class="myInput"
+                      name="reasonForLeavingId" placeholder="סיבת עזיבה" [options]="schoolService.reasonForLeaving"
+                      optionLabel="name" [(ngModel)]="CurrentStudent.reasonForLeaving" [style]="{ width: '100%' }"
+                      filter="true" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                      emptyMessage="אין נתונים קיימים"></p-dropdown>
+                  </div>
+
+
+                  <!-- פעיל? -->
+                  <div class="p-field col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <label class="w3-text-grey">פעיל?</label><br />
+
+                    <p-triStateCheckbox name="isActive" [style]="{ width: '100%' }"
+                      [(ngModel)]="CurrentStudent.isActive">
+                    </p-triStateCheckbox>
+                  </div>
+
+
+                  <!-- הערה -->
+                  <div class="p-field col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <label class="w3-text-grey"> הערה </label>
+                    <textarea type="text" pInputText autoResize="autoResize" class="myInput" name="note"
+                      [(ngModel)]="CurrentStudent.note"></textarea>
+                  </div>
+
+                  <!-- אנשי קשר -->
+                  <!-- <h5 class="p-field p-col-12" style="font-weight: bold">אנשי קשר </h5>
+
+               <div class="p-field p-col-3" *ngFor="let index of CurrentStudent.contactPerStudent">
+                <label class="w3-text-grey">שם איש קשר</label>
+                <input
+                  class="myInput"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="index.contact.firstName"
+                />
+              </div> -->
+
+                  <div class="p-field col-xs-0 col-sm-0 col-md-6 col-lg-6"></div>
+                </div>
+                <!--
+
+    <label>שיוך לקבוצה:</label>
+
+    <p-multiSelect
+      name="groups"
+      [style]="{ width: '100%' }"
+      [options]="MosadService.groups"
+      [(ngModel)]="CurrentStudent.groups"
+      defaultLabel="בחירת קבוצות"
+      optionLabel="Name"
+    ></p-multiSelect>
+
+
+
+    <br />
+    <span
+      class="p-tag p-tag-rounded p-tag-info"
+      style="font-size: 12px; padding: 4px 10px; margin: 5px"
+      *ngFor="let g of CurrentStudent.groups"
+    >
+      {{ g.Name
+      }}<a class="removeBadge" (click)="removeGroup(g)">&times;</a></span
+    >    -->
+
+                <br />
+                <!-- [disabled]="form.valid != true" -->
+              </div>
+            </div>
+
+            <!-- כתובת -->
+            <div [ngStyle]="{'display':addressDetails == true ? 'flex' : 'none'}">
+              <div class="p-fluid p-formgrid p-grid">
+                <h5 class="p-field p-col-12" style="font-weight: bold; margin-top: 7%"> פרטי כתובת</h5>
+
+                <div class="p-field p-col-3">
+                  <label class="w3-text-grey">עיר מגורים</label><label class="w3-text-red"> * </label><br />
+                  <p-dropdown dir="rtl" name="City" id="City" #City="ngModel" class="myInput"
+                    [options]="schoolService.Cities" optionLabel="name" placeholder="בחר עיר"
+                    (onChange)="ChangeCity(CurrentStudent.City.idcity)" [style]="{ width: '100%' }" filter="true"
+                    [(ngModel)]="CurrentStudent.City" required emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                    emptyMessage="אין נתונים קיימים"></p-dropdown>
+                  <div *ngIf="City.invalid &&(City.touched || City.dirty || flagInvalid)">
+                    <div *ngIf="City.errors.required" class="w3-text-red"> שדה חובה </div>
+                  </div>
+                </div>
+
+
+                <!-- רחוב -->
+                <div class="p-field p-col-3">
+                  <label class="w3-text-grey">רחוב</label><label class="w3-text-red"> * </label>
+                  <p-dropdown required dir="rtl" name="street" id="street" #street="ngModel" class="myInput" [options]="StreetService.StreetsPerCity"
+                    optionLabel="name" placeholder="בחר רחוב" [style]="{ width: '100%' }" filter="true"
+                    [(ngModel)]="CurrentStudent.Street" [disabled]="
+                      CurrentStudent.City == null ||
+                      CurrentStudent.City.value == undefined" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                    emptyMessage="אין נתונים קיימים"></p-dropdown>
+                    <div *ngIf="street.invalid &&(street.touched || street.dirty || flagInvalid)">
+                      <div *ngIf="street.errors.required" class="w3-text-red"> שדה חובה </div>
+                    </div>
+                </div>
+
+                <!-- מס בית -->
+                <div class="p-field p-col-3">
+                  <label class="w3-text-grey">מס' בית</label><label class="w3-text-red"> * </label>
+                  <input required class="myInput" name="houseNumber" id="houseNumber" #houseNumber="ngModel" type="text" pInputText
+                    [(ngModel)]="CurrentStudent.address.houseNumber" [pKeyFilter]="blockSpecial" maxlength="10" />
+                    <div *ngIf="houseNumber.invalid &&(houseNumber.touched || houseNumber.dirty || flagInvalid)">
+                      <div *ngIf="houseNumber.errors.required" class="w3-text-red"> שדה חובה </div>
+                    </div>
+                </div>
+
+                <!-- מס דירה -->
+                <div class="p-field p-col-3">
+                  <label class="w3-text-grey">מס' דירה</label>
+                  <input class="myInput" name="apartmentNumber" type="text" pInputText
+                    [(ngModel)]="CurrentStudent.address.apartmentNumber" [pKeyFilter]="blockSpecial" maxlength="10" />
+                </div>
+
+                <!-- מיקוד -->
+                <div class="p-field p-col-3">
+                  <label class="w3-text-grey"> מיקוד</label>
+                  <input class="myInput" name="zipCode" type="number" pInputText
+                    [(ngModel)]="CurrentStudent.address.zipCode" />
+                </div>
+
+                <!-- תיבת דואר -->
+                <div class="p-field p-col-3">
+                  <label class="w3-text-grey"> תיבת דואר</label>
+                  <input class="myInput" name="poBox" type="number" pInputText
+                    [(ngModel)]="CurrentStudent.address.poBox" />
+                </div>
+                <div class="p-col-6"></div>
+                <!-- הערה כתובת -->
+                <div class="p-field p-col-6">
+                  <label class="w3-text-grey"> הערה </label>
+                  <textarea type="text" pInputText autoResize="autoResize" class="myInput" name="commentAddress"
+                    [(ngModel)]="CurrentStudent.address.comment"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- יצירת קשר -->
+            <div [ngStyle]="{'display':contactDetails== true ? 'flex' : 'none'}" class="p-fluid p-formgrid p-grid">
+              <h5 class="p-field p-col-12" style="font-weight: bold; margin-top: 7%">
+                פרטי יצירת קשר
+                <label class="w3-text-red"> * </label>
+              </h5>
+              <div *ngIf="contactInformationValidaition == true" class="w3-text-red p-field p-col-12">
+                חובה למלאות אחד מפרטי הקשר
+              </div>
+
+              <!-- טלפון 1; -->
+              <div class="p-field p-col-3">
+                <label class="w3-text-grey">טלפון 1</label>
+                <input class="myInput" name="telephoneNumber1" id="telephoneNumber1" type="tel" pInputText [(ngModel)]="
+                    CurrentStudent.contactInformation.telephoneNumber1
+                  " (change)="OnChangeContact()" pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10"
+                  [minLength]="9" #telephoneNumber1="ngModel" />
+
+                <div *ngIf="
+                    telephoneNumber1.errors &&
+                    (telephoneNumber1.touched || telephoneNumber1.dirty)
+                  " class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+              </div>
+
+              <!-- טלפון 2 -->
+              <div class="p-field p-col-3">
+                <label class="w3-text-grey">טלפון 2</label>
+                <input class="myInput" name="telephoneNumber2" id="telephoneNumber2" #telephoneNumber2="ngModel"
+                  type="tel" pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9" pInputText
+                  [(ngModel)]="
+                    CurrentStudent.contactInformation.telephoneNumber2
+                  " (change)="OnChangeContact()" />
+                <div *ngIf="
+                    telephoneNumber2.errors &&
+                    (telephoneNumber2.touched || telephoneNumber2.dirty)
+                  " class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+              </div>
+
+              <!-- Validators.pattern('[- +()0-9]+') -->
+              <!--               pattern="('[- +()0-9]+')" -->
+
+              <!-- נייד 1 -->
+              <div class="p-field p-col-3">
+                <label class="w3-text-grey">נייד 1</label>
+                <input class="myInput" name="phoneNumber1" id="phoneNumber1" #phoneNumber1="ngModel" type="tel"
+                  pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9" pInputText
+                  [(ngModel)]="CurrentStudent.contactInformation.phoneNumber1" (change)="OnChangeContact()" />
+                <div *ngIf="
+                    phoneNumber1.errors &&
+                    (phoneNumber1.touched || phoneNumber1.dirty)
+                  " class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+              </div>
+
+              <!-- נייד 2 -->
+              <div class="p-field p-col-3">
+                <label class="w3-text-grey">נייד 2</label>
+                <input class="myInput" name="phoneNumber2" id="phoneNumber2" #phoneNumber2="ngModel" type="tel"
+                  pInputText [(ngModel)]="CurrentStudent.contactInformation.phoneNumber2" (change)="OnChangeContact()"
+                  pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9" />
+                <div *ngIf="
+                    phoneNumber2.errors &&
+                    (phoneNumber2.touched || phoneNumber2.dirty)
+                  " class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+              </div>
+
+              <!-- נייד 3 -->
+              <div class="p-field p-col-3">
+                <label class="w3-text-grey">נייד 3</label>
+                <input class="myInput" name="phoneNumber3" id="phoneNumber3" #phoneNumber3="ngModel" type="tel"
+                  pInputText [(ngModel)]="CurrentStudent.contactInformation.phoneNumber3" (change)="OnChangeContact()"
+                  pattern="^0\d([\d]{0,1})([-]{0,1})\d{7}$" [maxLength]="10" [minLength]="9" />
+                <div *ngIf="
+                    phoneNumber3.errors &&
+                    (phoneNumber3.touched || phoneNumber3.dirty)
+                  " class="text-danger">
+                  <div>מס' לא תקין</div>
+                </div>
+              </div>
+              <!-- פקס -->
+              <div class="p-field p-col-3">
+                <label class="w3-text-grey"> פקס</label>
+                <input class="myInput" name="faxNumber" type="text" pInputText
+                  [(ngModel)]="CurrentStudent.contactInformation.faxNumber" [pKeyFilter]="blockSpecial" />
+              </div>
+              <!-- מייל -->
+              <div class="p-field p-col-3">
+                <label class="w3-text-grey"> מייל</label>
+                <input class="myInput" name="email" id="email" #email="ngModel" type="email"
+                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}$" pInputText
+                  [(ngModel)]="CurrentStudent.contactInformation.email" />
+                <div *ngIf="email.errors && (email.touched || email.dirty)" class="text-danger">
+                  <div>מייל לא תקין</div>
+                </div>
+              </div>
+
+              <!--הערה על יצירת קשר -->
+              <div class="p-field p-col-6">
+                <label class="w3-text-grey"> יצירת קשר-הערה </label>
+                <textarea type="text" pInputText autoResize="autoResize" class="myInput"
+                  name="commentContactInformation" [(ngModel)]="CurrentStudent.contactInformation.comment"></textarea>
+              </div>
+            </div>
+
+            <!-- טבלת משפחה -->
+            <div [ngStyle]="{'display':familyDetails== true ? 'block' : 'none'}">
+              <h5 class="p-field p-col-12" style="font-weight: bold; margin-top: 7%">
+                פרטי משפחה
+              </h5>
+              <p-button icon="pi pi-save" type="button" label="הוספת איש קשר/ משפחה" class="p-button-text"
+                (click)="AddContact()">
+
+              </p-button>
+              <p-table [value]="CurrentStudent.contactPerStudent">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="lastName">
+                      שם משפחה <p-sortIcon field="code"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="firstName">
+                      שם פרטי <p-sortIcon field="name"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tz">
+                      מספר זיהוי <p-sortIcon field="category"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="typeContact">
+                      סוג קשר <p-sortIcon field="quantity"></p-sortIcon>
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-contactPerStudent>
+                  <tr>
+                    <td>{{ contactPerStudent.contact.firstName }}</td>
+                    <td>{{ contactPerStudent.contact.lastName }}</td>
+                    <td>{{ contactPerStudent.contact.tz }}</td>
+                    <td>
+                      {{
+                      contactPerStudent.typeContact != null
+                      ? contactPerStudent.typeContact.name
+                      : null
+                      }}
+                    </td>
+                    <td>
+                      <button pButton pRipple type="button" tooltipPosition="top" icon="pi pi-pencil"
+                        pTooltip="עריכת קשר" (click)="opencontactTypeDetails(contactPerStudent)"
+                        class="p-button-rounded p-button-text"></button>
+                      <button pButton pRipple type="button" tooltipPosition="top" icon="pi pi-user-edit"
+                        pTooltip="עריכת איש קשר" (click)="openContactDetails(contactPerStudent.contact)"
+                        class="p-button-rounded p-button-text"></button>
+                      <button pButton pRipple type="button" tooltipPosition="top" icon="pi pi-trash" pTooltip="מחיקה"
+                        (click)="DeleteContactPerStudent(contactPerStudent)"
+                        class="p-button-rounded p-button-text"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <br>
+              <!-- דיילוג עריכת קשר   -->
+              <div *ngIf="displayModal" style="height: 150%;">
+                <p-dialog header="עריכת קשר" icon="pi pi pi-send" [(visible)]="displayModal" [modal]="true"
+                  [style]="{ width: '30vw' }" [draggable]="false" [resizable]="false">
+                  <label class="w3-text-grey">סוג קשר</label>
+                  <p-dropdown appendTo="body" dir="rtl" name="typeContact" class="myInput"
+                    [options]="contactService.typeContactList" optionLabel="name"
+                    [(ngModel)]="contactService.currentContacPerStudent.typeContact" [style]="{ width: '100%' }"
+                    filter="true" placeholder="בחר סוג קשר" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+                    emptyMessage="אין נתונים קיימים">
+                  </p-dropdown><br>
+                  <p-button id="btn" icon="pi pi-save" type="button" label="שמור" class="p-button-text"
+                    [disabled]="form.valid != true" (click)="SaveContactPerStudent()">
+
+                  </p-button>
+                  <ng-template pTemplate="footer"> </ng-template>
+                </p-dialog>
+              </div>
+            </div>
+
+            <p-button id="btn" icon="pi pi-save" type="button" label="שמור" class="p-button-text" (click)="
+            form.valid != true||flag ? SetInvalidFields():  SaveStudent()">
+            </p-button>
+
+          </div>
+
+          <!-- אייקונים בצד שמאל -->
+          <div class="p-field p-col-2">
+            <div class="p-fluid p-formgrid p-grid" style="margin-top: 30% ;place-content: center;">
+              <div class="p-field p-col-4">
+                <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-users"
+                  pTooltip="כרטיס משפחה"></button><br /><br />
+                <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-cloud-upload"
+                  pTooltip="צרף מסמך"></button><br /><br />
+                <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-briefcase"
+                  pTooltip="הצג כרטיס לימודים"></button><br /><br />
+                <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-trash"
+                  pTooltip="מחיקה"></button><br /><br />
+                <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-user-edit"
+                  pTooltip="עריכה"></button><br /><br />
+                <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-directions-alt"
+                  pTooltip="הצג הסטורית תלמיד"></button><br /><br />
+                <button pButton pRipple type="button" class="p-button-rounded" icon="pi pi-list"
+                  pTooltip="הצג קבוצות תלמיד"></button>
+              </div>
+            </div>
+            <!-- <div class="p-field p-col-4"></div> -->
+          </div>
+
+          <!-- [disabled]="form.valid != true" -->
+
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+
+
+
+
+<p-confirmDialog [style]="{width: '50vw'}" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text">
+</p-confirmDialog>
+
+
+<!-- message -->
+<div class="p-text-center">
+  <p-toast position="top-center"></p-toast>
+  <p-toast position="top-center" (onClose)="onClose()" key="tl"></p-toast>
+  <p-toast position="top-center" key="tc"></p-toast>
+</div>
