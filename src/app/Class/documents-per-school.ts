@@ -16,7 +16,8 @@ export class DocumentsPerSchool{
     public exsistDocumentId ?: number,
     public folderName?:string,
     public displayOrderNum?: number,
-    public uniqueCodeId ?: number
+    public uniqueCodeId ?: number,
+    public isSelected?:boolean
   ) {
   }
 }

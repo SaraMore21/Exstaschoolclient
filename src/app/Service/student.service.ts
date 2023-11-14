@@ -35,6 +35,7 @@ export class StudentService {
   }
   // שליפת התלמידים למוסד בשנתון
   GetListStudentsBySchoolIdAndYearbookId(Schools: Array<any>, YearbookId: number): Observable<Array<Student>> {
+    debugger;
     var ArraySchool: string = "";
     Schools.forEach(f => ArraySchool += f.school.idschool + ",");
     this.YearbookIdPerStudent = YearbookId;
@@ -55,6 +56,14 @@ export class StudentService {
   //עדכון תלמיד
   UpdateStudent(student: any, UserId: number, schoolId: number): Observable<any> {
     return this.http.post<any>(this.Url + "UpdateStudent/" + UserId + "/" + schoolId, student);
+  }
+  getData(page: number, pageSize: number, YearbookId: number,Schools:Array<any>): Observable<any[]> {
+    debugger;
+    var ArraySchool: string = "";
+    Schools.forEach(f => ArraySchool += f.school.idschool + ",");
+    this.YearbookIdPerStudent = YearbookId;
+    const url = this.Url + `GetPartlyListStudent/${page}/${pageSize}/${YearbookId}/${ArraySchool}`
+    return this.http.get<any>(url);
   }
 
   // UpdateProfilePathToStudent(SchoolID: number, idStudent: number, path: string, UserId: number) {
@@ -92,5 +101,14 @@ export class StudentService {
   //שליפת אפשרויות סיבת עזיבה למוסד
   GetReasonForLeavingPerSchool(SchoolId):Observable<any>{
     return this.http.get<any>(`${this.Url}GetReasonForLeavingPerSchool/${SchoolId}`);
+  }
+
+  SearchInStudentList(str:string, YearbookId:number,Schools: Array<any> ): Observable<Array<Student>>
+  {
+    debugger
+    var ArraySchool: string = "";
+    Schools.forEach(f => ArraySchool += f.school.idschool + ",");
+    this.YearbookIdPerStudent = YearbookId;
+    return this.http.get<Array<Student>>(this.Url+"SearchInStudentList/"+str+"/"+YearbookId+"/"+ArraySchool)
   }
 }

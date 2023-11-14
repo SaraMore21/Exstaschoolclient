@@ -17,7 +17,9 @@ export class DocumentsPerCourse {
     public folderCreated?: number,
     public indexFolder?: number,
     public displayOrderNum?: number,
-    public exsistDocumentId ?: number
+    public exsistDocumentId ?: number,
+    public isSelected ?:boolean
+    
   ) {
 
   }

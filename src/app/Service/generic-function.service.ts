@@ -5,8 +5,16 @@ import { Location } from '@angular/common';
   providedIn: 'root'
 })
 export class GenericFunctionService {
+  
+  studentGeneral:boolean
+  studentAddressDetails:boolean
+  studentContactDetails:boolean
+  studentFamilyDetails:boolean
+  isEdit:boolean
 
-  constructor(private location: Location) { }
+  constructor(private location: Location) { 
+
+  }
 
   uniqueBy(a, cond) {
     debugger
@@ -15,6 +23,7 @@ export class GenericFunctionService {
 
   GoBackToLastPage() {
     debugger
+    this.isEdit=false
     this.location.back();
   }
 }

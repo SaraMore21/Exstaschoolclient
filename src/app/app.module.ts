@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AddOrUpdateProfessionComponent } from './Component/professions/add-or-update-profession/add-or-update-profession.component';
-
+import { ReactiveFormsModule } from '@angular/forms';
 
 //Component
 import { LoginComponent } from './Component/login/login.component';
@@ -45,6 +45,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MessagesModule } from 'primeng/messages';
 import { MessageModule } from 'primeng/message';
 import { RippleModule } from 'primeng/ripple';
+import {ProgressBarModule} from 'primeng/progressbar';
+
 
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 
@@ -64,7 +66,7 @@ import { DocumentsPerCourseComponent } from './Component/Course/documents-per-co
 import { DocumentsPerSchoolComponent } from './Component/School/documents-per-school/documents-per-school.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
-
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ToggleButtonModule } from 'primeng/togglebutton';
@@ -142,7 +144,9 @@ import { PresencePerGroupComponent } from './Component/Presence/presence-per-gro
     OverlayPanelModule,
     ScrollPanelModule,
     RippleModule,
-
+    ReactiveFormsModule,
+    ProgressSpinnerModule,
+    ProgressBarModule
     // QuillModule.forRoot()
 
     // PrimeIcons

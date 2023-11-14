@@ -159,6 +159,7 @@ export class ListCourseComponent implements OnInit {
         this.PushListGroupPerSY();
     this.SelectGroup = this.groupService.ListGroupPerSY.find(f => f.idgroupPerYearbook == course.groupId);
 
+    debugger
     var y = this.schoolService.ListSchool.find(f => f.school.idschool == this.CurrentFatherCourse.schoolId).appYearbookPerSchools.find(f => f.yearbookId == this.schoolService.SelectYearbook.idyearbook)
     if (this.ListSemester == null || this.ListSemester.length == 0 || this.ListSemester[0].yearbookId != y.idyearbookPerSchool)
       this.courseService.GetAllSemester(y.idyearbookPerSchool).subscribe(data => {

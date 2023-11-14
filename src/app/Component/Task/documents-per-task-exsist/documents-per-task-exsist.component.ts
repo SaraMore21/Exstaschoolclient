@@ -140,10 +140,12 @@ export class DocumentsPerTaskExsistComponent implements OnInit {
       debugger;
       this.CurrentDocument = { ...this.CurrentDocumentsPerTaskExsist };
       let path = this.SchoolId + "-TaskExsists-" + this.TaskExsistId + '-';
-
+      let flag: boolean = false
       //נדרשים
-      if (this.CurrentDocumentsPerTaskExsist.requiredDocumentPerTaskExsistId != null && this.CurrentDocumentsPerTaskExsist.requiredDocumentPerTaskExsistId > 0)
+      if (this.CurrentDocumentsPerTaskExsist.requiredDocumentPerTaskExsistId != null && this.CurrentDocumentsPerTaskExsist.requiredDocumentPerTaskExsistId > 0) {
         path = path + 'r' + this.CurrentDocumentsPerTaskExsist.requiredDocumentPerTaskExsistId + "&FileName=";
+        flag = confirm("האם ברצונך להשאיר את השם של הקובץ כפי שמופיע באתר?")
+      }
       //קיימים ולא דרושים
       else
         path = path + 'd' + this.CurrentDocumentsPerTaskExsist.exsistDocumentId + "&FileName=";
@@ -152,7 +154,10 @@ export class DocumentsPerTaskExsistComponent implements OnInit {
         oldpath = this.CurrentDocumentsPerTaskExsist.path;
         pathDoc = path + index;
         this.fileD = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder];
-
+        if (flag) {
+          const newFile = new File([this.fileD], this.CurrentDocument.name, { type: this.fileD.type });
+          this.fileD = newFile
+        }
         this.FilesAzureService.uploadFileToAzure(this.fileD, pathDoc, this.SchoolId)
           .subscribe(
             d => {
@@ -160,19 +165,22 @@ export class DocumentsPerTaskExsistComponent implements OnInit {
               this.CurrentDocument = { ...this.CurrentDocumentsPerTaskExsist };
               this.CurrentDocument.path = d;
               this.CurrentDocument.TaskExsistId = this.TaskExsistId;
-              this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name;
+              if (!flag)
+                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name;
               this.CurrentDocument.schoolId = this.SchoolId;
 
               // שמירת סוג הקובץ
               var index2 = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name.lastIndexOf('.')
               if (index2 > -1) {
                 this.type = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name.substring(index2);
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name.substring(0, index2);
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name.substring(0, index2);
 
               }
               else {
                 this.type = '';
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name;
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name;
               }
               this.CurrentDocument.type = this.type;
 
@@ -430,8 +438,8 @@ export class DocumentsPerTaskExsistComponent implements OnInit {
                 }
               }
               else
-              if (this.numSuccess == files.length && this.ListDocumentsPerTaskExsist.length == 0)
-              this.ngxService.stop();
+                if (this.numSuccess == files.length && this.ListDocumentsPerTaskExsist.length == 0)
+                  this.ngxService.stop();
               this.CurrentDocument = new DocumentsPerTaskExsist();
               this.messageService.add({ key: 'tc', severity: 'error', summary: 'שגיאה', detail: ' בקובץ ' + files[index - this.CurrentDocumentsPerTaskExsist.indexFolder].name + ' יש בעיה ', sticky: true });
 
@@ -441,6 +449,7 @@ export class DocumentsPerTaskExsistComponent implements OnInit {
     }
 
   }
+
 
   // //העלאת קבצים והחלפת קבצים
   // uploadDocument(files: FileList, IsFolder: boolean = false) {
@@ -1065,7 +1074,36 @@ export class DocumentsPerTaskExsistComponent implements OnInit {
     this.displayDialog = true;
     this.filesLst = null;
   }
+  onDrop(event: any) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    this.confirmationService.confirm({
+      message: 'האם ברצונך להעלות את הקבצים שנבחרו למיקום זה?',
+      header: 'אזהרה',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: ' העלאה',
+      rejectLabel: ' ביטול',
+      accept: () => {
+        this.CurrentDocumentsPerTaskExsist = new DocumentsPerTaskExsist();
+    this.CurrentDocumentsPerTaskExsist.schoolId = this.SchoolId;
+    this.CurrentDocumentsPerTaskExsist.TaskExsistId = this.TaskExsistId;
+    this.CurrentDocumentsPerTaskExsist.indexFolder = 0;
+        this.filesLst = null;
+        
+        
+        this.setFiles(files);
+        this.GetIdExsistDocument()
+      },
+      reject: (type) => {
+        
+      }
+    });
 
+  }
+
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
   //מחיקת קובץ מהרשימה שרוצים להעלות בתוך קובץ חדש ולא דרוש
   deleteCurrentFile(files: FileList, i: number) {
     debugger;
@@ -1091,6 +1129,10 @@ export class DocumentsPerTaskExsistComponent implements OnInit {
       data => {
         if (data != undefined && data > 0)
           this.CurrentDocumentsPerTaskExsist.exsistDocumentId = data;
+          if (this.CurrentDocumentsPerTaskExsist.name == undefined && this.filesLst != undefined && this.filesLst.length > 1) {
+            let name = prompt("הכנס שם תיקיה", "לא נבחר שם")
+            this.CurrentDocumentsPerTaskExsist.name = name
+          }
         this.CurrentDocumentsPerTaskExsist.folderName = this.CurrentDocumentsPerTaskExsist.name;
         this.uploadDocument(this.filesLst, true, false);
       },

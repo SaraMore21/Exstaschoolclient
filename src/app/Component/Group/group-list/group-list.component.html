@@ -32,7 +32,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-group>
-        <tr>
+        <tr class="tr" id="ddd" (click)="StudentPerGroup(group)">
           <td>{{group.index}}</td>
           <td>{{group.group.nameGroup}}</td>
           <td >{{group.group.ageGroupName}}</td>
@@ -41,10 +41,10 @@
 
           <td style="text-align: center">
             <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
-              (click)="EditDetailsGroup(group)" class="p-button-rounded p-button-text"></button>
+              (click)="EditDetailsGroup(group,$event)" class="p-button-rounded p-button-text"></button>
 
             <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
-              (click)="DeleteGroup(group)" class="p-button-rounded p-button-text"></button>
+              (click)="DeleteGroup(group,$event)" class="p-button-rounded p-button-text"></button>
 
             <button pButton pRipple type="button" icon="pi pi-users" tooltipPosition="top" pTooltip="תלמידות"
               (click)="StudentPerGroup(group)" class="p-button-rounded p-button-text"></button>

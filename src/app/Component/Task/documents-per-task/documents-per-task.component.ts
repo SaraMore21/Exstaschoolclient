@@ -144,10 +144,12 @@ export class DocumentsPerTaskComponent implements OnInit {
       debugger;
       this.CurrentDocument = { ...this.CurrentDocumentsPerTask };
       let path = this.SchoolId + "-Tasks-" + this.TaskId + '-';
-
+      let flag: boolean = false
       //נדרשים
-      if (this.CurrentDocumentsPerTask.requiredDocumentPerTaskId != null && this.CurrentDocumentsPerTask.requiredDocumentPerTaskId > 0)
+      if (this.CurrentDocumentsPerTask.requiredDocumentPerTaskId != null && this.CurrentDocumentsPerTask.requiredDocumentPerTaskId > 0) {
         path = path + 'r' + this.CurrentDocumentsPerTask.requiredDocumentPerTaskId + "&FileName=";
+        flag = confirm("האם ברצונך להשאיר את השם של הקובץ כפי שמופיע באתר?")
+      }
       //קיימים ולא דרושים
       else
         path = path + 'd' + this.CurrentDocumentsPerTask.exsistDocumentId + "&FileName=";
@@ -156,7 +158,10 @@ export class DocumentsPerTaskComponent implements OnInit {
         oldpath = this.CurrentDocumentsPerTask.path;
         pathDoc = path + index;
         this.fileD = files[index - this.CurrentDocumentsPerTask.indexFolder];
-
+        if (flag) {
+          const newFile = new File([this.fileD], this.CurrentDocument.name, { type: this.fileD.type });
+          this.fileD = newFile
+        }
         this.FilesAzureService.uploadFileToAzure(this.fileD, pathDoc, this.SchoolId)
           .subscribe(
             d => {
@@ -164,19 +169,22 @@ export class DocumentsPerTaskComponent implements OnInit {
               this.CurrentDocument = { ...this.CurrentDocumentsPerTask };
               this.CurrentDocument.path = d;
               this.CurrentDocument.TaskId = this.TaskId;
-              this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTask.indexFolder].name;
+              if (!flag)
+                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTask.indexFolder].name;
               this.CurrentDocument.schoolId = this.SchoolId;
 
               // שמירת סוג הקובץ
               var index2 = files[index - this.CurrentDocumentsPerTask.indexFolder].name.lastIndexOf('.')
               if (index2 > -1) {
                 this.type = files[index - this.CurrentDocumentsPerTask.indexFolder].name.substring(index2);
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTask.indexFolder].name.substring(0, index2);
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTask.indexFolder].name.substring(0, index2);
 
               }
               else {
                 this.type = '';
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTask.indexFolder].name;
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerTask.indexFolder].name;
               }
               this.CurrentDocument.type = this.type;
 
@@ -454,6 +462,7 @@ export class DocumentsPerTaskComponent implements OnInit {
 
   }
 
+
   DisplayDocInNewWindow(doc: DocumentsPerTask) {
 
     window.open(doc.path);
@@ -483,34 +492,6 @@ export class DocumentsPerTaskComponent implements OnInit {
       debugger; console.log('Error downloading the file')
     });
 
-  }
-
-  //הורדת כל הקבצים מתיקיה
-  DownloadFewDoc(docs: DocumentsPerTask[]) {
-    docs.forEach(doc => {
-
-      this.DownloadDoc(doc);
-      debugger;
-      // this.FilesAzureService.DownloadFileFromAzure(doc.path).subscribe(response => {
-      //   debugger;
-      //   let blob: any = new Blob([response], { type: response + '; charset=utf-8' });
-      //   const url = window.URL.createObjectURL(blob);
-      //   //window.open(url);
-      //   //window.location.href = response.url;
-
-      //   let result = response.type.substring(response.type.indexOf('/') + 1);
-      //   if (result.indexOf('.') > 0)
-      //     this.DisplayDocInNewWindow(doc);
-      //   else {
-      //     let date = new Date();
-      //     fileSaver.saveAs(blob, 'file.' + result);
-      //     // fileSaver.saveAs(blob, date.getFullYear()+'-'+date.getMonth()+'-'+date.getDay()+'.' + result);
-      //   }
-      // }, error => {
-      //   this.DisplayDocInNewWindow(doc);
-      //   debugger; console.log('Error downloading the file')
-      // });
-    })
   }
 
   //מחיקת קובץ
@@ -744,9 +725,108 @@ export class DocumentsPerTaskComponent implements OnInit {
 
       });
   }
+  DownloadFewDoc(docs: DocumentsPerTask[]) {
+    docs.forEach(doc => {
+      if (doc.isSelected)
+        this.DownloadDoc(doc);
+      debugger;
+
+    })
+  }
+  // הורדת כל התיקייה
+  DownloadallDoc(docs: DocumentsPerTask[]) {
+    docs.forEach(doc => {
+      this.DownloadDoc(doc);
+      debugger;
+    })
+  }
+  isFilesSelectedOpenByThisUser(doc: DocumentsPerTask[]) {
+    debugger
+    let selectedDocs = new Array<DocumentsPerTask>()
+    doc.forEach(
+      d => {
+        if (d.isSelected)
+          selectedDocs.push(d)
+      }
+    )
+
+    return this.isAllFilesOpenByThisUser(selectedDocs)
+  }
+
+
+  isFilesSelected(doc: DocumentsPerTask[]) {
+    let flag = false;
+    doc.forEach(d => {
+      if (d.isSelected)
+        flag = true;
+    })
+    return !flag
+  }
+  confirmFiles(docs: DocumentsPerTask[], IsFolder: boolean = true) {
+    let count = 0
+    docs.forEach(doc => {
+      if (doc.isSelected) {
+        count++
+      }
+    })
+    if (count > 0) {
+      this.confirmationService.confirm({
+        message: 'האם הינך בטוח/ה כי ברצונך למחוק קבצים אלו לצמיתות?',
+        header: 'אזהרה',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: ' מחק',
+        rejectLabel: ' ביטול',
+        accept: () => {
+          if (count == docs.length)
+            this.DeleteFewDoc(docs)
+          else
+            docs.forEach(doc => {
+              if (doc.isSelected)
+                this.DeleteDoc(doc, IsFolder);
+            }
+            )
+
+        },
+        reject: (type) => {
+          debugger;
+          switch (type) {
+            case ConfirmEventType.REJECT || ConfirmEventType.CANCEL:
+              this.messageService.add({ severity: 'error', summary: 'בוטל', detail: 'המחיקה בוטלה' });
+              break;
+
+          }
+        }
+      });
+    }
+    else
+      this.messageService.add({ severity: 'error', summary: 'אין אפשרות למחוק', detail: ' לא נבחרו קבצים' });
+  }
+
+
+
+
+
+
+  chooseAll(docs: DocumentsPerTask[], event: any) {
+
+    if (event.checked)
+      docs.forEach(
+        doc =>
+          doc.isSelected = true
+      )
+    else
+
+      docs.forEach(
+        doc =>
+          doc.isSelected = false
+      )
+
+  }
 
   //בדיקה האם כל הקבצים בתיקיה נפתחו ע"י המשתמש הנוכחי
   isAllFilesOpenByThisUser(doc: DocumentsPerTask[]) {
+    if (doc.length == 0)
+      return true
     let index = doc.findIndex(f => f.userCreatedId != this.SchoolService.ListSchool[0].userId)
     return (index != null && index > -1);
   }
@@ -773,7 +853,36 @@ export class DocumentsPerTaskComponent implements OnInit {
     this.displayDialog = true;
     this.filesLst = null;
   }
+  onDrop(event: any) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    this.confirmationService.confirm({
+      message: 'האם ברצונך להעלות את הקבצים שנבחרו למיקום זה?',
+      header: 'אזהרה',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: ' העלאה',
+      rejectLabel: ' ביטול',
+      accept: () => {
+        this.CurrentDocumentsPerTask = new DocumentsPerTask();
+    this.CurrentDocumentsPerTask.schoolId = this.SchoolId;
+    this.CurrentDocumentsPerTask.TaskId = this.TaskId;
+    this.CurrentDocumentsPerTask.indexFolder = 0;
+        this.filesLst = null;
+        
+        
+        this.setFiles(files);
+        this.GetIdExsistDocument()
+      },
+      reject: (type) => {
+        
+      }
+    });
+ 
+  }
 
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
   //מחיקת קובץ מהרשימה שרוצים להעלות בתוך קובץ חדש ולא דרוש
   deleteCurrentFile(files: FileList, i: number) {
     debugger;
@@ -799,6 +908,10 @@ export class DocumentsPerTaskComponent implements OnInit {
       data => {
         if (data != undefined && data > 0)
           this.CurrentDocumentsPerTask.exsistDocumentId = data;
+          if (this.CurrentDocumentsPerTask.name == undefined && this.filesLst != undefined && this.filesLst.length > 1) {
+            let name = prompt("הכנס שם תיקיה", "לא נבחר שם")
+            this.CurrentDocumentsPerTask.name = name
+          }
         this.CurrentDocumentsPerTask.folderName = this.CurrentDocumentsPerTask.name;
 
         this.uploadDocument(this.filesLst, true, false);

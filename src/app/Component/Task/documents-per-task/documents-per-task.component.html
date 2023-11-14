@@ -25,7 +25,11 @@
 <button pButton pRipple type="button" label="Secondary" class="p-button-outlined p-button-secondary"></button> -->
 
 </h5>
-
+<div
+id="drop-area"
+(drop)="onDrop($event)"
+(dragover)="onDragOver($event)"
+>
 <div style="font-size: x-large; text-align-last: center; flex: content">
 
   <div style="color: red;" *ngIf="(SchoolService.IsCustomer == true && uniqueCodeID > 0 )">
@@ -50,13 +54,16 @@
           <div style="border: outset; border-color: cornflowerblue" class="box box-stretched">
             {{ item[0].folderName }}
             <div style="text-align: left">
-              <!-- הורדת הקבצים -->
-              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת כל הקבצים"
-                icon="pi pi-download" (click)="DownloadFewDoc(item)" class="p-button-rounded p-button-text"></button>
+                        <!-- הורדת הקבצים -->
+                        <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת כל הקבצים"
+                        icon="pi pi-download" (click)="DownloadallDoc(item)" class="p-button-rounded p-button-text"></button>
+             
               <!-- מחיקת כל הקבצים -->
-              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת כל הקבצים" icon="pi pi-trash"
+              <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת תיקיה"  icon="pi pi-trash"
                 (click)="confirmFolder(item)" class="p-button-rounded p-button-text"
-                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item)) ? 'none': 'inline'}"></button>
+                [ngStyle]="{'display' : (SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item)) ? 'none': 'inline'}">
+            
+              </button>
 
               <!-- פתיחת התיקיה -->
               <button pButton pRipple type="button" tooltipPosition="top" pTooltip="פתיחת התיקיה"
@@ -91,14 +98,13 @@
                 <!-- style="text-align: left" -->
                 <!-- class=" col-xs-3 col-sm-3 col-md-3 col-lg-3" -->
                 <div>
-                  <!-- הורדת הקבצים -->
-                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת כל הקבצים"
-                    icon="pi pi-download" (click)="DownloadFewDoc(item)"
-                    class="p-button-rounded p-button-text"></button>
-                  <!-- מחיקת כל הקבצים -->
-                  <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת כל הקבצים"
-                    icon="pi pi-trash" (click)="confirmFolder(item)" class="p-button-rounded p-button-text"
-                    [ngStyle]="{'display' : (SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item)) ? 'none': 'inline'}"></button>
+    
+                <!-- מחיקת כל הקבצים --> 
+                   <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת תיקיה"
+                   (click)="confirmFolder(item)" class="p-button-rounded p-button-text"
+                   [ngStyle]="{'display' : (SchoolService.IsCustomer == false && isAllFilesOpenByThisUser(item)) ? 'none': 'inline'}">
+                   <img src="../../../../assets/Image/folder1.png" class="deleteFolder">
+                 </button>
 
                   <!-- פתיחת התיקיה -->
                   <button pButton pRipple type="button" tooltipPosition="top" pTooltip="פתיחת התיקיה"
@@ -113,10 +119,21 @@
                 <!-- </div> -->
               </div>
             </ng-template>
-
-            <div *ngFor="let file of item; let i=index">
+            <p-checkbox name="selectedFiles" (onChange)="chooseAll(item,$event)" class="ckbx" binary="true"
+              pTooltip="בחר הכל" tooltipPosition="left"></p-checkbox>
+            <!-- הורדת הקבצים -->
+            <button pButton pRipple type="button" tooltipPosition="top" pTooltip="הורדת קבצים נבחרים"
+              icon="pi pi-download" (click)="DownloadFewDoc(item)"
+              [ngStyle]="{'display' : (isFilesSelected(item)) ? 'none': 'inline'}"
+              class="p-button-rounded p-button-text"></button>
+            <!-- מחיקת קבצים נבחרים -->
+            <button pButton pRipple type="button" tooltipPosition="top" pTooltip="מחיקת קבצים נבחרים" icon="pi pi-trash"
+              (click)="confirmFiles(item)" class="p-button-rounded p-button-text"
+              [ngStyle]="{'display' : (SchoolService.IsCustomer == false && isFilesSelectedOpenByThisUser(item)|| (SchoolService.IsCustomer == true && isFilesSelected(item)))? 'none': 'inline'}"></button>
+       <div *ngFor="let file of item; let i=index">
               <div class="row" style="border: solid; border-width: thin; border-style: inset;">
                 <div class=" col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <p-checkbox  name="selectedFiles" [(ngModel)]="file.isSelected" [binary]="true"></p-checkbox>
                   <label><i class="pi pi-file"></i> </label>
                   <ng-container *ngIf="
                       !(IsEditName && idfile == file.iddocumentPerFatherCourse);
@@ -130,7 +147,8 @@
                       <button type="button" id='EditBtn' pButton pRipple icon="pi pi-check"
                         styleClass="p-button-success" tooltipPosition="top" pTooltip="שמירה"
                         (click)="SaveNameFile(file)"></button>
-                      <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                      <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name"
+                        (keydown.enter)="SaveNameFile(item[0])" />
                       <!-- ---------- -->
                       <button type="button" id='EditBtn' pButton pRipple tooltipPosition="top" pTooltip="ביטול"
                         icon="pi pi-times" styleClass="p-button-danger" (click)="IsEditName = false"></button>
@@ -198,7 +216,8 @@
                   <!-- ---------- -->
                   <button id='EditBtn' type="button" pButton pRipple icon="pi pi-check" styleClass="p-button-success"
                     tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item[0])"></button>
-                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name"
+                    (keydown.enter)="SaveNameFile(item[0])" />
                   <!-- ---------- -->
 
                   <button id='EditBtn' type="button" pButton pRipple tooltipPosition="top" pTooltip="ביטול"
@@ -267,7 +286,8 @@
                     <!-- ---------- -->
                     <button type="button" id='EditBtn' pButton pRipple icon="pi pi-check" styleClass="p-button-success"
                       tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item[0])"></button>
-                    <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                    <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name"
+                      (keydown.enter)="SaveNameFile(item[0])" />
                     <!-- ---------- -->
                     <button type="button" id='EditBtn' pButton pRipple tooltipPosition="top" pTooltip="ביטול"
                       icon="pi pi-times" styleClass="p-button-danger" (click)="IsEditName = false"></button>
@@ -394,7 +414,8 @@
                   <!-- ---------- -->
                   <button id='EditBtn' type="button" pButton pRipple icon="pi pi-check" styleClass="p-button-success"
                     tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item,item.folderId)"></button>
-                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name"
+                    (keydown.enter)="SaveNameFile(item[0])" />
                   <!-- ---------- -->
                   <button id='EditBtn' type="button" pButton pRipple tooltipPosition="top" pTooltip="ביטול"
                     icon="pi pi-times" styleClass="p-button-danger" (click)="IsEditName = false"></button>
@@ -493,3 +514,4 @@
       pButton icon="pi pi-save" label="שמור" class="buttonSave" (click)="GetIdExsistDocument()"></button>
   </div>
 </p-dialog>
+</div>

@@ -69,6 +69,7 @@ export class ProfessionListComponent implements OnInit {
       data => {
         debugger;
         this.professionService.ListProfession = data
+        this.exportExcelAsync()
         for (let i = 0; i < this.professionService.ListProfession.length; i++) {
           this.professionService.ListProfession[i].index = i + 1
         }
@@ -309,7 +310,7 @@ export class ProfessionListComponent implements OnInit {
   }
 
   //מחיקת מקצוע
-  DeletProfession(professionId: number) {
+  DeletProfession(professionId: number,event: Event=null) {
     debugger;
     this.confirmationService.confirm({
       message: 'האם הנך בטוח כי ברצונך למחוק מקצוע זה   ?  ',
@@ -342,7 +343,8 @@ export class ProfessionListComponent implements OnInit {
       reject: () => {
       }
     })
-
+    if (event!=null)
+    event.stopPropagation();
   }
   //שליפת הנתונים הנדרשים-בעת שיוני מוסד
   ChangeSchool() {
@@ -456,14 +458,14 @@ export class ProfessionListComponent implements OnInit {
 
 
 
-  sendToExportExcel() {
-    debugger
-    if (this.excelProfessionList.length == 0)
-      this.exportExcelAsync()
+  // sendToExportExcel() {
+  //   debugger
+  //   if (this.excelProfessionList.length == 0)
+  //     this.exportExcelAsync()
 
-    else
-      this.exportExcel()
-  }
+  //   else
+  //     this.exportExcel()
+  // }
   exportExcel() {
 
 

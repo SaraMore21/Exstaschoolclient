@@ -2,6 +2,7 @@
 
 <body class="myForm" dir="rtl">
   <div [ngStyle]="{ 'pointer-events': lockForm() }">
+    <div >
     <h1 style="text-align: center; background-color: cornflowerblue">תלמיד</h1>
 
     <div class="p-fluid p-formgrid p-grid">
@@ -23,7 +24,7 @@
                 style=" background-repeat:round; background-image: url({{CurrentStudent.passportPicture}}); height: 250px; width: 90%; margin-top: 30%"
                 (click)="file.click()" />
             </ng-template>
-            k
+           
             <input [disabled]="id == 0" type="file" #file placeholder="Choose file" (change)="setFile(file.files)"
               accept="image/png, image/jpeg" style="display: none" />
             <!-- radioButton -->
@@ -38,6 +39,7 @@
               <!-- כתובת -->
               <div class="p-field-radiobutton">
                 <p-radioButton name="address" id="address" #addressD="ngModel" value="da" [(ngModel)]="city"
+              
                   inputId="address" (click)="addressDetailsFunc()">
                 </p-radioButton>
                 <label for="address">כתובת</label>
@@ -609,9 +611,10 @@
                   <div *ngIf="City.invalid &&(City.touched || City.dirty || flagInvalid)">
                     <div *ngIf="City.errors.required" class="w3-text-red"> שדה חובה </div>
                   </div>
+
                 </div>
 
-
+               
                 <!-- רחוב -->
                 <div class="p-field p-col-3">
                   <label class="w3-text-grey">רחוב</label><label class="w3-text-red"> * </label>
@@ -798,6 +801,9 @@
                     <th pSortableColumn="tz">
                       מספר זיהוי <p-sortIcon field="category"></p-sortIcon>
                     </th>
+                    <th pSortableColumn="contactInformation.phoneNumber1">
+                    מספר טלפון<p-sortIcon field="contactInformation.phoneNumber1"></p-sortIcon>
+                    </th>
                     <th pSortableColumn="typeContact">
                       סוג קשר <p-sortIcon field="quantity"></p-sortIcon>
                     </th>
@@ -809,6 +815,9 @@
                     <td>{{ contactPerStudent.contact.firstName }}</td>
                     <td>{{ contactPerStudent.contact.lastName }}</td>
                     <td>{{ contactPerStudent.contact.tz }}</td>
+                    <td>{{ contactPerStudent.contact.contactInformation!=null &&  
+                      contactPerStudent.contact.contactInformation.phoneNumber1!=null?
+                      contactPerStudent.contact.contactInformation.phoneNumber1:null}}</td>
                     <td>
                       {{
                       contactPerStudent.typeContact != null
@@ -886,6 +895,7 @@
       </form>
     </div>
   </div>
+</div>
 </body>
 
 

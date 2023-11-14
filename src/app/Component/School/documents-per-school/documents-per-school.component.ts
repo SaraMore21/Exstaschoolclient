@@ -162,10 +162,12 @@ export class DocumentsPerSchoolComponent implements OnInit {
       debugger;
       this.CurrentDocument = { ...this.CurrentDocumentsPerSchool };
       let path = this.SchoolId + "-Schools-" + this.SchoolId + '-';
-
+      let flag: boolean = false
       //נדרשים
-      if (this.CurrentDocumentsPerSchool.requiredDocumentPerSchoolId != null && this.CurrentDocumentsPerSchool.requiredDocumentPerSchoolId > 0)
+      if (this.CurrentDocumentsPerSchool.requiredDocumentPerSchoolId != null && this.CurrentDocumentsPerSchool.requiredDocumentPerSchoolId > 0) {
         path = path + 'r' + this.CurrentDocumentsPerSchool.requiredDocumentPerSchoolId + "&FileName=";
+        flag = confirm("האם ברצונך להשאיר את השם של הקובץ כפי שמופיע באתר?")
+      }
       //קיימים ולא דרושים
       else
         path = path + 'd' + this.CurrentDocumentsPerSchool.exsistDocumentId + "&FileName=";
@@ -174,26 +176,32 @@ export class DocumentsPerSchoolComponent implements OnInit {
         oldpath = this.CurrentDocumentsPerSchool.path;
         pathDoc = path + index;
         this.fileD = files[index - this.CurrentDocumentsPerSchool.indexFolder];
-
+        if (flag) {
+          const newFile = new File([this.fileD], this.CurrentDocument.name, { type: this.fileD.type });
+          this.fileD = newFile
+        }
         this.FilesAzureService.uploadFileToAzure(this.fileD, pathDoc, this.SchoolId)
           .subscribe(
             d => {
               this.numSuccess++;
               this.CurrentDocument = { ...this.CurrentDocumentsPerSchool };
               this.CurrentDocument.path = d;
-              this.CurrentDocument.name = files[index - this.CurrentDocumentsPerSchool.indexFolder].name;
+              if (!flag)
+                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerSchool.indexFolder].name;
               this.CurrentDocument.schoolId = this.SchoolId;
 
               // שמירת סוג הקובץ
               var index2 = files[index - this.CurrentDocumentsPerSchool.indexFolder].name.lastIndexOf('.')
               if (index2 > -1) {
                 this.type = files[index - this.CurrentDocumentsPerSchool.indexFolder].name.substring(index2);
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerSchool.indexFolder].name.substring(0, index2);
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerSchool.indexFolder].name.substring(0, index2);
 
               }
               else {
                 this.type = '';
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerSchool.indexFolder].name;
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerSchool.indexFolder].name;
               }
               this.CurrentDocument.type = this.type;
 
@@ -483,9 +491,9 @@ export class DocumentsPerSchoolComponent implements OnInit {
                 }
               }
               else
-              debugger;
-                if (this.numSuccess == files.length && this.ListDocumentsPerSchool.length == 0)
-                  this.ngxService.stop();
+                debugger;
+              if (this.numSuccess == files.length && this.ListDocumentsPerSchool.length == 0)
+                this.ngxService.stop();
               this.CurrentDocument = new DocumentsPerSchool();
               this.messageService.add({ key: 'tc', severity: 'error', summary: 'שגיאה', detail: ' בקובץ ' + files[index - this.CurrentDocumentsPerSchool.indexFolder].name + ' יש בעיה ', sticky: true });
 
@@ -497,6 +505,7 @@ export class DocumentsPerSchoolComponent implements OnInit {
     }
 
   }
+
 
   // //העלאת קבצים והחלפת קבצים
   // uploadDocument(files: FileList, IsFolder: boolean = false) {
@@ -857,10 +866,11 @@ export class DocumentsPerSchoolComponent implements OnInit {
   }
 
   //הורדת כל הקבצים מתיקיה
+  //הורדת קבצים נבחרים
   DownloadFewDoc(docs: DocumentsPerSchool[]) {
     docs.forEach(doc => {
-
-      this.DownloadDoc(doc);
+      if (doc.isSelected)
+        this.DownloadDoc(doc);
       debugger;
       // this.FilesAzureService.DownloadFileFromAzure(doc.path).subscribe(response => {
       //   debugger;
@@ -883,7 +893,13 @@ export class DocumentsPerSchoolComponent implements OnInit {
       // });
     })
   }
-
+  // הורדת כל התיקייה
+  DownloadallDoc(docs: DocumentsPerSchool[]) {
+    docs.forEach(doc => {
+      this.DownloadDoc(doc);
+      debugger;
+    })
+  }
   //מחיקת קובץ
   DeleteDoc(doc: DocumentsPerSchool, IsFolder: boolean = false) {
     debugger;
@@ -1030,6 +1046,23 @@ export class DocumentsPerSchoolComponent implements OnInit {
     this.IsEditName = false;
   }
 
+  //בחירת כל הקבצים שבתיקיה
+  chooseAll(docs: DocumentsPerSchool[], event: any) {
+
+    if (event.checked)
+      docs.forEach(
+        doc =>
+          doc.isSelected = true
+      )
+    else
+
+      docs.forEach(
+        doc =>
+          doc.isSelected = false
+      )
+
+  }
+
   //דיאלוג לשאלה אם רוצה למחוק תיקיה
   confirmFolder(docs: DocumentsPerSchool[]) {
     this.confirmationService.confirm({
@@ -1073,6 +1106,46 @@ export class DocumentsPerSchoolComponent implements OnInit {
         }
       }
     });
+  }
+
+  confirmFiles(docs: DocumentsPerSchool[], IsFolder: boolean = true) {
+    let count = 0
+    docs.forEach(doc => {
+      if (doc.isSelected) {
+        count++
+      }
+    })
+    if (count > 0) {
+      this.confirmationService.confirm({
+        message: 'האם הינך בטוח/ה כי ברצונך למחוק קבצים אלו לצמיתות?',
+        header: 'אזהרה',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: ' מחק',
+        rejectLabel: ' ביטול',
+        accept: () => {
+          if (count == docs.length)
+            this.DeleteFewDoc(docs)
+          else
+            docs.forEach(doc => {
+              if (doc.isSelected)
+                this.DeleteDoc(doc, IsFolder);
+            }
+            )
+
+        },
+        reject: (type) => {
+          debugger;
+          switch (type) {
+            case ConfirmEventType.REJECT || ConfirmEventType.CANCEL:
+              this.messageService.add({ severity: 'error', summary: 'בוטל', detail: 'המחיקה בוטלה' });
+              break;
+
+          }
+        }
+      });
+    }
+    else
+      this.messageService.add({ severity: 'error', summary: 'אין אפשרות למחוק', detail: ' לא נבחרו קבצים' });
   }
 
   //פתיחת עריכת שם לקובץ
@@ -1127,7 +1200,7 @@ export class DocumentsPerSchoolComponent implements OnInit {
     let index = doc.findIndex(f => f.userCreatedId != this.SchoolService.ListSchool[0].userId)
     return (index != null && index > -1);
   }
-debbuger;
+  debbuger;
   largeFileUpload(event: any) {
     debugger;
     let fileList: FileList = event.target.files;
@@ -1148,6 +1221,45 @@ debbuger;
     this.CurrentDocumentsPerSchool.indexFolder = 0;
     this.displayDialog = true;
     this.filesLst = null;
+  }
+
+  
+  onDrop(event: any) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    this.confirmationService.confirm({
+      message: 'האם ברצונך להעלות את הקבצים שנבחרו למיקום זה?',
+      header: 'אזהרה',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: ' העלאה',
+      rejectLabel: ' ביטול',
+      accept: () => {
+        this.CurrentDocumentsPerSchool = new DocumentsPerSchool();
+        this.CurrentDocumentsPerSchool.schoolId = this.SchoolId;
+        this.CurrentDocumentsPerSchool.indexFolder = 0;
+        this.filesLst = null;
+        
+        
+        this.setFiles(files);
+        this.GetIdExsistDocument()
+      },
+      reject: (type) => {
+        
+      }
+    });
+  
+  }
+
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
+  isFilesSelected(doc: DocumentsPerSchool[]) {
+    let flag = false;
+    doc.forEach(d => {
+      if (d.isSelected)
+        flag = true;
+    })
+    return !flag
   }
 
   //מחיקת קובץ מהרשימה שרוצים להעלות בתוך קובץ חדש ולא דרוש
@@ -1175,6 +1287,10 @@ debbuger;
       data => {
         if (data != undefined && data > 0)
           this.CurrentDocumentsPerSchool.exsistDocumentId = data;
+          if (this.CurrentDocumentsPerSchool.name == undefined && this.filesLst != undefined && this.filesLst.length > 1) {
+            let name = prompt("הכנס שם תיקיה", "לא נבחר שם")
+            this.CurrentDocumentsPerSchool.name = name
+          }
         this.CurrentDocumentsPerSchool.folderName = this.CurrentDocumentsPerSchool.name;
 
         this.uploadDocument(this.filesLst, true, false);

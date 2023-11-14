@@ -10,7 +10,11 @@
   </div>
 
 </h5>
-
+<div
+id="drop-area"
+(drop)="onDrop($event)"
+(dragover)="onDragOver($event)"
+>
 <div style="font-size: x-large; text-align-last: center; flex: content">
 
   <!-- מעבר על המסמכים הקיימים והנדרשים -->
@@ -69,7 +73,7 @@
                 <div class="p-inputgroup">
                   <button id='EditBtn' type="button" pButton pRipple icon="pi pi-check" styleClass="p-button-success"
                     tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item[0])"></button>
-                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" (keydown.enter)="SaveNameFile(item[0])"/>
                   <button id='EditBtn' type="button" pButton pRipple tooltipPosition="top" pTooltip="ביטול" icon="pi pi-times"
                     styleClass="p-button-danger" (click)="IsEditName = false"></button>
                 </div>
@@ -154,7 +158,7 @@
                 <div class="p-inputgroup">
                   <button id='EditBtn' type="button" pButton pRipple icon="pi pi-check" styleClass="p-button-success"
                     tooltipPosition="top" pTooltip="שמירה" (click)="SaveNameFile(item,item.folderId)"></button>
-                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" />
+                  <input type="text" [(ngModel)]="NameFile" pInputText placeholder="enter name" (keydown.enter)="SaveNameFile(item[0])"/>
                   <button id='EditBtn' type="button" pButton pRipple tooltipPosition="top" pTooltip="ביטול" icon="pi pi-times"
                     styleClass="p-button-danger" (click)="IsEditName = false"></button>
                 </div>
@@ -250,3 +254,4 @@
       pButton icon="pi pi-save" label="שמור" class="buttonSave" (click)="GetIdExsistDocument()"></button>
   </div>
 </p-dialog>
+</div>

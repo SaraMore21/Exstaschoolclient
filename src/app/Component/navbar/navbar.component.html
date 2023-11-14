@@ -2,7 +2,7 @@
 
 <div class="container-fluid" style="padding-top: 2%;">
 
-  <div style="width: max-content; margin-right: 16%;">
+  <div style="width: max-content; margin-right: 16%; ">
     <!-- <label style="width: max-content; margin-right: 16%;"> -->
     <label>שנת לימודים</label><br>
     <p-dropdown [options]="SchoolService.ListYearbook" [(ngModel)]="SchoolService.SelectYearbook" editable="true"
@@ -16,7 +16,7 @@
   </div>
   <div class="row form-group">
     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-      <p-panelMenu class="sidenav" [model]="items" [style]="{'width':'300px','hight':'100%'}">
+      <p-panelMenu class="sidenav" [model]="items" [style]="{'width':'300px','hight':'100%','position':'fixed'}">
         <!-- <div style="bottom: 10px; position: fixed;">
         <button>rgfd</button>
       </div> -->

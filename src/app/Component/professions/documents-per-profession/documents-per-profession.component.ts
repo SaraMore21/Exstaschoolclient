@@ -143,10 +143,12 @@ export class DocumentsPerProfessionComponent implements OnInit {
       debugger;
       this.CurrentDocument = { ...this.CurrentDocumentsPerProfession };
       let path = this.SchoolId + "-Professions-" + this.ProfessionId + '-';
-
+      let flag: boolean = false
       //נדרשים
-      if (this.CurrentDocumentsPerProfession.requiredDocumentPerProfessionId != null && this.CurrentDocumentsPerProfession.requiredDocumentPerProfessionId > 0)
+      if (this.CurrentDocumentsPerProfession.requiredDocumentPerProfessionId != null && this.CurrentDocumentsPerProfession.requiredDocumentPerProfessionId > 0) {
         path = path + 'r' + this.CurrentDocumentsPerProfession.requiredDocumentPerProfessionId + "&FileName=";
+        flag = confirm("האם ברצונך להשאיר את השם של הקובץ כפי שמופיע באתר?")
+      }
       //קיימים ולא דרושים
       else
         path = path + 'd' + this.CurrentDocumentsPerProfession.exsistDocumentId + "&FileName=";
@@ -155,7 +157,10 @@ export class DocumentsPerProfessionComponent implements OnInit {
         oldpath = this.CurrentDocumentsPerProfession.path;
         pathDoc = path + index;
         this.fileD = files[index - this.CurrentDocumentsPerProfession.indexFolder];
-
+        if (flag) {
+          const newFile = new File([this.fileD], this.CurrentDocument.name, { type: this.fileD.type });
+          this.fileD = newFile
+        }
         this.FilesAzureService.uploadFileToAzure(this.fileD, pathDoc, this.SchoolId)
           .subscribe(
             d => {
@@ -163,19 +168,22 @@ export class DocumentsPerProfessionComponent implements OnInit {
               this.CurrentDocument = { ...this.CurrentDocumentsPerProfession };
               this.CurrentDocument.path = d;
               this.CurrentDocument.ProfessionId = this.ProfessionId;
-              this.CurrentDocument.name = files[index - this.CurrentDocumentsPerProfession.indexFolder].name;
+              if (!flag)
+                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerProfession.indexFolder].name;
               this.CurrentDocument.schoolId = this.SchoolId;
 
               // שמירת סוג הקובץ
               var index2 = files[index - this.CurrentDocumentsPerProfession.indexFolder].name.lastIndexOf('.')
               if (index2 > -1) {
                 this.type = files[index - this.CurrentDocumentsPerProfession.indexFolder].name.substring(index2);
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerProfession.indexFolder].name.substring(0, index2);
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerProfession.indexFolder].name.substring(0, index2);
 
               }
               else {
                 this.type = '';
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerProfession.indexFolder].name;
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerProfession.indexFolder].name;
               }
               this.CurrentDocument.type = this.type;
 
@@ -438,8 +446,8 @@ export class DocumentsPerProfessionComponent implements OnInit {
               }
               else
                 if (this.numSuccess == files.length && this.ListDocumentsPerProfession.length == 0)
-                this.ngxService.stop();
-                this.CurrentDocument = new DocumentsPerProfession();
+                  this.ngxService.stop();
+              this.CurrentDocument = new DocumentsPerProfession();
               this.messageService.add({ key: 'tc', severity: 'error', summary: 'שגיאה', detail: ' בקובץ ' + files[index - this.CurrentDocumentsPerProfession.indexFolder].name + ' יש בעיה ', sticky: true });
 
             }
@@ -448,6 +456,7 @@ export class DocumentsPerProfessionComponent implements OnInit {
     }
 
   }
+
 
   DisplayDocInNewWindow(doc: DocumentsPerProfession) {
 
@@ -507,7 +516,13 @@ export class DocumentsPerProfessionComponent implements OnInit {
       // });
     })
   }
-
+  // הורדת כל התיקייה
+  DownloadallDoc(docs: DocumentsPerProfession[]) {
+    docs.forEach(doc => {
+      this.DownloadDoc(doc);
+      debugger;
+    })
+  }
   //מחיקת קובץ
   DeleteDoc(doc: DocumentsPerProfession, IsFolder: boolean = false) {
     debugger;
@@ -759,7 +774,37 @@ export class DocumentsPerProfessionComponent implements OnInit {
     this.displayDialog = true;
     this.filesLst = null;
   }
+  onDrop(event: any) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    this.confirmationService.confirm({
+      message: 'האם ברצונך להעלות את הקבצים שנבחרו למיקום זה?',
+      header: 'אזהרה',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: ' העלאה',
+      rejectLabel: ' ביטול',
+      accept: () => {
+        this.CurrentDocumentsPerProfession = new DocumentsPerProfession();
+        this.CurrentDocumentsPerProfession.schoolId = this.SchoolId;
+        this.CurrentDocumentsPerProfession.ProfessionId = this.ProfessionId;
+        this.CurrentDocumentsPerProfession.indexFolder = 0;
+        this.filesLst = null;
+        
+        
+        this.setFiles(files);
+        this.GetIdExsistDocument()
+      },
+      reject: (type) => {
+        
+      }
+    });
+   
+ 
+  }
 
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
   //מחיקת קובץ מהרשימה שרוצים להעלות בתוך קובץ חדש ולא דרוש
   deleteCurrentFile(files: FileList, i: number) {
     debugger;
@@ -785,6 +830,10 @@ export class DocumentsPerProfessionComponent implements OnInit {
       data => {
         if (data != undefined && data > 0)
           this.CurrentDocumentsPerProfession.exsistDocumentId = data;
+          if (this.CurrentDocumentsPerProfession.name == undefined && this.filesLst != undefined && this.filesLst.length > 1) {
+            let name = prompt("הכנס שם תיקיה", "לא נבחר שם")
+            this.CurrentDocumentsPerProfession.name = name
+          }
         this.CurrentDocumentsPerProfession.folderName = this.CurrentDocumentsPerProfession.name;
 
         this.uploadDocument(this.filesLst, true, false);

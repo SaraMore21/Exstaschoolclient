@@ -78,7 +78,9 @@ export class ContactsComponent implements OnInit {
         }
       );
   }
-
+  moveToPrev(){
+    //this.router.navigate()
+  }
   // שמירת איש קשר
   //הוספה/עדכון
   SaveContact() {

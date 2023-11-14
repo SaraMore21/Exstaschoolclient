@@ -115,7 +115,7 @@ export class GroupListComponent implements OnInit {
     this.router.navigate(["Home/StudentsPerGroup/" + group.idgroupPerYearbook]);
   }
   //מחיקת קבוצה
-  DeleteGroup(group: any) {
+  DeleteGroup(group: any,event:Event=null) {
     debugger;
     this.confirmationService.confirm({
       message: 'האם הנך בטוח כי ברצונך למחוק קבוצה זו   ?  ',
@@ -141,10 +141,12 @@ export class GroupListComponent implements OnInit {
       reject: () => {
       }
     });
+    if (event!=null)
+    event.stopPropagation();
   }
 
   //פתיחת דיאלוג עריכת קבוצה
-  EditDetailsGroup(G: any) {
+  EditDetailsGroup(G: any,event:Event=null) {
     debugger;
     this.edit = true; this.Showedit = true;
     this.CurrentGroup = { ...G };
@@ -202,6 +204,8 @@ export class GroupListComponent implements OnInit {
         }
       }
         , er => { })
+        if (event!=null)
+        event.stopPropagation();
   }
   //שליחה לסרבר לפי ההתאמה -הוספת קורס לשנתון/למוסד/הוספה
   SaveEditOrAdd() {

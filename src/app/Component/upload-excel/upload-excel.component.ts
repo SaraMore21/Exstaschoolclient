@@ -5,9 +5,12 @@ import { HttpEventType } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SelectItem } from 'primeng/api/selectitem';
 import { Router } from '@angular/router';
-import { Workbook } from 'exceljs';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 // import { Subscription } from 'rxjs';
 import { Subscription } from 'rxjs';
+
 
 
 @Component({
@@ -40,8 +43,9 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
   IsOverride: boolean = false;
   fileToUpload: File;
   subscription: Subscription;
-
-  constructor(private ExcelService: ExcelService, private router: Router, public schoolService: SchoolService) { }
+ 
+  constructor(private ExcelService: ExcelService, private router: Router, public schoolService: SchoolService) { 
+  }
 
   ngOnDestroy(): void {
     if (this.subscription) {
@@ -56,10 +60,10 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
     }
 
     // "אנשי קשר"
-    this.optionalTables = ["תלמידים", "משתמשים", "מקצועות", "שיוך תלמיד קבוצה", "אנשי קשר", "קבוצות לימוד", "מערכת קבועה","שעות שיעורים לקבוצה"].sort();
+    this.optionalTables = ["תלמידים", "משתמשים", "מקצועות", "שיוך תלמיד קבוצה", "אנשי קשר", "קבוצות לימוד", "מערכת קבועה","שעות שיעורים לקבוצה","קורסי אב","קורסים"].sort();
     this.optionalTables.forEach(tbl => this.optionalTables2.push({ label: tbl, value: tbl }));
 
-    this.optionalTables3 = ["תלמידים", "משתמשים", "קבוצות לימוד", "אנשי קשר" ,"נתוני בסיס","מקצועות"];
+    this.optionalTables3 = ["תלמידים", "משתמשים", "קבוצות לימוד", "אנשי קשר" ,"נתוני בסיס","מקצועות","קורסי אב","קורסים"];
     let i = 1;
     this.optionalTables3.forEach(tbl => { this.optionalTables4.push({ label: tbl, value: i.toString() }); i++; });
 
@@ -263,10 +267,73 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
   //   }
 
   DownloadExcelFile() {
-    this.tablesToDownload.forEach(f => {
-      debugger;
-      var a = document.getElementById(f);
-      a.click();
+     this.tablesToDownload.forEach(f => {
+      // debugger;
+      // var a = document.getElementById(f);
+      // a.click();
+
+      switch (f)
+      {
+        case "7":
+          this.ExcelService.downloadFatherCourseExcel(this.CurrentSchool.school.idschool)
+         // .subscribe(d=>{alert("הקובץ נשלח בהצלחה למייל שהוזן")})
+          .subscribe((data: Blob) => {
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'קורסי אב.xlsx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+          }
+          )
+          break;
+          case "8":
+          this.ExcelService.downloadCourseExcel(this.CurrentSchool.school.idschool,this.schoolService.SelectYearbook.idyearbook)
+         // .subscribe(d=>{alert("הקובץ נשלח בהצלחה למייל שהוזן")})
+          .subscribe((data: Blob) => {
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'קורסים.xlsx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+          }
+          )
+      }
     })
+
   }
+
+
+  generateExcel() {
+    // Create a worksheet
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
+      ['Data Validation Example'],
+      ['Select an option:'],
+    ]);
+  
+    // Define the data validation (dropdown) for a specific cell (e.g., A3)
+    worksheet['!dataValidations'] = [{
+      sqref: 'A3',
+      formula1: '"Option 1,Option 2,Option 3"',
+      showDropDown: true,
+    }];
+  
+    // Create a workbook
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Sheet 1': worksheet },
+      SheetNames: ['Sheet 1'],
+    };
+  
+    // Generate the Excel file
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+    // Save the file
+    FileSaver.saveAs(data, 'excel_with_dropdown.xlsx');
+  }
+
+  
 }

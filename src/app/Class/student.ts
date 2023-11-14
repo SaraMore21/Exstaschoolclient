@@ -43,6 +43,7 @@ export class Student extends Indexer {
         public numRequiredPerStudent? :number,
         public numExsistRequiredPerStudent?: number,
         public contactPerStudent ?:ContactPerStudent,
+        public checked ?:boolean
 
 
     ){

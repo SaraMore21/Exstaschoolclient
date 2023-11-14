@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { environment } from 'src/environments/environment';
@@ -45,4 +45,16 @@ export class ExcelService {
       responseType: 'blob'
     })
   }
+
+ downloadFatherCourseExcel(idschool:string):Observable<any>{
+  //const headers = new HttpHeaders().set('Content-Type', 'text/plain; charset=utf-8');
+  const headers = new HttpHeaders({ 'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return this.http.get<any>(this.Url+"downloadFatherCourseExcel/"+idschool,{ headers, responseType: 'blob' as 'json' })
+ }
+
+ downloadCourseExcel(idschool:string,idyearbook:number):Observable<any>{
+  //const headers = new HttpHeaders().set('Content-Type', 'text/plain; charset=utf-8');
+  const headers = new HttpHeaders({ 'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return this.http.get<any>(this.Url+"downloadCourseExcel/"+idschool+"/"+idyearbook,{ headers, responseType: 'blob' as 'json' })
+ }
 }

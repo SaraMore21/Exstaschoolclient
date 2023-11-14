@@ -15,7 +15,7 @@
           pRipple
           type="button"
           label=" יצוא לקובץ EXCEL"
-          (click)="sendToExportExcel()"
+          (click)="exportExcel()"
           icon="pi pi-file-excel"
           class=" p-button-outline p-button-success"></p-button>
         <span class="p-input-icon-left">
@@ -55,7 +55,7 @@
 
       <!-- גוף הטבלה -->
       <ng-template pTemplate="body" let-profession >
-        <tr>
+        <tr class="tr1" id="ddd" (click)="OpenUpdate(profession)">
          <td>{{profession.index}}</td>
           <td>{{profession.name }}</td>
           <td>{{profession && profession.coordinator?profession.coordinator.firstName+'
@@ -70,7 +70,7 @@
             <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
               (click)="GoToDocumentsPerProfession(profession)" class="p-button-rounded p-button-text"></button>
 
-            <button pButton pRipple type="button" icon="pi pi-trash" (click)="DeletProfession(profession.idprofession)"
+            <button pButton pRipple type="button" icon="pi pi-trash" (click)="DeletProfession(profession.idprofession,$event)"
               class="p-button-rounded p-button-text"></button>
           </td>
         </tr>

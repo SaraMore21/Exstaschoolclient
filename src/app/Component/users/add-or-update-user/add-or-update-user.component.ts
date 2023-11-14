@@ -208,9 +208,6 @@ export class AddOrUpdateUserComponent implements OnInit {
     );
     if (this.CurrentUser.City != null) {
       this.ChangeCity();
-      this.CurrentUser.Street = this.streetService.StreetsPerCity.find(
-        (f) => f.idstreet == this.CurrentUser.address.streetId
-      );
     }
     this.CurrentUser.Citizenship = this.schoolService.Countries.find(
       (f) => f.value == this.CurrentUser.birth.citizenshipId
@@ -328,7 +325,10 @@ export class AddOrUpdateUserComponent implements OnInit {
   ChangeCity() {
     debugger;
     if (this.streetService.StreetsPerCity == null || this.streetService.StreetsPerCity.length == 0 || this.streetService.StreetsPerCity[0].cityId != this.CurrentUser.City.value)
-      this.streetService.GetStreetsByCityId(this.CurrentUser.City.value).subscribe(data => { this.streetService.StreetsPerCity = data }, er => { })
+      this.streetService.GetStreetsByCityId(this.CurrentUser.City.value).subscribe(data => { this.streetService.StreetsPerCity = data 
+        this.CurrentUser.Street = this.streetService.StreetsPerCity.find(
+          (f) => f.idstreet == this.CurrentUser.address.streetId
+        );}, er => { })
   }
 
   showModalDialog() {

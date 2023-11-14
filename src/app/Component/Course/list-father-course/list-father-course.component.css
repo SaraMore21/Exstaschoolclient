@@ -1,4 +1,7 @@
 .Input{
     width: 100%;
     }
-    
+    .tr:hover {
+        cursor: pointer; 
+        background-color: rgb(240, 239, 239);
+      }

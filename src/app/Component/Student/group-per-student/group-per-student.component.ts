@@ -212,6 +212,7 @@ export class GroupPerStudentComponent implements OnInit {
 
 
     this.DialogEditRangOfDate = false;
+    debugger;
     this.groupService.EditStudentInGroup(this.StudentPerGroup, f, t, this.CurrentSchool.userId).subscribe(data => {
       debugger;
       if (data.id == 1) {

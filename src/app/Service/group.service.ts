@@ -76,6 +76,7 @@ export class GroupService {
   }
   //עריכת תלמיד בקבוצה
   EditStudentInGroup(StudentPerGroup: StudentPerGroup, FromDate: Date, ToDate: Date, UserUpdateId: number): Observable<any> {
+    debugger;
     return this.http.post<any>(this.Url + "EditStudentInGroup/" + FromDate + "/" + ToDate + "/" + UserUpdateId, StudentPerGroup);
   }
 

@@ -54,6 +54,7 @@ export class ListTaskToStudentComponent implements OnInit {
       return;
     }
     this.active.params.subscribe(c => { this.TaskExsistID = c["id"] })
+    debugger;
     this.CurrentSchool = this.schoolService.ListSchool.find(f => f.school.idschool == this.TaskExsistService.listTaskExsist.find(f => f.idexsistTask == this.TaskExsistID).schoolId)
     if (this.CurrentSchool.appYearbookPerSchools.find(f => f.idyearbookPerSchool == this.taskService.ListTask[0].yearBookId).yearbookId != this.schoolService.SelectYearbook.idyearbook)
       this.GenericFunctionService.GoBackToLastPage();

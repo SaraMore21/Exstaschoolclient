@@ -65,7 +65,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-task let-r="rowIndex">
-        <tr>
+        <tr class="tr" id="ddd"  (click)="GoToListTaskExsist(task)">
           <td>{{task.index}}</td>
           <td>{{ task.codeTask }}</td>
           <td>{{ task.name }}</td>
@@ -81,7 +81,7 @@
 
           <td style="text-align: center">
             <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
-              (click)="EditDetailsTask(task)" class="p-button-rounded p-button-text"></button>
+              (click)="EditDetailsTask(task,$event)" class="p-button-rounded p-button-text"></button>
 
             <button pButton pRipple type="button" icon="pi pi-calendar-times" tooltipPosition="top"
               pTooltip="מטלות משוייכות למטלה זו" (click)="GoToListTaskExsist(task)"
@@ -91,7 +91,7 @@
               (click)="GoToDocumentsPerTask(task)" class="p-button-rounded p-button-text"></button>
 
             <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
-              (click)="confirmDeleteFile(task)" class="p-button-rounded p-button-text"></button>
+              (click)="confirmDeleteFile(task,$event)" class="p-button-rounded p-button-text"></button>
           </td>
         </tr>
       </ng-template>

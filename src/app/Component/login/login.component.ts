@@ -63,13 +63,12 @@ this.y= x as unknown as Time;
     debugger;
     document.getElementById('user').focus();
 
-
-
   }
 
 
   //בדיקה האם קיים משתמש עם נתונים אלו
   CheckIfExsist(UserCode: string, UserPassword: string) {
+    debugger;
 
     // if(this.flag==true)
     // alert("hvfjdl");

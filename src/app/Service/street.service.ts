@@ -11,11 +11,14 @@ export class StreetService {
 
 // Url:string="api/Street/";
 Url=environment.API_ENDPOINT+"api/Street/";
-
+//  StreetsPerCity: any[] = null;
 StreetsPerCity:Array<Street>=new Array<Street>();
+
   constructor(private http:HttpClient) { }
 
   GetStreetsByCityId(cityId:number):Observable<Array<Street>>{
+    debugger;
+    console.log("🙄😀")
    return this.http.get<Array<Street>>(this.Url+"GetStreetsByCityId/"+cityId)
   }
 }

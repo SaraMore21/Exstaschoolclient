@@ -37,6 +37,7 @@ export class UserListComponent implements OnInit {
     }
     if (this.userService.ListUserByListSchoolAndYerbook == null || this.userService.ListUserByListSchoolAndYerbook.length == 0 || this.userService.YearbookIdPerUser != this.schoolService.SelectYearbook.idyearbook)
       this.GetListUsers();
+    this.exportExcelAsync()
   }
   //שליפת רשימת המשתמשים
   GetListUsers() {
@@ -57,7 +58,7 @@ export class UserListComponent implements OnInit {
     this.router.navigate(["Home/AddOrUpdateUser/" + idUser, SchoolId])
   }
   //מחיקת משתמש
-  DeletUser(user: User) {
+  DeletUser(user: User,event:Event=null) {
     debugger;
     this.confirmationService.confirm({
       message: 'האם הנך בטוח כי ברצונך למחוק משתמש זה   ?  ',
@@ -97,6 +98,8 @@ export class UserListComponent implements OnInit {
       reject: () => {
       }
     })
+    if (event!=null)
+    event.stopPropagation();
   }
 
   GoToDocumentsPerUser(user: User) {
@@ -168,16 +171,16 @@ export class UserListComponent implements OnInit {
           );
           this.excelUserList.push(
             {
-              'tz': d.tz,
-              'typeTz':'',
+              'tz': d.user!=null?d.user.tz:'',
+              'typeTz':d.user!=null?d.typeIdentityId:'',
               // 'typeTz': d.typeIdentity != null ? d.typeIdentity.name : '',
               
               // 'code': u.userCode, 'typeTz': typeIdentity != null ? typeIdentity.name : '',
-              'code': '',
+              'code':d.user!=null? d.userCode:'',
               'fname': d.firstName,
               'lname': d.lastName,
               'gender': gender!=null?gender.name:'',
-              'eBirthdate': d.birth.birthDate != null ? d.birth.birthDate : '',
+              'eBirthdate': d.birth!=null?d.birth.birthDate  : '',
             
               // 'hBirthdate': u.birthץ != null ? u.birth.birthHebrewDate : '',
               'hBirthdate': d.birth != null ? d.birth.birthHebrewDate : '',

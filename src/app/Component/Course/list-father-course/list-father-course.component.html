@@ -42,7 +42,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-course let-r="rowIndex">
-        <tr>
+        <tr class="tr" (click)="GoToListCourse(course,$event)">
           <td>{{course.index}}</td>
           <td>{{course.name}}</td>
           <td>{{course.hours}}</td>
@@ -57,13 +57,13 @@
 
           <td style="text-align: center">
             <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
-              (click)="EditDetailsFatherCrouse(course)" class="p-button-rounded p-button-text"></button>
+              (click)="EditDetailsFatherCrouse(course,$event)" class="p-button-rounded p-button-text"></button>
 
             <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
-              (click)="DeleteFatherCrouse(course)" class="p-button-rounded p-button-text"></button>
+              (click)="DeleteFatherCrouse(course,$event)" class="p-button-rounded p-button-text"></button>
 
             <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
-              (click)="GoToDocumentsPerFatherCourse(course)" class="p-button-rounded p-button-text"></button>
+              (click)="GoToDocumentsPerFatherCourse(course,$event)" class="p-button-rounded p-button-text"></button>
 
             <button pButton pRipple type="button" icon="pi pi-calendar-times" tooltipPosition="top"
               pTooltip="קורסים המשוייכים לקורס אב זה" (click)="GoToListCourse(course)"

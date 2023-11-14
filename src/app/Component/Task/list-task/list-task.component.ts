@@ -115,7 +115,7 @@ export class ListTaskComponent implements OnInit {
 
   }
 
-  EditDetailsTask(task: Task) {
+  EditDetailsTask(task: Task,event:Event=null) {
     this.taskService.ListQuestionsOfTasks = new Array<QuestionsOfTasks>();
     this.isCoordinationOrSchool = false;
     this.CurrentTask = { ...task };
@@ -165,7 +165,8 @@ export class ListTaskComponent implements OnInit {
     this.displayModal = true;
     this.IsListUserOfCoordinationCode = false;
 
-    debugger;
+    if (event!=null)
+    event.stopPropagation();
 
   }
 
@@ -192,6 +193,7 @@ export class ListTaskComponent implements OnInit {
           this.messageService.add({ severity: 'error', summary: 'ארעה תקלה', detail: 'המחיקה נכשלה ,אנא נסה שנית' });
 
         });
+    
   }
 
   //אם זו מטלה שנפתחה ע"י לקוח וגם נכנסו כעת כלקוח.
@@ -333,7 +335,7 @@ export class ListTaskComponent implements OnInit {
   }
 
   //דיאלוג לשאלה אם רוצה למחוק
-  confirmDeleteFile(task: Task) {
+  confirmDeleteFile(task: Task,event:Event) {
     debugger;
     this.confirmationService.confirm({
       message: 'האם הינך בטוח/ה כי ברצונך למחוק מטלה זו?',
@@ -354,6 +356,8 @@ export class ListTaskComponent implements OnInit {
         }
       }
     });
+    if (event!=null)
+    event.stopPropagation();
   }
 
   ChangeSchool() {

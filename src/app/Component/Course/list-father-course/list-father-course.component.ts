@@ -61,7 +61,7 @@ export class ListFatherCourseComponent implements OnInit {
     }, er => { })
   }
   //פתיחת דיאלוג עריכת קורס
-  EditDetailsFatherCrouse(course: FatherCourse) {
+  EditDetailsFatherCrouse(course: FatherCourse,event: Event=null) {
     debugger;
     this.edit = true; this.add = false;
     this.CurrentCourse = { ...course };
@@ -77,6 +77,8 @@ export class ListFatherCourseComponent implements OnInit {
     this.SelectProfession = this.professionService.ListProfessionPerS.find(f => f.idprofession == course.professionId);
 
     this.SelectLearningStyle = this.schoolService.LearningStyle.find(f => f.value == course.learningStyleId);
+    if (event!=null)
+    event.stopPropagation();
   }
   //פתיחת דיאלוג הוספת קורס אב
   AddCrouseFather() {
@@ -504,7 +506,7 @@ export class ListFatherCourseComponent implements OnInit {
     }
   }
   //מחיקת קורס אב
-  DeleteFatherCrouse(fatherCourse: FatherCourse) {
+  DeleteFatherCrouse(fatherCourse: FatherCourse,event:Event) {
     debugger;
     this.confirmationService.confirm({
       message: 'האם הנך בטוח כי ברצונך למחוק קורס אב זה   ?  ',
@@ -529,9 +531,12 @@ export class ListFatherCourseComponent implements OnInit {
       reject: () => {
       }
     });
+    if (event!=null)
+    event.stopPropagation();
   }
   //מעבר לקומפוננטה קורסים
-  GoToListCourse(fatherCourse: FatherCourse) {
+  GoToListCourse(fatherCourse: FatherCourse, event:Event=null) {
+ 
     this.router.navigate(["Home/ListCourse", fatherCourse.idcourse, fatherCourse.schoolId, fatherCourse.yearbookId])
   }
   //פתיחת דיאלוג הוספת קרוס תואם

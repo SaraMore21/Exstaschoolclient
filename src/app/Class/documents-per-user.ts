@@ -17,7 +17,8 @@ export class DocumentsPerUser {
     public uniqueCodeId?: number,
     public indexFolder?: number,
     public displayOrderNum?: number,
-    public exsistDocumentId?: number
+    public exsistDocumentId?: number,
+    public isSelected?:boolean
 
   ) { }
 }

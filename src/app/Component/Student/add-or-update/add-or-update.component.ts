@@ -1,5 +1,5 @@
 import { FilesAzureService } from "./../../../Service/files-azure.service";
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Student } from "src/app/Class/student";
 import { StudentService } from "src/app/Service/student.service";
@@ -19,6 +19,8 @@ import { ContactPerStudent } from "src/app/Class/contact-per-student";
 import { TypeContact } from "src/app/Class/type-contact";
 import { StreetService } from 'src/app/Service/street.service';
 import { GenericFunctionService } from "src/app/Service/generic-function.service";
+import { Observable } from "rxjs";
+import { Street } from "src/app/Class/street";
 
 @Component({
   selector: "app-add-or-update",
@@ -32,7 +34,6 @@ import { GenericFunctionService } from "src/app/Service/generic-function.service
 })
 export class AddOrUpdateComponent implements OnInit {
   @ViewChild("pdf") pdf2: any;
-
   //#region משתנים
   items: MenuItem[];
   cityi: any;
@@ -63,6 +64,9 @@ export class AddOrUpdateComponent implements OnInit {
   date6: Date;
   contact: any;
   blockSpecial: RegExp = /^[0-9]+$/;
+  isstreet:boolean=false;
+  // public streett :Observable<Street[]>;
+
   constructor(
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -87,7 +91,13 @@ export class AddOrUpdateComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.general = true;
+    if(this.genericFunctionService.isEdit)
+    this.general=true
+  else
+    this.general = this.genericFunctionService.studentGeneral;
+    this.contactDetails =this.genericFunctionService.studentContactDetails;
+    this.addressDetails=this.genericFunctionService.studentAddressDetails
+    this.familyDetails=this.genericFunctionService.studentFamilyDetails
     debugger;
     if (this.schoolService.ListSchool == null || this.schoolService.ListSchool.length == 0) {
       this.router.navigate(['Login']);
@@ -95,11 +105,29 @@ export class AddOrUpdateComponent implements OnInit {
     }
     if (this.studentService.YearbookIdPerStudent != this.schoolService.SelectYearbook.idyearbook)
       this.genericFunctionService.GoBackToLastPage();
-    this.general = true;
+      if(this.genericFunctionService.isEdit)
+      this.general=true
+    else
+      this.general = this.genericFunctionService.studentGeneral;
     if (this.id != 0)
       this.GetStudentDetailsByIDStudent();
     else
-      this.DetailsStudent();
+      this.DetailsStudent();   
+      // console.log('before');
+      // this.wait(7000);  //7 seconds in milliseconds
+      // console.log('after');
+      // if(this.isstreet!=true)
+      //   console.log('before');
+      // this.wait(7000);  //7 seconds in milliseconds
+      // console.log('after');
+      // console.log("street"+ this.CurrentStudent.Street);
+      // debugger
+      // this.CurrentStudent.Street = this.StreetService.StreetsPerCity.find(
+      //   (f) => f.idstreet == this.CurrentStudent.address.streetId
+      // );
+      // console.log("street"+ this.CurrentStudent.Street);
+      // debugger;
+    
     //  window.open();
   }
   GetReasonForLeavingPerSchool(){
@@ -127,6 +155,7 @@ export class AddOrUpdateComponent implements OnInit {
   }
   //פונקציה השולפת את פרטי התלמיד
   GetStudentDetailsByIDStudent() {
+    
     this.studentService.GetStudentDetailsByIDStudent(this.id).subscribe(
       (data) => {
         debugger;
@@ -138,6 +167,7 @@ export class AddOrUpdateComponent implements OnInit {
   }
   // פרטי תלמיד
   DetailsStudent() {
+    debugger;
     if (this.CurrentStudent == null) {
       this.CurrentStudent = new Student();
       this.CurrentStudent.isActive = true;
@@ -174,9 +204,17 @@ export class AddOrUpdateComponent implements OnInit {
     );
     if (this.CurrentStudent.City != null) {
       this.ChangeCity();
-      this.CurrentStudent.Street = this.StreetService.StreetsPerCity.find(
-        (f) => f.idstreet == this.CurrentStudent.address.streetId
-      );
+      // this.wait(7000);
+      debugger;
+      // this.CurrentStudent.Street = this.StreetService.StreetsPerCity.find(
+      //   (f) => f.idstreet == this.CurrentStudent.address.streetId
+      // );
+      // if (this.CurrentStudent.Street!=undefined)
+      // this.isstreet=true;
+      // console.log("isstreet"+this.isstreet)
+      // debugger;
+      // console.log("street"+ this.CurrentStudent.Street)
+      
     }
     this.CurrentStudent.Citizenship = this.schoolService.Countries.find(
       (f) => f.value == this.CurrentStudent.birth.citizenshipId
@@ -502,7 +540,17 @@ export class AddOrUpdateComponent implements OnInit {
   ChangeCity() {
     debugger;
     if ((this.StreetService.StreetsPerCity == null || this.StreetService.StreetsPerCity.length == 0 || this.StreetService.StreetsPerCity[0].cityId != this.CurrentStudent.City.value) && (this.CurrentStudent != null && this.CurrentStudent.City != null))
-      this.StreetService.GetStreetsByCityId(this.CurrentStudent.City.value).subscribe(data => { this.StreetService.StreetsPerCity = data }, er => { })
+      this.StreetService.GetStreetsByCityId(this.CurrentStudent.City.value).subscribe(data => { this.StreetService.StreetsPerCity = data 
+        this.CurrentStudent.Street = this.StreetService.StreetsPerCity.find(
+          (f) => f.idstreet == this.CurrentStudent.address.streetId
+        );
+       // this.isstreet=true;
+     // console.log("😀😀:"+ data)
+    debugger;}, er => { })
+    else if (this.CurrentStudent != null && this.CurrentStudent.City != null)
+    this.CurrentStudent.Street = this.StreetService.StreetsPerCity.find(
+      (f) => f.idstreet == this.CurrentStudent.address.streetId
+    );
   }
 
   onClose() {
@@ -542,14 +590,27 @@ export class AddOrUpdateComponent implements OnInit {
     this.addressDetails = false;
     this.contactDetails = false;
     this.familyDetails = false
+
+this.genericFunctionService.studentGeneral=true;
+
+this.genericFunctionService.studentContactDetails=false;
+this.genericFunctionService.studentAddressDetails=false
+this.genericFunctionService.studentFamilyDetails=false
   }
   //כתובת
   addressDetailsFunc() {
+    debugger;
     this.addressDetails = true;
 
     this.general = false;
     this.contactDetails = false;
     this.familyDetails = false;
+
+    this.genericFunctionService.studentAddressDetails=true;
+
+this.genericFunctionService.studentContactDetails=false;
+this.genericFunctionService.studentGeneral=false
+this.genericFunctionService.studentFamilyDetails=false
   }
   //יצירת קשר
   contactDetailsFunc() {
@@ -558,13 +619,26 @@ export class AddOrUpdateComponent implements OnInit {
     this.general = false;
     this.addressDetails = false;
     this.familyDetails = false;
+
+    this.genericFunctionService.studentContactDetails=true;
+
+this.genericFunctionService.studentGeneral=false;
+this.genericFunctionService.studentAddressDetails=false
+this.genericFunctionService.studentFamilyDetails=false
   }
   //כתובת
   AddressFunc() {
+    debugger;
     this.addressDetails = true;
     this.general = false;
     this.contactDetails = false;
     this.familyDetails = false;
+
+    this.genericFunctionService.studentAddressDetails=true;
+
+this.genericFunctionService.studentContactDetails=false;
+this.genericFunctionService.studentGeneral=false
+this.genericFunctionService.studentFamilyDetails=false
   }
   //משפחה
   familyDetailsFunc() {
@@ -573,6 +647,12 @@ export class AddOrUpdateComponent implements OnInit {
     this.contactDetails = false;
     this.general = false;
     this.addressDetails = false;
+
+    this.genericFunctionService.studentFamilyDetails=true;
+
+this.genericFunctionService.studentContactDetails=false;
+this.genericFunctionService.studentGeneral=false
+this.genericFunctionService.studentAddressDetails=false
   }
   //#endregion
 
@@ -698,4 +778,13 @@ export class AddOrUpdateComponent implements OnInit {
     this.contactService.currentStudentForContact = { ...this.CurrentStudent }
     this.router.navigate(["Home/Contacts"]);
   }
+
+
+  wait(ms){
+    var start = new Date().getTime();
+    var end = start;
+    while(end < start + ms) {
+      end = new Date().getTime();
+   }
+ }
 }

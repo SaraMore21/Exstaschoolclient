@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ElementRef, HostListener } from '@angular/core';
 import { StudentService } from 'src/app/Service/student.service'
 import { SchoolService } from 'src/app/Service/school.service';
 import { Student } from 'src/app/Class/student';
@@ -10,6 +10,7 @@ import { SelectItem } from 'primeng/api';
 import { finalize } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
 import { StreetService } from 'src/app/Service/street.service';
+import { GenericFunctionService } from 'src/app/Service/generic-function.service';
 
 @Component({
   selector: 'app-student-list',
@@ -21,12 +22,18 @@ export class StudentListComponent implements OnInit {
   selectFilter: Array<any>;
   data: Array<SelectItem>
   ADate: SelectItem
+  ddata: any[] = [];
+  page = 1; // הדף הנוכחי
+  pageSize = 10; // מספר הפריטים לכל דף
   //משתנה בוליאני לפתיחת דיאלוג הוספה או עריכה
   OpenDialogAOU: boolean = false;
+  spin:boolean=false
   excelStudentList:Array<any>=new Array<any>()
+  virtualStudents:Student[]
+  searchText:string
   constructor(public studentService: StudentService, public schoolService: SchoolService, private router: Router,
     private messageService: MessageService, private confirmationService: ConfirmationService,
-    private ngxService: NgxUiLoaderService,private StreetService:StreetService
+    private ngxService: NgxUiLoaderService,private StreetService:StreetService,private el: ElementRef,private genericFunctionService:GenericFunctionService
   ) { }
 
   ngOnInit(): void {
@@ -36,9 +43,84 @@ export class StudentListComponent implements OnInit {
       this.router.navigate(['Login']);
       return;
     }
+    this.virtualStudents = Array.from({ length: 10000 });
     if (this.studentService.ListStudent == null || this.studentService.ListStudent.length == 0 || this.studentService.YearbookIdPerStudent != this.schoolService.SelectYearbook.idyearbook)
-      this.GetListStudent();
+    
+    //this.GetListStudent();
+    this.loadPage();
+
+
   }
+  search(){
+    if(this.searchText!='' && this.searchText!=undefined)
+    this.studentService.SearchInStudentList(this.searchText,this.schoolService.SelectYearbook.idyearbook,this.schoolService.ListSchool)
+    .subscribe(data=>
+      {
+        this.studentService.ListStudent=data
+      }
+      )
+ 
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event) {
+    debugger
+    const infiniteScrollBackground = this.el.nativeElement.querySelector('.infinite-scroll-background');
+    if (infiniteScrollBackground && infiniteScrollBackground.getBoundingClientRect().bottom <= window.innerHeight) {
+      debugger
+      this.loadMoreData();
+    }
+  }
+ 
+ 
+    debugger
+
+  loadMoreData() {
+    debugger
+    this.page++;
+    this.spin=false
+    this.studentService.getData(this.page, this.pageSize,this.schoolService.SelectYearbook.idyearbook,this.schoolService.ListSchool)
+      .subscribe((result: any[]) => {
+        this.studentService.ListStudent = this.studentService.ListStudent.concat(result); 
+        if(result.length>0)     
+          this.spin=true  
+        for(let i=0;i<this.studentService.ListStudent.length;i++){
+                this.studentService.ListStudent[i].index=i+1
+              }
+      });
+  }
+
+  loadPage() {
+    debugger;
+    this.studentService.getData(this.page, this.pageSize,this.schoolService.SelectYearbook.idyearbook,this.schoolService.ListSchool)
+      .subscribe((result: any) => {
+        this.studentService.ListStudent = result;
+        this.spin=true
+        for(let i=0;i<this.studentService.ListStudent.length;i++){
+                this.studentService.ListStudent[i].index=i+1
+              }
+      });
+      this.searchText = '';
+  }
+
+
+
+
+
+  // nextPage() {
+  //   debugger
+  //   this.page++;
+  //   this.loadPage();
+  // }
+
+  // prevPage() {
+  //   debugger
+  //   if (this.page > 1) {
+  //     this.page--;
+  //     this.loadPage();
+  //   }
+  // }
+
   //שליפת התלמידים
   GetListStudent() {
     debugger
@@ -47,11 +129,16 @@ export class StudentListComponent implements OnInit {
         this.studentService.ListStudent[i].index=i+1
       }
     }, er => { debugger; console.log(er) });
+
+
+}
+
     // this.studentService.ListStudent.push(new Student(1,"123456789",1,"רחל","לוי","",new Date(),"1234",1,"","","","","","","","","",1,1,1,1,true,"","",",","","",1,new Date(),1,new Date());
-  }
+  
   //עריכת פרטי תלמיד
   EditDetailsStudent(StudentID: number) {
     debugger;
+    this.genericFunctionService.isEdit=true
     this.router.navigate(["Home/AddOrUpdateStudent/" + StudentID])
   }
   //הוספת תלמיד
@@ -60,7 +147,7 @@ export class StudentListComponent implements OnInit {
     this.router.navigate(["Home/AddOrUpdateStudent/" + 0])
   }
   //מחיקת תלמיד
-  DeletStudent(student: Student) {
+  DeletStudent(student: Student,event:Event=null) {
     debugger;
     this.confirmationService.confirm({
       message: 'האם הנך בטוח כי ברצונך למחוק תלמיד זה   ?  ',
@@ -87,7 +174,8 @@ export class StudentListComponent implements OnInit {
       reject: () => {
       }
     });
-
+    if (event!=null)
+    event.stopPropagation();
   }
 
   GoToDocumentsPerStudent(Student: Student) {

@@ -1,3 +1,31 @@
 #toast{
     margin-top: 50%;
 }
+
+.tr:hover {
+    cursor: pointer; 
+    background-color: rgb(240, 239, 239);
+  }
+  .tbl {
+    position: sticky; /* Or use 'static' if no positioning is required */
+    height: 300px; /* Set the desired height */
+    overflow: auto;
+    /* Add any additional styling to the child div as needed */
+  }
+
+  /* @keyframes p-progress-spinner-color {
+    100%,
+    0% {
+        stroke: #d62d20;
+    }
+    40% {
+        stroke: #0057e7;
+    }
+    66% {
+        stroke: #008744;
+    }
+    80%,
+    90% {
+        stroke: #ffa700;
+    } */
+/* } */

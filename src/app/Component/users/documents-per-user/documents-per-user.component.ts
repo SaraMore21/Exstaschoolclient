@@ -87,8 +87,8 @@ export class DocumentsPerUserComponent implements OnInit {
     this.DocumentPerUserService.getLstDocumentPerUser(this.SchoolId, this.UserPerSchoolId)
       .subscribe(d => {
         debugger; this.ListDocuments = d;
-          // ------------
-          this.ListDocuments = this.ListDocuments.sort((a, b) => (b[0].displayOrderNum > a[0].displayOrderNum ? -1 : 1));
+        // ------------
+        this.ListDocuments = this.ListDocuments.sort((a, b) => (b[0].displayOrderNum > a[0].displayOrderNum ? -1 : 1));
 
       },
         e => { })
@@ -149,10 +149,12 @@ export class DocumentsPerUserComponent implements OnInit {
       debugger;
       this.CurrentDocument = { ...this.CurrentDocumentsPerUser };
       let path = this.SchoolId + "-Users-" + this.UserPerSchoolId + '-';
-
+      let flag: boolean = false
       //נדרשים
-      if (this.CurrentDocumentsPerUser.requiredDocumentPerUserId != null && this.CurrentDocumentsPerUser.requiredDocumentPerUserId > 0)
+      if (this.CurrentDocumentsPerUser.requiredDocumentPerUserId != null && this.CurrentDocumentsPerUser.requiredDocumentPerUserId > 0) {
         path = path + 'r' + this.CurrentDocumentsPerUser.requiredDocumentPerUserId + "&FileName=";
+        flag = confirm("האם ברצונך להשאיר את השם של הקובץ כפי שמופיע באתר?")
+      }
       //קיימים ולא דרושים
       else
         path = path + 'd' + this.CurrentDocumentsPerUser.exsistDocumentId + "&FileName=";
@@ -161,6 +163,10 @@ export class DocumentsPerUserComponent implements OnInit {
         oldpath = this.CurrentDocumentsPerUser.path;
         pathDoc = path + index;
         this.fileD = files[index - this.CurrentDocumentsPerUser.indexFolder];
+        if (flag) {
+          const newFile = new File([this.fileD], this.CurrentDocument.name, { type: this.fileD.type });
+          this.fileD = newFile
+        }
 
         this.FilesAzureService.uploadFileToAzure(this.fileD, pathDoc, this.SchoolId)
           .subscribe(
@@ -169,19 +175,22 @@ export class DocumentsPerUserComponent implements OnInit {
               this.CurrentDocument = { ...this.CurrentDocumentsPerUser };
               this.CurrentDocument.path = d;
               this.CurrentDocument.UserId = this.UserPerSchoolId;
-              this.CurrentDocument.name = files[index - this.CurrentDocumentsPerUser.indexFolder].name;
+              if (!flag)
+                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerUser.indexFolder].name;
               this.CurrentDocument.schoolId = this.SchoolId;
 
               // שמירת סוג הקובץ
               var index2 = files[index - this.CurrentDocumentsPerUser.indexFolder].name.lastIndexOf('.')
               if (index2 > -1) {
                 this.type = files[index - this.CurrentDocumentsPerUser.indexFolder].name.substring(index2);
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerUser.indexFolder].name.substring(0, index2);
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerUser.indexFolder].name.substring(0, index2);
 
               }
               else {
                 this.type = '';
-                this.CurrentDocument.name = files[index - this.CurrentDocumentsPerUser.indexFolder].name;
+                if (!flag)
+                  this.CurrentDocument.name = files[index - this.CurrentDocumentsPerUser.indexFolder].name;
               }
               this.CurrentDocument.type = this.type;
 
@@ -458,6 +467,7 @@ export class DocumentsPerUserComponent implements OnInit {
     }
 
   }
+
 
   // //העלאת קבצים והחלפת קבצים
   // uploadDocument(files: FileList, IsFolder: boolean = false) {
@@ -820,8 +830,8 @@ export class DocumentsPerUserComponent implements OnInit {
   //הורדת כל הקבצים מתיקיה
   DownloadFewDoc(docs: DocumentsPerUser[]) {
     docs.forEach(doc => {
-
-      this.DownloadDoc(doc);
+      if (doc.isSelected)
+        this.DownloadDoc(doc);
       debugger;
       // this.FilesAzureService.DownloadFileFromAzure(doc.path).subscribe(response => {
       //   debugger;
@@ -844,13 +854,19 @@ export class DocumentsPerUserComponent implements OnInit {
       // });
     })
   }
-
+  // הורדת כל התיקייה
+  DownloadallDoc(docs: DocumentsPerUser[]) {
+    docs.forEach(doc => {
+      this.DownloadDoc(doc);
+      debugger;
+    })
+  }
   //מחיקת קובץ
   DeleteDoc(doc: DocumentsPerUser, IsFolder: boolean = false) {
     debugger;
 
-  // ------------
-  var path;
+    // ------------
+    var path;
     path = doc.path;
 
 
@@ -961,9 +977,9 @@ export class DocumentsPerUserComponent implements OnInit {
         }
         this.ngxService.stop();
         this.messageService.add({ key: 'tc', severity: 'info', summary: '', detail: 'הקבצים נמחקו בהצלחה' });
-          // ------------
-          this.ListDocuments = this.ListDocuments.sort((a, b) => (b[0].displayOrderNum > a[0].displayOrderNum ? -1 : 1));
-          //מחיקת הקבצים מאזור
+        // ------------
+        this.ListDocuments = this.ListDocuments.sort((a, b) => (b[0].displayOrderNum > a[0].displayOrderNum ? -1 : 1));
+        //מחיקת הקבצים מאזור
         docs.forEach(doc => {
           debugger;
           this.FilesAzureService.DeleteFileFromAzure(doc.path).subscribe(response => {
@@ -1011,6 +1027,49 @@ export class DocumentsPerUserComponent implements OnInit {
       }
     });
   }
+
+  confirmFiles(docs: DocumentsPerUser[], IsFolder: boolean = true) {
+    let count = 0
+    docs.forEach(doc => {
+      if (doc.isSelected) {
+        count++
+      }
+    })
+    if (count > 0) {
+      this.confirmationService.confirm({
+        message: 'האם הינך בטוח/ה כי ברצונך למחוק קבצים אלו לצמיתות?',
+        header: 'אזהרה',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: ' מחק',
+        rejectLabel: ' ביטול',
+        accept: () => {
+          if (count == docs.length)
+            this.DeleteFewDoc(docs)
+          else
+            docs.forEach(doc => {
+              if (doc.isSelected)
+                this.DeleteDoc(doc, IsFolder);
+            }
+            )
+
+        },
+        reject: (type) => {
+          debugger;
+          switch (type) {
+            case ConfirmEventType.REJECT || ConfirmEventType.CANCEL:
+              this.messageService.add({ severity: 'error', summary: 'בוטל', detail: 'המחיקה בוטלה' });
+              break;
+
+          }
+        }
+      });
+    }
+    else
+      this.messageService.add({ severity: 'error', summary: 'אין אפשרות למחוק', detail: ' לא נבחרו קבצים' });
+  }
+
+
+
 
   //דיאלוג לשאלה אם רוצה למחוק קובץ
   confirmDeleteFile(doc: DocumentsPerUser, IsFolder: boolean = false) {
@@ -1082,8 +1141,44 @@ export class DocumentsPerUserComponent implements OnInit {
 
   //בדיקה האם כל הקבצים בתיקיה נפתחו ע"י המשתמש הנוכחי
   isAllFilesOpenByThisUser(doc: DocumentsPerUser[]) {
+    if (doc.length == 0)
+      return true
     let index = doc.findIndex(f => f.userCreatedId != this.SchoolService.ListSchool[0].userId)
     return (index != null && index > -1);
+  }
+  isFilesSelected(doc: DocumentsPerUser[]) {
+    let flag = false;
+    doc.forEach(d => {
+      if (d.isSelected)
+        flag = true;
+    })
+    return !flag
+  }
+  isFilesSelectedOpenByThisUser(doc: DocumentsPerUser[]) {
+    let selectedDocs = new Array<DocumentsPerUser>()
+    doc.forEach(
+      d => {
+        if (d.isSelected)
+          selectedDocs.push(d)
+      }
+    )
+    return this.isAllFilesOpenByThisUser(selectedDocs)
+  }
+
+  chooseAll(docs: DocumentsPerUser[], event: any) {
+
+    if (event.checked)
+      docs.forEach(
+        doc =>
+          doc.isSelected = true
+      )
+    else
+
+      docs.forEach(
+        doc =>
+          doc.isSelected = false
+      )
+
   }
 
   largeFileUpload(event: any) {
@@ -1107,6 +1202,37 @@ export class DocumentsPerUserComponent implements OnInit {
     this.CurrentDocumentsPerUser.indexFolder = 0;
     this.displayDialog = true;
     this.filesLst = null;
+  }
+
+
+  onDrop(event: any) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    this.confirmationService.confirm({
+      message: 'האם ברצונך להעלות את הקבצים שנבחרו למיקום זה?',
+      header: 'אזהרה',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: ' העלאה',
+      rejectLabel: ' ביטול',
+      accept: () => {
+        this.CurrentDocumentsPerUser = new DocumentsPerUser();
+    this.CurrentDocumentsPerUser.schoolId = this.SchoolId;
+    this.CurrentDocumentsPerUser.UserId = this.UserPerSchoolId;
+    this.CurrentDocumentsPerUser.indexFolder = 0;
+        this.filesLst = null;
+        
+        
+        this.setFiles(files);
+        this.GetIdExsistDocument()
+      },
+      reject: (type) => {
+        
+      }
+    });
+  }
+
+  onDragOver(event: any) {
+    event.preventDefault();
   }
 
   //מחיקת קובץ מהרשימה שרוצים להעלות בתוך קובץ חדש ולא דרוש
@@ -1134,8 +1260,11 @@ export class DocumentsPerUserComponent implements OnInit {
       data => {
         if (data != undefined && data > 0)
           this.CurrentDocumentsPerUser.exsistDocumentId = data;
+        if (this.CurrentDocumentsPerUser.name == undefined && this.filesLst != undefined && this.filesLst.length > 1) {
+          let name = prompt("הכנס שם תיקיה", "לא נבחר שם")
+          this.CurrentDocumentsPerUser.name = name;
+        }
         this.CurrentDocumentsPerUser.folderName = this.CurrentDocumentsPerUser.name;
-
         this.uploadDocument(this.filesLst, true, false);
 
       },
@@ -1145,4 +1274,5 @@ export class DocumentsPerUserComponent implements OnInit {
       }
     );
   }
+
 }

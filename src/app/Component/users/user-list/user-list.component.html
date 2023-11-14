@@ -41,7 +41,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-user let-r="rowIndex">
-        <tr>
+        <tr class="tr" (click)="EditDetailsUser(user.iduser,user.schoolId)">
           <td>{{user.index}}</td>
           <td>{{user.tz}}</td>
           <td>{{user.lastName}}</td>
@@ -56,7 +56,7 @@
               <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
               (click)="GoToDocumentsPerUser(user)" class="p-button-rounded p-button-text"></button>
 
-            <button pButton pRipple type="button" icon="pi pi-trash" (click)="DeletUser(user)"
+            <button pButton pRipple type="button" icon="pi pi-trash" (click)="DeletUser(user,$event)"
               class="p-button-rounded p-button-text"></button>
           </td>
         </tr>

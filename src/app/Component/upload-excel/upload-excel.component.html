@@ -2,15 +2,15 @@
   <div class="row" >
 
   <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-    <!-- מוסד -->
-    <div *ngIf="this.schoolService.ListSchool!= undefined && this.schoolService.ListSchool.length!=1">
-      <label class="w3-text-grey">מוסד</label><br>
-      <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
-        optionLabel="school.name" placeholder="בחר מוסד" filter="true" [style]="{ width: '29%' }"
-        [(ngModel)]="CurrentSchool" required emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
-        emptyMessage="אין נתונים קיימים"></p-dropdown>
-    </div>
-
+    
+<!-- מוסד -->
+<div *ngIf="this.schoolService.ListSchool!= undefined && this.schoolService.ListSchool.length!=1">
+  <label class="w3-text-grey">מוסד</label><br>
+  <p-dropdown dir="rtl" name="School" id="School" #School="ngModel" [options]="schoolService.ListSchool"
+    optionLabel="school.name" placeholder="בחר מוסד" filter="true" [style]="{ width: '29%' }"
+    [(ngModel)]="CurrentSchool" required emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש"
+    emptyMessage="אין נתונים קיימים"></p-dropdown>
+</div>
     <label class="w3-text-grey">טבלאות להעלאה</label><br>
     <p-multiSelect name="ttables" [style]="{ width: '29%' }" [options]="optionalTables2" [(ngModel)]="tablesToRead"
       defaultLabel="בחר טבלה להעלאה" (onChange)="IsSchedule()"></p-multiSelect>
@@ -43,7 +43,7 @@
       <div>
         <!-- style=" width: 100%; place-content: center" -->
         <label class="w3-text-grey">האם זו מערכת חדשה?</label><br />
-        <p-toggleButton [(ngModel)]="IsNew" onIcon="pi pi-check" offIcon="pi pi-times" name="isActive">
+        <p-toggleButton [(ngModel)]="IsNew" onIcon="pi-check" offIcon="pi pi-times" name="isActive">
         </p-toggleButton>
       </div>
 
@@ -52,7 +52,7 @@
 
       <div *ngIf="IsScheduleDis==true && IsNew == false">
         <label class="w3-text-grey">במידה וקיימים נתונים חופפים, האם לדרוס??</label><br />
-        <p-toggleButton onIcon="pi pi-check" offIcon="pi pi-times" name="isActive" [(ngModel)]="IsOverride">
+        <p-toggleButton onIcon="pi-check" offIcon="pi pi-times" name="isActive" [(ngModel)]="IsOverride">
         </p-toggleButton>
       </div>
 
@@ -85,7 +85,18 @@
     <button pButton pRipple type="button" label="העלאה" class="p-button-rounded" (click)="UploadExcelFile()"
       [disabled]="fileToUpload== undefined|| isDisable||tablesToRead.length==0||CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null||CurrentSchool.school.idschool==0"></button>
 
-  </div>
+      <div>
+        <label class="w3-text-grey">טבלאות להורדה</label><br>
+        <p-multiSelect name="ttables" [style]="{ width: '29%' }" [options]="optionalTables4" [(ngModel)]="tablesToDownload"
+          defaultLabel="בחר טבלה להורדה"></p-multiSelect>
+        <br><br>
+        <button pButton pRipple type="button" label="הורדה" class="p-button-rounded" (click)="DownloadExcelFile()"
+          [disabled]="tablesToDownload== undefined ||tablesToDownload.length==0 || CurrentSchool==null||CurrentSchool.school==null||CurrentSchool.school.idschool==null||CurrentSchool.school.idschool==0"></button>
+      </div>
+ 
+    </div>
+   
+    
   <!-- <div class="col-md-4">
     <span class="upload" *ngIf="progress > 0"> {{ progress }}% </span>
     <span class="upload" *ngIf="message">
@@ -93,14 +104,9 @@
     </span>
   </div> -->
   <br>
-  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-    <label class="w3-text-grey">טבלאות להורדה</label><br>
-    <p-multiSelect name="ttables" [style]="{ width: '29%' }" [options]="optionalTables4" [(ngModel)]="tablesToDownload"
-      defaultLabel="בחר טבלה להורדה"></p-multiSelect>
-    <br><br>
-    <button pButton pRipple type="button" label="הורדה" class="p-button-rounded" (click)="DownloadExcelFile()"
-      [disabled]="tablesToDownload== undefined ||tablesToDownload.length==0"></button>
-  </div>
+
+  
+
 </div>
 
 </div>
@@ -117,4 +123,6 @@
 <a id="2" href="../../../assets/Excel/משתמשים.xlsx" target="_self" download></a>
 <a id="1" href="../../../assets/Excel/תלמידים.xlsx" target="_self" download></a>
 
-<!-- <button (click)="downloadExcel()">export excel </button> -->
+
+
+
