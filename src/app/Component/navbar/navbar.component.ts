@@ -41,7 +41,12 @@ export class NavbarComponent implements OnInit {
       { label: ' מערכת יומית ', icon: '', routerLink: '/Home/DailySchedule' },
       { label: ' מערכת שעות ', icon: '', routerLink: '/Home/RegularSchedule' },
       { label: ' תמיכה ', icon: '', routerLink: '/Home/Support' },
-      { label: ' נוכחות ', icon: 'pi pi-check-square', routerLink: '/Home/DailyAttendanceForGroup' }
+      { label: ' נוכחות ', icon: 'pi pi-check-square', routerLink: '/Home/DailyAttendanceForGroup' },
+      { label: ' מחולל הדוחות ', icon: 'pi pi-book', routerLink: '/Home/ReportGenerator' },
+      { label: 'עדכון נוכחות לתלמידה מתאריך עד תאריך', icon: 'pi pi-check-square', routerLink: '/Home/PrecentByStudentFromDateTODAte' },
+
+      // { label: ' הגדרות כלליות למוסד ', icon: 'pi pi-book', routerLink: 'GeneralSettings' }
+      
       // { label: ' נוכחות יומית לקבוצה ', icon: '', routerLink: '/Home/DailyAttendanceForGroup' },
       // { label: 'לוח מודעות',icon:'',routerLink: 'BulletinBoard'},
     ]

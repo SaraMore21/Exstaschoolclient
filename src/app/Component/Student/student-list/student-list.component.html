@@ -16,16 +16,29 @@
         (click)="sendToExportExcel()"
         icon="pi pi-file-excel"
         class=" p-button-outline p-button-success"></p-button>
-        <span class="p-input-icon-left">
-          <i class="pi pi-search" ></i>
+        <span class="p-input-icon-left" style="position: relative;">
+          <i class="pi pi-search" style="position: absolute; right: 8px; bottom: 100%; transform: translateY(50%);"></i>
           <input pInputText type="text" [(ngModel)]="searchText"
             placeholder="חיפוש" />
+            
             <button pButton type="button" (click)="search()">חפש</button>
             <button pButton type="button" (click)="loadPage()">הצג הכל</button>
-         
+            <!-- <div>
            
+              <select (change)="onOptionChange()">
+                <option *ngFor="let option of optionsToMoreDetailes"  [(ngModel)]="option.value" [value]="option.value">{{ option.label }}</option>
+              </select>
+            </div> -->
+
             <!-- (input)="tb.filterGlobal($event.target.value, 'contains')" -->
         </span>
+        
+        <div>
+             
+          <p-multiSelect name="ttables" [style]="{ width: '30%' }" [options]="optionsToMoreDetailes" (onChange)="setDisplayValue($event.value)" [(ngModel)]="detailesToDisplay"
+            defaultLabel="בחר נתונים נוספים להצגה" ></p-multiSelect>
+          
+        </div>
       </ng-template>
       <ng-template pTemplate="header">
         <tr> 
@@ -40,8 +53,83 @@
           </th>
           <th pSortableColumn="schoolName">השלמת רישום <p-sortIcon field="schoolName"></p-sortIcon>
           </th>
-          <th pSortableColumn="schoolName">... <p-sortIcon field="schoolName"></p-sortIcon>
-          </th>
+            <th *ngIf="detailsOptions.typeidentity" pSortableColumn="schoolName">סוג זיהוי <p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.code" pSortableColumn="schoolName">קוד נבחנת <p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.preName" pSortableColumn="schoolName">שם קודם <p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.foreignLastName" pSortableColumn="schoolName">שם ממשפחה לועזי <p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.foreignFirstName" pSortableColumn="schoolName">שם פרטי לועזי <p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.gender" pSortableColumn="schoolName">מין<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.citizenship" pSortableColumn="schoolName">אזרחות<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.birthDate" pSortableColumn="schoolName">תאריך לידה<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.birtheCountry" pSortableColumn="schoolName">ארץ לידה<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.imigrationCountry" pSortableColumn="schoolName">ארץ עליה<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.imigrationDate" pSortableColumn="schoolName">תאריך עליה<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.fatherTz" pSortableColumn="schoolName">מ.ז אב<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.fatherTypeIdentity" pSortableColumn="schoolName">סוג זיהוי אב<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.motherTz" pSortableColumn="schoolName">מ.ז אם<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.motherTypeIdentit" pSortableColumn="schoolName">סוג זיהוי אם<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.field1" pSortableColumn="schoolName">ציון מבחן תיל<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.field2" pSortableColumn="schoolName">שדה 2<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.field3" pSortableColumn="schoolName">שדה 3<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.field4" pSortableColumn="schoolName">שדה 4<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.field5" pSortableColumn="schoolName">שדה 5<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.status" pSortableColumn="schoolName"> סטטוס<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.studentStatus" pSortableColumn="schoolName"> סטטוס תלמיד<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.isActive" pSortableColumn="schoolName"> ?פעיל<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.city" pSortableColumn="schoolName"> עיר<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.houseNum" pSortableColumn="schoolName">מספר בית <p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.aptNum" pSortableColumn="schoolName"> מספר דירה<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.zip" pSortableColumn="schoolName"> מיקוד<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.poBox" pSortableColumn="schoolName"> תיבת דואר<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.phone1" pSortableColumn="schoolName"> טלפון 1<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.phone2" pSortableColumn="schoolName"> טלפון 2<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.cell1" pSortableColumn="schoolName"> פלאפון 1<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.cell2" pSortableColumn="schoolName"> פלאפון 2<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.cell3" pSortableColumn="schoolName"> פלאפון 3<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.fax" pSortableColumn="schoolName"> פקס<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.mail" pSortableColumn="schoolName"> מייל<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+            <th *ngIf="detailsOptions.passportPicture" pSortableColumn="schoolName"> תמונת פספורט<p-sortIcon field="schoolName"></p-sortIcon></th>
+
+         
+
+
+
+
           <!-- <th pSortableColumn="TelephoneNumber1">טלפון <p-sortIcon field="TelephoneNumber1"></p-sortIcon></th> -->
 
           <th></th>
@@ -54,6 +142,8 @@
           <td>{{student.lastName}}</td>
           <td>{{student.firstName}}</td>
           <td>{{student.schoolName}}</td>
+
+          
           <td>
             <i *ngIf="student.numExsistRequiredPerStudent>=student.numRequiredPerStudent" class="pi pi-check"></i>
             <i *ngIf="!(student.numExsistRequiredPerStudent>=student.numRequiredPerStudent)" class="pi pi-times"></i>
@@ -63,11 +153,6 @@
               [disabled]="true">
             </p-inputSwitch> -->
           </td>
-          <td>
-           
-            <p-dropdown [options]="yourOptions" [(ngModel)]="student.selectedOption"></p-dropdown>
-          </td>
-          <!-- <td>{{student.TelephoneNumber1}}</td> -->
           <td style="text-align: center">
             <button pButton pRipple type="button" tooltipPosition="top" icon="pi pi-pencil" pTooltip="עריכה"
               (click)="EditDetailsStudent(student.idstudent)" class="p-button-rounded p-button-text"></button>
@@ -89,6 +174,78 @@
                   class="p-button-rounded p-button-text"
                 ></button> -->
           </td>
+          <td *ngIf="detailsOptions.typeidentity">{{ student.identityType }}</td>
+
+          <td *ngIf="detailsOptions.code">{{ student.code }}</td>
+
+          <td *ngIf="detailsOptions.preName">{{ student.previusName }}</td>
+
+          <td *ngIf="detailsOptions.foreignLastName">{{ student.foreignLastName }}</td>
+
+          <td *ngIf="detailsOptions.foreignFirstName">{{ student.foreignFirstName }}</td>
+
+          <td *ngIf="detailsOptions.gender">{{ student.gender }}</td>
+
+          <td *ngIf="detailsOptions.citizenship">{{ student.citizenship }}</td>
+
+          <td *ngIf="detailsOptions.birthDate">{{ student.birtheDate }}</td>
+
+          <td *ngIf="detailsOptions.birtheCountry">{{ student.birtheCountry }}</td>
+
+          <td *ngIf="detailsOptions.imigrationCountry">{{ student.imigrationCountry }}</td>
+
+          <td *ngIf="detailsOptions.imigrationDate">{{ student.imigrationDate }}</td>
+
+          <td *ngIf="detailsOptions.fatherTz">{{ student.fatherTz  }}</td>
+
+          <td *ngIf="detailsOptions.fatherTypeIdentity">{{ student.fatherTypeIdentity }}</td>
+
+          <td *ngIf="detailsOptions.field1">{{ student.field1 }}</td>
+
+          <td *ngIf="detailsOptions.field2">{{ student.field2 }}</td>
+
+          <td *ngIf="detailsOptions.field3">{{ student.field3 }}</td>
+
+          <td *ngIf="detailsOptions.field4">{{ student.field4 }}</td>
+
+          <td *ngIf="detailsOptions.field5">{{ student.field5 }}</td>
+
+          <td *ngIf="detailsOptions.status">{{ student.status }}</td>
+
+          <td *ngIf="detailsOptions.studentStatus">{{ student.studentStatus }}</td>
+
+          <td *ngIf="detailsOptions.isActive">{{ student.isActive }}</td>
+
+          <td *ngIf="detailsOptions.city">{{ student.city }}</td>
+
+          <td *ngIf="detailsOptions.houseNum">{{ student.houseNum }}</td>
+
+          <td *ngIf="detailsOptions.aptNum">{{ student.aptNum }}</td>
+
+          <td *ngIf="detailsOptions.zip">{{ student.zip }}</td>
+
+          <td *ngIf="detailsOptions.poBox">{{ student.poBox }}</td>
+
+          <td *ngIf="detailsOptions.phone1">{{ student.phone1 }}</td>
+
+          <td *ngIf="detailsOptions.phone2">{{ student.phone2 }}</td>
+
+          <td *ngIf="detailsOptions.cell1">{{ student.cell1 }}</td>
+
+          <td *ngIf="detailsOptions.cell2">{{ student.cell2 }}</td>
+
+          <td *ngIf="detailsOptions.cell3">{{ student.cell3 }}</td>
+
+          <td *ngIf="detailsOptions.fax">{{ student.fax }}</td>
+
+          <td *ngIf="detailsOptions.mail">{{ student.mail }}</td>
+
+          <td *ngIf="detailsOptions.passportPicture">{{ student.passportPicture }}</td>
+
+
+       
+          <!-- <td>{{student.TelephoneNumber1}}</td> -->
+        
         </tr>
       </ng-template>
    

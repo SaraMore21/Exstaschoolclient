@@ -199,6 +199,7 @@ export class EditDailyScheduleComponent implements OnInit {
             }
           )
           var user= this.dailyScheduleService.currentDailySchedule.userCreatedId
+          
           this.presentService.addOrUpdateAttendance(new Date(scheduleDate),user,listPresence)
           .subscribe(
             d=>{},e=>{}

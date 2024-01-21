@@ -71,7 +71,8 @@ export class ListCourseComponent implements OnInit {
   CurrentFatherCourse: FatherCourse;
   schoolId: number;
   YearbookPerSchool: number = 0;
-  IsAddCoordinationsCode: boolean = false
+  IsAddCoordinationsCode: boolean = false;
+  FatherCourseName:string;
 
   //אוביקט לשמירת הקוד תאום הנבחר
   CoordinationCode: string = '';
@@ -104,6 +105,7 @@ export class ListCourseComponent implements OnInit {
     this.active.params.subscribe(c => { this.FatherCourseId = c["FatherCourseId"] })
     this.active.params.subscribe(c => { this.schoolId = c["schoolId"] })
     this.active.params.subscribe(c => { this.YearbookPerSchool = c["YearbookPerSchool"] })
+    this.active.params.subscribe(c => { this.FatherCourseName = c["name"] })
 
 
     this.CurrentFatherCourse = this.fatherCourseService.ListFatherCourse.find(f => f.idcourse == this.FatherCourseId);

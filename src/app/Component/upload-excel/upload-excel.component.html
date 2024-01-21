@@ -87,7 +87,7 @@
 
       <div>
         <label class="w3-text-grey">טבלאות להורדה</label><br>
-        <p-multiSelect name="ttables" [style]="{ width: '29%' }" [options]="optionalTables4" [(ngModel)]="tablesToDownload"
+        <p-multiSelect name="ttables" [style]="{ width: '29%' }"  [options]="optionalTables4" [(ngModel)]="tablesToDownload"
           defaultLabel="בחר טבלה להורדה"></p-multiSelect>
         <br><br>
         <button pButton pRipple type="button" label="הורדה" class="p-button-rounded" (click)="DownloadExcelFile()"

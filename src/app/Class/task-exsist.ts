@@ -24,7 +24,9 @@ export class TaskExsist extends Indexer {
     public courseId?: number,
     public courseName?: string,
     public coordinatorName?: string,
-    public percentsCourse ?:number
+    public percentsCourse ?:number,
+    public groupName ?:string
+    
 
   ) {super()
 

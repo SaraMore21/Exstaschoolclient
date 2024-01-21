@@ -37,6 +37,9 @@ import { SupportComponent } from './Component/support/support.component';
 import { BulletinBoardComponent } from './Component/bulletin-board/bulletin-board.component';
 import { DailyAttendanceForGroupComponent } from './Component/Attendance/daily-attendance-for-group/daily-attendance-for-group.component';
 import { PresencePerGroupComponent } from './Component/Presence/presence-per-group/presence-per-group.component';
+import { GeneralSettingComponent } from './Component/general-setting/general-setting.component';
+import { ReportGeneratorComponent } from './Component/report-generator/report-generator.component';
+import { PrecentByStudentFromDateTODAteComponent } from './Component/precent-by-student-from-date-todate/precent-by-student-from-date-todate.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'Login', pathMatch: 'full' },
@@ -68,7 +71,7 @@ const routes: Routes = [
       { path: 'DocumentPerProfession/:id/:schoolId/:uniqueCodeID', component: DocumentsPerProfessionComponent },
       { path: 'Professions', component: ProfessionListComponent },
       { path: 'Contacts', component: ContactsComponent },
-      { path: 'ListCourse/:FatherCourseId/:schoolId/:YearbookPerSchool', component: ListCourseComponent },
+      { path: 'ListCourse/:FatherCourseId/:schoolId/:YearbookPerSchool/:name', component: ListCourseComponent },
       { path: 'GroupPerStudent/:StudentId/:SchoolId', component: GroupPerStudentComponent },
       { path: 'EditDailySchedule', component: EditDailyScheduleComponent },
       { path: 'DailySchedule', component: DailyScheduleComponent },
@@ -76,10 +79,16 @@ const routes: Routes = [
       { path: 'Support', component: SupportComponent },
       { path: 'BulletinBoard',component:BulletinBoardComponent},
       { path: 'DailyAttendanceForGroup',component:DailyAttendanceForGroupComponent},
-      { path: 'Presence',component:PresencePerGroupComponent}
+      { path: 'Presence',component:PresencePerGroupComponent},
+      { path: 'GeneralSettings',component:GeneralSettingComponent},
+      { path: 'ReportGenerator',component:ReportGeneratorComponent},
+      { path: 'PrecentByStudentFromDateTODAte',component:PrecentByStudentFromDateTODAteComponent },
+      
     ]
   },
 ];
+
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -123,7 +123,9 @@ export class ScheduleRegularComponent implements OnInit {
       gregorian: (this.calendar as NgbCalendarHebrew).toGregorian(date),
     };
   }
-
+  compareArrays(array1: any[], array2: any[]): number {
+    // לדוגמה, נמיין לפי ה-property1 של האובייקט הראשון במערך
+    return array1[0].dayOfWeek - array2[0].dayOfWeek;}
   open() {
     if (this.model != undefined) {
       this.a = new NgbDate(this.model.year, this.model.month, this.model.day);
@@ -140,9 +142,11 @@ export class ScheduleRegularComponent implements OnInit {
           data => {
             debugger
             this.regularScheduleService.listRegularSchedulePerGroup = data;
+            this.regularScheduleService.listRegularSchedulePerGroup.sort(this.compareArrays)
+            console.log(data);
             this.listWeek = new Array<Array<ScheduleRegular>>();
             this.listLength = new Array<any>();
-            console.log(data);
+            console.log(this.regularScheduleService.listRegularSchedulePerGroup);
             debugger
             let list: Array<ScheduleRegular> = new Array<ScheduleRegular>()
             let num = 1
@@ -201,9 +205,13 @@ export class ScheduleRegularComponent implements OnInit {
 
   getListFullWithSpaces(list: Array<ScheduleRegular>) {
     debugger;
+    let i =0
     let arr: Array<ScheduleRegular> = new Array<ScheduleRegular>()
+    while(list[0].numLesson>i){
+    arr.push(null)
+  i++}
     arr.push(list[0])
-    let dsP, dsC;
+    let dsP, dsC,def;
     for (let i = 1; i < list.length; i++) {
 
       dsP = list[i - 1].endTime.split(":");
@@ -212,11 +220,18 @@ export class ScheduleRegularComponent implements OnInit {
       let previous = Number(dsP[0] * 60) + Number(dsP[1]);
       console.log("previous:" + previous);
 
-      let current = Number(dsC[0] * 60) + dsC[1];
+      let current = Number(dsC[0] * 60) + Number(dsC[1]);
       console.log("current:" + current);
-
+      
       if (current - previous >= 45) {
-        arr.push(null)
+        def= Math.trunc((current - previous)/45)
+        console.log("def" + def);
+      
+        while(def>0){
+          arr.push(null)
+          def--
+        }
+
       }
       arr.push(list[i])
     }

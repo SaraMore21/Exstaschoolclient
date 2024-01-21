@@ -63,7 +63,7 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
     this.optionalTables = ["תלמידים", "משתמשים", "מקצועות", "שיוך תלמיד קבוצה", "אנשי קשר", "קבוצות לימוד", "מערכת קבועה","שעות שיעורים לקבוצה","קורסי אב","קורסים"].sort();
     this.optionalTables.forEach(tbl => this.optionalTables2.push({ label: tbl, value: tbl }));
 
-    this.optionalTables3 = ["תלמידים", "משתמשים", "קבוצות לימוד", "אנשי קשר" ,"נתוני בסיס","מקצועות","קורסי אב","קורסים"];
+    this.optionalTables3 = ["תלמידים", "משתמשים", "קבוצות לימוד", "אנשי קשר" ,"נתוני בסיס","מקצועות","קורסי אב","קורסים","מערכת קבועה"];
     let i = 1;
     this.optionalTables3.forEach(tbl => { this.optionalTables4.push({ label: tbl, value: i.toString() }); i++; });
 
@@ -148,7 +148,7 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
   }
 
   IsSchedule() {
-    // debugger;
+    debugger;
     if (this.tablesToRead.findIndex(f => f == "מערכת קבועה") != -1)
       this.IsScheduleDis = true;
     else
@@ -267,6 +267,7 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
   //   }
 
   DownloadExcelFile() {
+    debugger;
      this.tablesToDownload.forEach(f => {
       // debugger;
       // var a = document.getElementById(f);
@@ -297,6 +298,20 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
             const a = document.createElement('a');
             a.href = url;
             a.download = 'קורסים.xlsx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+          }
+          )
+          break;
+          case "9":
+          this.ExcelService.downloadScheduleRegularExcel(this.CurrentSchool.school.idschool,this.schoolService.SelectYearbook.idyearbook)
+         // .subscribe(d=>{alert("הקובץ נשלח בהצלחה למייל שהוזן")})
+          .subscribe((data: Blob) => {
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'מערכת  קבועה.xlsx';
             a.click();
             window.URL.revokeObjectURL(url);
           }

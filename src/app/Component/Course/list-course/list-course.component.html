@@ -1,6 +1,6 @@
 <div class="card row">
 
-  <h1 style="text-align: center;">קורסים</h1>
+  <h1 style="text-align: center;">קורסים :    {{FatherCourseName}}</h1>
   <div style="text-align-last: center;">
     <p-table #tb [value]="ListCourse" dir="rtl" [filterDelay]="0" [scrollable]="true" scrollHeight="100vh"
       [globalFilterFields]="['index','groupName','semesterName','fromDate','code']">
@@ -9,7 +9,7 @@
           <button pButton label="הוספת קורס" (click)="AddCrousePerGroup()"></button>
 
 
-
+ 
 
 
 
@@ -95,7 +95,7 @@
     placeholder="בחר שם קבוצה" [(ngModel)]="SelectGroup" [style]="{ width: '100%' }" filter="true" [disabled]="edit"
     appendTo="body">
   </p-dropdown> -->
-  <p-dropdown [(ngModel)]="SelectGroup" filter="true" filterBy="nameGroup,lastName,firstName"
+  <p-dropdown [(ngModel)]="SelectGroup" filter="true" filterBy="group.nameGroup,group.ageGroupName"
   [options]="groupService.ListGroupPerSY" placeholder="בחר קבוצה" [disabled]="edit" appendTo="body"
   [style]="{ width: '100%' }" 
   emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">

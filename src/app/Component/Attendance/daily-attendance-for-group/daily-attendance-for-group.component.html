@@ -74,9 +74,9 @@
  
   <p-dialog [modal]="true"   [(visible)]="edit"  >
     <h5>נוכחות</h5>
-    <div class="p-field-radiobutton" *ngFor="let i of presenceTypeService.ListPresenceType">
-      <p-radioButton name="p" value="{{i.idtypePresence}}" [(ngModel)]="selectedTypePresenceId"></p-radioButton>
-      <label>{{i.typePresenceDes}}</label>
+    <div class="p-field-radiobutton" *ngFor="let i of attendanceMarkingService.ListAttendanceMarking">
+      <p-radioButton name="p" value="{{i.idattendanceMarkings}}" [(ngModel)]="selectedTypePresenceId"></p-radioButton>
+      <label>{{i.markingName}}</label>
     </div>
 
 
@@ -127,6 +127,7 @@
         <th pSortableColumn="index"> # <p-sortIcon field="index"></p-sortIcon></th>
         <th pSortableColumn="nameStudent">שם התלמידה<p-sortIcon field="nameStudent"></p-sortIcon></th>
          <th *ngFor="let item of lLesson;let i=index">
+          <input type="checkbox" [ngStyle]="{'background-color': 'yellow' }" />
 
           {{item.lessonName}}
           <br>
@@ -167,11 +168,10 @@
 
           
 
-
+         
 
 
         </td>
-
 
       </tr>
 

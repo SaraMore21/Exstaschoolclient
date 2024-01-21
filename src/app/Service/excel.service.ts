@@ -57,4 +57,10 @@ export class ExcelService {
   const headers = new HttpHeaders({ 'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   return this.http.get<any>(this.Url+"downloadCourseExcel/"+idschool+"/"+idyearbook,{ headers, responseType: 'blob' as 'json' })
  }
+ 
+ downloadScheduleRegularExcel(idschool:string,idyearbook:number):Observable<any>{
+  //const headers = new HttpHeaders().set('Content-Type', 'text/plain; charset=utf-8');
+  const headers = new HttpHeaders({ 'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return this.http.get<any>(this.Url+"downloadScheduleRegularExcel/"+idschool+"/"+idyearbook,{ headers, responseType: 'blob' as 'json' })
+ }
 }

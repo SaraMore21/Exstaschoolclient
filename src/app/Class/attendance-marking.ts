@@ -9,5 +9,6 @@ export class AttendanceMarking {
         public  dateCreated ?:Date,
         public  userUpdatedId ?:number,
         public  dateUpdated ?:Date,
+        public  groupId ?:number,
     ){}
 }

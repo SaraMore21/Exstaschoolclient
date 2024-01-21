@@ -8,6 +8,8 @@ export class Lesson
         public isChanges?:boolean, 
         public teacherId?:number, 
         public lessonNumber?:number ,
-        public lessonName?:string
+        public lessonName?:string,
+        public isSelected?:boolean
+        
     ){}
 }

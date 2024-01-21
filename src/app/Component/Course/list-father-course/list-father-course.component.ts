@@ -536,8 +536,8 @@ export class ListFatherCourseComponent implements OnInit {
   }
   //מעבר לקומפוננטה קורסים
   GoToListCourse(fatherCourse: FatherCourse, event:Event=null) {
- 
-    this.router.navigate(["Home/ListCourse", fatherCourse.idcourse, fatherCourse.schoolId, fatherCourse.yearbookId])
+ debugger
+    this.router.navigate(["Home/ListCourse", fatherCourse.idcourse, fatherCourse.schoolId, fatherCourse.yearbookId,fatherCourse.name])
   }
   //פתיחת דיאלוג הוספת קרוס תואם
   AddCoordinationsCrouseFather() {

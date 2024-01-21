@@ -17,8 +17,6 @@ export class PresenceService {
   // pad(n) {return n < 10 ? "0"+n : n;}
   GetLessonsByDate(date:Date,idGroup:number):Observable<Array<Lesson>>{
    debugger
-   
- 
  // let result = this.pad(this.pad(date.getMonth()+1))+"."+date.getDate()+"."+date.getFullYear();
   let result = date.getMonth()+1+"."+date.getDate()+"."+date.getFullYear();
    
@@ -27,13 +25,14 @@ export class PresenceService {
    
     return this.http.get<Array<Lesson>>(this.Url+"GetLessonsByDate/"+result+"/"+idGroup)
   }
+  
   GetNochectByDateIdgroup(date:Date,idGroup:number):Observable<Array<AttendencePerDay>>{
-    // debugger;
+    debugger;
     let result = date.getMonth()+1+"."+date.getDate()+"."+date.getFullYear();
     
     console.log(this.Url+"GetLessonsByDate/"+result+"/"+idGroup);
 
-    return this.http.post<Array<AttendencePerDay>>(this.Url+"GetNochectByDateIdgroup/"+result+"/"+idGroup,null)
+    return this.http.post<Array<AttendencePerDay>>(this.Url+"GetNochectByDay/"+result+"/"+idGroup,null)
 
   }
 

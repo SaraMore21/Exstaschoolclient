@@ -97,6 +97,10 @@ import { SupportComponent } from './Component/support/support.component';
 import { BulletinBoardComponent } from './Component/bulletin-board/bulletin-board.component';
 import { DailyAttendanceForGroupComponent } from './Component/Attendance/daily-attendance-for-group/daily-attendance-for-group.component';
 import { PresencePerGroupComponent } from './Component/Presence/presence-per-group/presence-per-group.component';
+import { GeneralSettingComponent } from './Component/general-setting/general-setting.component';
+import { ReportGeneratorComponent } from './Component/report-generator/report-generator.component';
+import { PrecentByStudentFromDateTODAteComponent } from './Component/precent-by-student-from-date-todate/precent-by-student-from-date-todate.component';
+
 
 // import { QuillModule } from 'quill';
 
@@ -192,6 +196,9 @@ import { PresencePerGroupComponent } from './Component/Presence/presence-per-gro
     BulletinBoardComponent,
     DailyAttendanceForGroupComponent,
     PresencePerGroupComponent,
+    GeneralSettingComponent,
+    ReportGeneratorComponent,
+    PrecentByStudentFromDateTODAteComponent,
   ],
   bootstrap: [AppComponent],
 })

@@ -15,6 +15,7 @@ import { HebrewCalanderService } from 'src/app/Service/hebrew-calander.service';
 import { RegularScheduleService } from 'src/app/Service/regular-schedule.service';
 import { SchoolService } from 'src/app/Service/school.service';
 import {PresenceTypeService}from 'src/app/Service/presence-type.service';
+import {AttendanceMarkingService}from 'src/app/Service/attendance-marking.service';
 import { AttendanceService } from 'src/app/Service/attendance.service';
 import { Group } from 'src/app/Class/group';
 import { PresenceService } from 'src/app/Service/presence.service';
@@ -59,6 +60,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
   constructor(
     public groupService: GroupService,
     public presenceTypeService:PresenceTypeService,
+    public attendanceMarkingService:AttendanceMarkingService,
     public schoolService: SchoolService,
     // private attendanceService: AttendanceService,
     public presenceService: PresenceService,
@@ -111,9 +113,14 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
     // this.presenceList.push(new TypePresence(1, 'נעדר'))
     // this.presenceList.push(new TypePresence(2, 'נוכח'))
     // this.presenceList.push(new TypePresence(3, 'איחר'))
-    
-     this.presenceTypeService.GetAllPresence().subscribe(d=> this.presenceTypeService.ListPresenceType=d,e=>{})
-  
+    debugger
+     this.attendanceMarkingService.GetAllPresence().subscribe(d=> { debugger 
+      this.attendanceMarkingService.ListAttendanceMarking=d
+      console.log("this.attendanceMarkingService.ListAttendanceMarking"+ this.attendanceMarkingService.ListAttendanceMarking);
+      debugger
+    },e=>{})
+
+  debugger
     
   }
 
@@ -123,6 +130,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
   }
 
   getGroups() {
+    debugger
     if (this.groupService.ListGroupsByListSchoolAndYerbook != null && this.groupService.ListGroupsByListSchoolAndYerbook.length != 0) {
 
 
@@ -138,6 +146,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
         this.groupService.ListGroupsByListSchoolAndYerbook = data;
     
         this.groupService.ListGroupPerSY = this.groupService.ListGroupsByListSchoolAndYerbook.filter(f => f.group.schoolId == this.schoolId);
+        debugger
         this.selectedGroup = this.groupService.ListGroupPerSY[0]
       },
         err => {
@@ -146,6 +155,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
     }
     else if (this.groupService.ListGroupPerSY == null || this.groupService.ListGroupPerSY.length == 0 || this.groupService.ListGroupPerSY[0].group == null || this.groupService.ListGroupPerSY[0].group.schoolId != this.schoolId) {
       this.groupService.ListGroupPerSY = this.groupService.ListGroupsByListSchoolAndYerbook.filter(f => f.group.schoolId == this.schoolId);
+      debugger
       this.selectedGroup = this.groupService.ListGroupPerSY[0]
     }
   }
@@ -248,6 +258,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
     var s = a.year + '-' + a.month + '-' + a.day;
     var temp: Array<Presence> = new Array<Presence>()
     temp.push(presence)
+    debugger
     this.presenceService.addOrUpdateAttendance(new Date(s), idStudent, temp).subscribe(
       d => { },
       e =>
@@ -270,14 +281,17 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
     this.presence.dateUpdated = new Date(Date.now())
     var user=  this.schoolService.ListSchool.find(f => f.school.idschool == this.schoolId)?.userId;
    // newPresence.studentId = idStudent
+   debugger
     this.presence.typePresenceId = parseInt(this.selectedTypePresenceId) 
     temp.push(this.presence)
+    debugger
     this.presenceService.addOrUpdateAttendance(new Date(s), user, temp).subscribe(
+      
       d => { 
- 
+        debugger
         this.ListAttendencePerDay.filter(lapd=>lapd.idStudent==this.attendencePerDay.idStudent)[0]
         .nochecotPerLesson.filter(npl=>npl.presence.idpresence==this.presence.idpresence)[0].presence.typePresenceName
-        =this.presenceTypeService.ListPresenceType.filter(pl=>pl.idtypePresence==this.presence.typePresenceId)[0].typePresenceDes
+        =this.attendanceMarkingService.ListAttendanceMarking.filter(pl=>pl.idattendanceMarkings==this.presence.typePresenceId)[0].markingName
 
         
       },
@@ -302,6 +316,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
 
     
   }
+
 
   exportPdf() { }
   exportExcel() { }

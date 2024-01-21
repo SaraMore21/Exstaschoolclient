@@ -31,6 +31,91 @@ export class StudentListComponent implements OnInit {
   excelStudentList:Array<any>=new Array<any>()
   virtualStudents:Student[]
   searchText:string
+  detailesToDisplay=[]
+  optionsToMoreDetailes = [
+    { value: 'typeidentity', label: ' סוג זיהוי ' },
+    { value: 'code', label: ' קוד נבחנת' },
+    { value: 'preName', label: ' שם קודם ' },
+    { value: 'foreignLastName', label: ' שם משפחה לועזי' },
+    { value: 'foreignFirstName', label: ' שם פרטי לועזי' },
+    { value: 'gender', label: ' מין ' },
+    { value: 'citizenship', label: ' אזרחות' },
+    { value: 'birthDate', label: ' תאריך לידה ' },
+    { value: 'birtheCountry', label: ' ארץ לידה ' },
+    { value: 'imigrationCountry', label: ' ארץ עליה ' },
+    { value: 'imigrationDate', label: ' תאריך עליה ' },
+    { value: 'fatherTz', label: ' מ.ז אב ' },
+    { value: 'fatherTypeIdentity', label: ' סוג זיהוי אב ' },
+    { value: 'motherTz', label: ' מ.ז אם ' },
+    { value: 'motherTypeIdentit', label: ' סוג זיהוי אם ' },
+    { value: 'field1', label: ' ציון מבחן תיל ' },
+    { value: 'field2', label: 'שדה 2' },
+    { value: 'field3', label: 'שדה 3' },
+    { value: 'field4', label: 'שדה 4' },
+    { value: 'field5', label: 'שדה 5' },
+    { value: 'status', label: '  סטטוס' },
+    { value: 'studentStatus', label: ' סטטוס תלמיד' },
+    { value: 'isActive', label: 'פעיל?' },
+    { value: 'street', label: ' רחוב ' },
+    { value: 'city', label: ' עיר' },
+    { value: 'houseNum', label: ' מספר בית' },
+    { value: 'aptNum', label: ' מספר דירה' },
+    { value: 'zip', label: ' מיקוד' },
+    { value: 'poBox', label: ' תיבת דואר' },
+    { value: 'phone1', label: '  טלפון1' },
+    { value: 'phone2', label: '  טלפון2' },
+    { value: 'cell1', label: '  נייד1' },
+    { value: 'cell2', label: '  נייד 2' },
+    { value: 'cell3', label: '  נייד 3' },
+    { value: 'fax', label: '  פקס' },
+    { value: 'mail', label: '  מייל' },
+    { value: 'passportPicture', label: '  תמונת פספורט' },
+// מ.ז. אפוטרופוס -קיים
+// סוג זיהוי אפוטרופוס
+
+  ];
+
+  detailsOptions: any = {
+  typeidentity:false,
+  code:false,
+  preName:false,
+  foreignLastName:false,
+  foreignFirstName:false,
+  gender:false,
+  citizenship:false,
+  birthDate:false,
+  birtheCountry:false,
+  imigrationCountry:false,
+  imigrationDate:false,
+  fatherTz:false,
+  fatherTypeIdentity:false,
+  motherTz:false,
+  motherTypeIdentit:false,
+  field1:false,
+  field2:false,
+  field3:false,
+  field4:false,
+  field5:false,
+  status:false,
+  studentStatus:false,
+  isActive:false,
+  street:false,
+  city:false,
+  houseNum:false,
+  aptNum:false,
+  zip:false,
+  poBox:false,
+  phone1:false,
+  phone2:false,
+  cell1:false,
+  cell2:false,
+  cell3:false,
+  fax:false,
+  mail:false,
+  passportPicture:false};
+
+
+
   constructor(public studentService: StudentService, public schoolService: SchoolService, private router: Router,
     private messageService: MessageService, private confirmationService: ConfirmationService,
     private ngxService: NgxUiLoaderService,private StreetService:StreetService,private el: ElementRef,private genericFunctionService:GenericFunctionService
@@ -56,11 +141,28 @@ export class StudentListComponent implements OnInit {
     this.studentService.SearchInStudentList(this.searchText,this.schoolService.SelectYearbook.idyearbook,this.schoolService.ListSchool)
     .subscribe(data=>
       {
+        debugger
         this.studentService.ListStudent=data
       }
       )
  
   }
+  setDisplayValue(option: string) {
+ debugger
+ console.log("this.detailesToDisplay"+this.detailesToDisplay)
+//  if (this.detailsOptions.hasOwnProperty(option)) {
+ // this.detailsOptions[option] = !this.detailsOptions[option];
+// } 
+this.optionsToMoreDetailes.forEach(opt=>
+  {
+    if(!this.detailesToDisplay.includes(opt.value))
+    this.detailsOptions[opt.value]=false
+  })
+this.detailsOptions[option[option.length-1]] = true
+ console.log("detailsOptions[option]"+this.detailsOptions[option])
+ console.log("detailsOptions.typeidentity"+this.detailsOptions[option])
+ console.log("student.typeidentity"+this.studentService.ListStudent)
+}
 
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
@@ -231,6 +333,7 @@ exportExcelAsync()
   
     
    let genercListStudent:Array<any>=this.studentService.ListStudent
+   debugger
     genercListStudent.forEach(d=>
       this.studentService.GetStudentDetailsByIDStudent(d.idstudent)
       .subscribe(s => {
@@ -332,8 +435,18 @@ exportExcelAsync()
         'poBox': s.address!=null?s.address.poBox:'',
         'zip':s.address!=null?s.address.zipCode:'',
         'moreDetails':s.anatherDetails,
-        'note':s.note}
-      )
+        'note':s.note,
+        'fatherPhone1':s.contactPerStudent[0]!=null&& s.contactPerStudent[0].contact && s.contactPerStudent[0].contact.contactInformation?s.contactPerStudent[0].contact.contactInformation.phoneNumber1:null,
+        'fPhoneNumber2':s.contactPerStudent[0]!=null&& s.contactPerStudent[0].contact && s.contactPerStudent[0].contact.contactInformation?s.contactPerStudent[0].contact.contactInformation.phoneNumber2:null,
+        'fPhoneNumber3':s.contactPerStudent[0]!=null&& s.contactPerStudent[0].contact && s.contactPerStudent[0].contact.contactInformation?s.contactPerStudent[0].contact.contactInformation.phoneNumber3:null,
+        'fTelephoneNumber1':s.contactPerStudent[0]!=null&& s.contactPerStudent[0].contact && s.contactPerStudent[0].contact.contactInformation?s.contactPerStudent[0].contact.contactInformation.telephoneNumber1:null,
+        'fTelephoneNumber2':s.contactPerStudent[0]!=null&& s.contactPerStudent[0].contact && s.contactPerStudent[0].contact.contactInformation?s.contactPerStudent[0].contact.contactInformation.telephoneNumber2:null,
+        'matherPhone':s.contactPerStudent[1]!=null&& s.contactPerStudent[1].contact && s.contactPerStudent[1].contact.contactInformation?s.contactPerStudent[1].contact.contactInformation.phoneNumber1:null,
+        'mPhoneNumber2':s.contactPerStudent[1]!=null&& s.contactPerStudent[1].contact && s.contactPerStudent[1].contact.contactInformation?s.contactPerStudent[1].contact.contactInformation.phoneNumber2:null,
+        'mPhoneNumber3':s.contactPerStudent[1]!=null&& s.contactPerStudent[1].contact && s.contactPerStudent[1].contact.contactInformation?s.contactPerStudent[1].contact.contactInformation.phoneNumber3:null,
+        'mTelephoneNumber1':s.contactPerStudent[1]!=null&& s.contactPerStudent[1].contact && s.contactPerStudent[1].contact.contactInformation?s.contactPerStudent[1].contact.contactInformation.telephoneNumber1:null,
+        'mTelephoneNumber2':s.contactPerStudent[1]!=null&& s.contactPerStudent[1].contact && s.contactPerStudent[1].contact.contactInformation?s.contactPerStudent[1].contact.contactInformation.telephoneNumber2:null,
+     } )
       
     }
     
@@ -346,6 +459,7 @@ exportExcelAsync()
 
 sendToExportExcel()
 {
+  
   if(this.excelStudentList.length==0)
   {
       this.exportExcelAsync()
@@ -367,7 +481,7 @@ sendToExportExcel()
    let Heading = [['מספר זיהוי','	סוג זיהוי',	'קוד',	'פרטי',	'משפחה',	'מין','	תאריך לידה לועזי','תאריך עברי','	ארץ לידה',	'אזרחות','	תאריך עליה',
    	'ארץ עליה','מצב משפחתי','	פרטי בלועזית','	משפחה בלועזית'	,'שם משפחה קודם',	'טלפון1',	'טלפון2',	'נייד1',	'נייד2', 	'נייד3',	'פקס',	'מייל',	'מספר זיהוי אב',
     	'סוג זיהוי אב','	מספר זיהוי אם','	סוג זיהוי אם','	מספר זיהוי אפוטרופוס','	סוג זיהוי אפוטרופוס',	'פעיל','סטטוס תלמידה',	'סיבה',	'עיר',	'שכונה',	'רחוב',	
-      'בנין',	'דירה','	ת.ד.',	'מיקוד','	פרטים נוספים',	'הערה']];
+      'בנין',	'דירה','	ת.ד.',	'מיקוד','	פרטים נוספים',	'הערה','פלאפון1 אב',' פלאפון 2 אב','פלאפון 3 אב','טלפון 1 אב','טלפון 2 אב','פלאפון 1 אם','פלאפון 2 אם','פלאפון 3 אם','טלפון 1 אם','טלפון 2 אם']];
 
 
   const worksheet = XLSX.utils.json_to_sheet([]);
