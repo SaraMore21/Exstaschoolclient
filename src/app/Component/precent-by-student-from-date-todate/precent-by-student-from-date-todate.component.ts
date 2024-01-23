@@ -26,6 +26,7 @@ import { Presence } from 'src/app/class/presence';
 import { TypePresence } from 'src/app/Class/type-presence'
 import { AttendancePerLesson } from 'src/app/class/AttendancePerLesson';
 import { StudentPerGroup } from 'src/app/Class/student-per-group';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-precent-by-student-from-date-todate',
@@ -58,7 +59,8 @@ export class PrecentByStudentFromDateTODAteComponent implements OnInit {
     public hebrewCalanderService: HebrewCalanderService,
     public router: Router,
     public datePipe: DatePipe,
-    public hebCalenderService: HebrewCalanderService
+    public hebCalenderService: HebrewCalanderService,
+    private ngxService: NgxUiLoaderService,
     ) { 
       this.dayTemplateData = this.dayTemplateData.bind(this);
     }
@@ -154,9 +156,15 @@ debugger;
       this.fromDate = date;
     }
   }
-  ok(){
-    debugger
-  }
+  // ok(){
+  //   debugger
+  //   this.ngxService.start();
+  //   this.presenceService.GetNochectByDateIdgroup(date, this.selectedGroup.idgroupPerYearbook).subscribe(data => {
+  //     debugger
+  //     this.ListAttendencePerDay = data
+  //   }, er => { })
+      
+//}
   onGroupChange(selectedGroup:any){
     debugger
     this.StudentPerGroup(selectedGroup.idgroupPerYearbook)
