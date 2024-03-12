@@ -43,8 +43,8 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
   IsOverride: boolean = false;
   fileToUpload: File;
   subscription: Subscription;
- 
-  constructor(private ExcelService: ExcelService, private router: Router, public schoolService: SchoolService) { 
+
+  constructor(private ExcelService: ExcelService, private router: Router, public schoolService: SchoolService) {
   }
 
   ngOnDestroy(): void {
@@ -63,7 +63,7 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
     this.optionalTables = ["תלמידים", "משתמשים", "מקצועות", "שיוך תלמיד קבוצה", "אנשי קשר", "קבוצות לימוד", "מערכת קבועה","שעות שיעורים לקבוצה","קורסי אב","קורסים"].sort();
     this.optionalTables.forEach(tbl => this.optionalTables2.push({ label: tbl, value: tbl }));
 
-    this.optionalTables3 = ["תלמידים", "משתמשים", "קבוצות לימוד", "אנשי קשר" ,"נתוני בסיס","מקצועות","קורסי אב","קורסים","מערכת קבועה"];
+    this.optionalTables3 = ["תלמידים", "משתמשים", "קבוצות לימוד", "אנשי קשר" ,"נתוני בסיס","מקצועות","קורסי אב","קורסים","מערכת קבועה","שעות שיעורים לקבוצה"];
     let i = 1;
     this.optionalTables3.forEach(tbl => { this.optionalTables4.push({ label: tbl, value: i.toString() }); i++; });
 
@@ -316,6 +316,19 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
             window.URL.revokeObjectURL(url);
           }
           )
+          case "10":
+            this.ExcelService.downloadLessonPerGroupExcel(this.CurrentSchool.school.idschool,this.schoolService.SelectYearbook.idyearbook)
+           // .subscribe(d=>{alert("הקובץ נשלח בהצלחה למייל שהוזן")})
+            .subscribe((data: Blob) => {
+              const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'שעות שיעורים לקבוצה.xlsx';
+              a.click();
+              window.URL.revokeObjectURL(url);
+            }
+            )
       }
     })
 
@@ -328,27 +341,27 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
       ['Data Validation Example'],
       ['Select an option:'],
     ]);
-  
+
     // Define the data validation (dropdown) for a specific cell (e.g., A3)
     worksheet['!dataValidations'] = [{
       sqref: 'A3',
       formula1: '"Option 1,Option 2,Option 3"',
       showDropDown: true,
     }];
-  
+
     // Create a workbook
     const workbook: XLSX.WorkBook = {
       Sheets: { 'Sheet 1': worksheet },
       SheetNames: ['Sheet 1'],
     };
-  
+
     // Generate the Excel file
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
+
     // Save the file
     FileSaver.saveAs(data, 'excel_with_dropdown.xlsx');
   }
 
-  
+
 }
