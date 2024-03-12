@@ -22,8 +22,9 @@ export class TaskToStudentService {
    
   }
 
-  AddOrUpdate(idschool: number, idyearbookPerSchool: number, CurrentTask: any,  isAotomat: boolean): Observable<TaskToStudent> {
-    return this.http.post<TaskToStudent>(this.Url + "AddOrUpdate/" + idschool + "/" + idyearbookPerSchool+"/"+isAotomat, CurrentTask);
+  AddOrUpdate(idschool: number, idyearbookPerSchool: number, CurrentTask: any,  isAotomat: boolean,courseid:number): Observable<TaskToStudent> {
+    debugger
+    return this.http.post<TaskToStudent>(this.Url + "AddOrUpdate/" + idschool + "/" + idyearbookPerSchool+"/"+isAotomat+ "/" +courseid, CurrentTask);
   }
 
   DeleteTaskToStudent(SchoolID: number, YearbookId: number, TaskToStudentId: number): Observable<boolean> {
@@ -31,7 +32,7 @@ export class TaskToStudentService {
   }
 
   UpdateActiveTask(SchoolID: number, YearbookId: number, TaskToStudentId: number, isActive: boolean): Observable<boolean> {
-    return this.http.get<boolean>(this.Url + "UpdateActiveTask/" + SchoolID + "/" + TaskToStudentId + "/" + isActive);
+    return this.http.get<boolean>(this.Url + "UpdateActiveTask/" + SchoolID + "/" + TaskToStudentId + "/" + isActive );
   }
   EditScoreToStudents(listTaskToStudent: Array<TaskToStudent>): Observable<any> {
     return this.http.post<any>(this.Url + "EditScoreToStudents", listTaskToStudent);

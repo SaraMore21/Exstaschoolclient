@@ -11,10 +11,12 @@
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    
   }
   
   iframe {
-    border: none;
+    border-width: 5px;
+    border-color: black;
     width: 100%;
     height: 100%;
   }

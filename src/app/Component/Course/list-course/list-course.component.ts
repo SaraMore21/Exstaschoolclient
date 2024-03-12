@@ -8,6 +8,7 @@ import { Group } from 'src/app/Class/group';
 import { Profession } from 'src/app/Class/profession';
 import { GroupService } from 'src/app/Service/group.service';
 import { ProfessionService } from 'src/app/Service/profession.service';
+import {StudentPerCourseService} from 'src/app/Service/student-per-course.service'
 import { LearningStyleService } from 'src/app/Service/learning-style.service';
 import { UserPerCourse } from 'src/app/Class/user-per-course'
 import { DatePipe } from '@angular/common';
@@ -81,6 +82,7 @@ export class ListCourseComponent implements OnInit {
     public courseService: CourseService,
     public fatherCourseService: FatherCourseService,
     public schoolService: SchoolService,
+    public studentPerCourseService: StudentPerCourseService,
     public userService: UserService,
     public groupService: GroupService,
     public professionService: ProfessionService,
@@ -276,6 +278,13 @@ export class ListCourseComponent implements OnInit {
   }
 
 
+  GoToListCourseToStudent(course: GroupSemesterPerCourse){
+    debugger;
+  this.studentPerCourseService.currentCourse=course;
+    this.router.navigate(['Home/ListCourseToStudent', course.idgroupSemesterPerCourse]);
+  }
+
+
   //שליפת הנתונים המשוייכים למוסד בזמן הוספה
   ChangeSchoolCourse() {
     if (this.groupService.ListGroupsByListSchoolAndYerbook != null) {
@@ -391,7 +400,7 @@ export class ListCourseComponent implements OnInit {
       if (this.edit == false) {
 
         // if (this.courseService.ListCourseByListSchoolAndYearbook.find(f => f.course.idcourse == this.SelectNameCourse.idcourse && f.groupId == this.SelectGroup.idgroupPerYearbook && f.semesterId == this.SelectSemester.idsemester) != null) {
-        //   this.messageService.add({ key: "tc", severity: 'warn', summary: 'שגיאה', detail: 'קיים קורס זה בקבוצה זהה עם אותו סמסטר' }); return;
+        //   this.messageService.add({ key: "tc", severity: 'warn', summary: 'שגיאה', detail: 'קיים קורס זה בק בוצה זהה עם אותו סמסטר' }); return;
         // }
         // else
         let date = new Date();
@@ -402,7 +411,7 @@ export class ListCourseComponent implements OnInit {
         this.CurrentCourse.semesterId = this.SelectSemester.idsemester;
         this.CurrentCourse.userCreatedId = this.CurrentSchool.userId;
         this.CurrentCourse.courseId = this.FatherCourseId;
-        this.courseService.AddCourse(this.CurrentCourse, this.SelectTeacher.userPerSchoolID).subscribe(data => {
+        this.courseService.AddCourse(this.CurrentCourse, this.SelectTeacher.userPerSchoolID,this.YearbookPerSchool).subscribe(data => {
           if (data == null)
             this.messageService.add({ key: "tc", severity: 'warn', summary: 'שגיאה', detail: 'קורס זה קיים כבר לקבוצה זו בתאריכים נפגשים' });
 

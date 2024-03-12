@@ -1,0 +1,191 @@
+<br>
+<!-- <div *ngIf='!display'> -->
+<div *ngIf='!display'>
+<form style="text-align-last: center;">
+
+
+    <p-dropdown [disabled]="schoolId == undefined" [(ngModel)]="selectedGroup" name="selectedGroup" filter="true" filterBy="nameGroup"
+    [options]="groupService.ListGroupPerSY" placeholder="בחר קבוצה" appendTo="body" [style]="{ width: '30%' }"
+    emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים"
+    (ngModelChange)="onGroupChange($event)">
+   
+    <ng-template let-item pTemplate="selectedItem">
+        
+      {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+    </ng-template>
+    <ng-template let-item pTemplate="item">
+      {{item.group.nameGroup}}, {{item.group.ageGroupName}}
+    </ng-template>
+  </p-dropdown>
+  <br>
+  <p-checkbox [binary]="true" label="הצג רק נוכחות מקבוצה זו" [(ngModel)]="showOneGroup"  name="show"></p-checkbox>
+  <br>
+  <!-- <p-checkbox [binary]="true" label="הצג את כל הנוכחיות של התלמידה מכללה הקבוצות אליהן היא משוייכת" [(ngModel)]="showAllGroups"  name="show1"></p-checkbox> -->
+    <h4 style="color:cornflowerblue;">בחר תלמידה</h4>
+    <!-- <p-multiSelect [options]="ListStudentPerGroup"  name="dd" [(ngModel)]="studend" filter="true" placeholder="בחר תלמידה" >
+      <ng-template let-item pTemplate="selectedItem">
+        <span style="vertical-align:middle; margin-left: .5em">{{item.student.firstName}}  {{item.student.lastName}} </span>
+    </ng-template>
+    </p-multiSelect> -->
+
+
+    <!-- <p-multiSelect [options]="ListStudentPerGroup" name="dd" [(ngModel)]="studend" filter="true" placeholder="בחר תלמידה" optionLabel="student.lastName">
+  <ng-template let-item pTemplate="selectedItem">
+    <span style="vertical-align: middle; margin-left: .5em">{{item.student.firstName}} {{item.student.lastName}}</span>
+  </ng-template>
+  <ng-template let-item pTemplate="item">
+    {{item.student.firstName}} {{item.student.lastName}}
+  </ng-template>
+
+</p-multiSelect> -->
+
+<p-multiSelect [options]="ListStudentPerGroup" name="dd" [(ngModel)]="studend" filter="true" placeholder="בחר תלמידה" >
+  <!-- תבנית עבור selectedItem -->
+  <ng-template let-item pTemplate="body">
+    <span style="vertical-align: middle; margin-left: .5em">{{ item.student.firstName }} {{ item.student.lastName }}</span>
+  </ng-template>
+  <!-- תבנית עבור item -->
+  <!-- <ng-template let-item pTemplate="item">
+    {{ item.student.firstName }} {{ item.student.lastName }}
+  </ng-template> -->
+</p-multiSelect>
+
+
+  
+   <br>
+   <h4 style="color:cornflowerblue;">בחר טווח תאריכים</h4> 
+ <br> 
+ <ngb-datepicker (dateSelect)="onDateSelection($event)" class="hebrew rtl" #dp [displayMonths]="1" [firstDayOfWeek]="7" 
+[dayTemplate]="dt" [dayTemplateData]="dayTemplateData">
+</ngb-datepicker> 
+
+<ng-template #dt let-date let-data="data" let-selected="selected" let-currentMonth="currentMonth">
+<div class="hebrew-day" [class.outside]="date.month !== currentMonth" [class.selected]="selected">
+
+  <div class="hebrew-num">
+    <span class="custom-day"
+     [class.range]="isRange(date)"
+      [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
+      (mouseleave)="hoveredDate = null">
+      {{ i18n.getDayNumerals(date) }}
+      <div class="gregorian-num">{{ data.gregorian.day + '/' + (data.gregorian.month) }}</div>
+    </span></div>
+</div>
+</ng-template>
+<br>
+<br>
+<p-button  [disabled]="(selectedGroup==undefined&&studend==undefined)||fromDate==undefined||toDate==undefined" (click)="ok()" >אישור</p-button>
+
+
+</form>
+
+
+</div>
+
+<div *ngIf="display" style="text-align-last: center;">
+    <p-button  (click)="export()" label="לכל בנות הכיתה PDF הורדת קובץ " styleClass="p-button-text"></p-button>
+  <div *ngFor="let cstudent of obj">
+  
+    <h5 >מעקב נוכחות עבור התלמידה:  {{cstudent.s.student.firstName}}   {{cstudent.s.student.lastName}} </h5>
+    <h5> בכיתה: {{selectedGroup.group.nameGroup}}  {{selectedGroup.group.ageGroupName}}      </h5>
+    <h5>מתאריך: {{fromHeb}}</h5>
+    <h5>עד תאריך: {{toHeb}}</h5>
+  
+  <!-- <button (click)="printDirect()"></button>-->
+  
+  <p-table [scrollable]="true" scrollHeight="700px" [value]="cstudent.a" [style]="{direction:'rtl'}" dir="rtl" *ngIf="display">
+    <ng-template pTemplate="caption">
+  
+  <button type="button" pButton pRipple label="PDF" icon="pi pi-file-pdf" (click)="ExportPdf(cstudent)" class="p-button-warning p-mr-2"></button>
+    <!--<button pButton pRipple (click)="back()" type="button" label="חזור" class="p-button-secondary" ></button> -->
+  
+    </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="hebrewDate">תאריך עברי <p-sortIcon field="dateH"></p-sortIcon></th>
+          <th pSortableColumn="0">0 </th>
+          <th pSortableColumn="1">1 </th>
+          <th pSortableColumn="2">2</th>
+          <th pSortableColumn="3">3 </th>
+          <th pSortableColumn="4">4</th>
+          <th pSortableColumn="5">5</th>
+          <th pSortableColumn="6">6</th>
+          <th pSortableColumn="7">7 </th>
+          <th pSortableColumn="8">8 </th>
+          <th pSortableColumn="9">9 </th>
+          <th pSortableColumn="10">10</th>
+          <th pSortableColumn="11">11 </th>
+          <th pSortableColumn="12">12</th>
+          <th pSortableColumn="13">13</th>
+          <th pSortableColumn="14">14</th>
+  
+        </tr>
+      </ng-template>
+     <ng-template pTemplate="body" let-attandence>
+        <tr>
+  
+          <td>{{ attandence.hebrewDate}}</td>
+  
+          <td *ngFor="let number of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]">
+        <div *ngFor="let pres of attandence.nochecotPerLesson">
+              <span *ngIf="pres.lesson.lessonNumber==number">
+                {{pres.lesson.lessonName}}
+                <!-- <button pButton pRipple type="button" icon="pi pi-check" class="p-button-rounded p-button-text"></button> -->
+  
+                <!-- <button pButton pRipple type="button" icon="pi pi-pencil" (click)="EditLesson(item)"
+                class="p-button-rounded p-button-text p-button-danger"></button> -->
+                <br>
+                
+               
+  
+                  <!-- <button pButton *ngIf="item.Id!=undefined" style="color: black;" label=" {{item.siman.Name}}" class="p-button-rounded p-button-text" (click)="EditPresence(item)" ></button> -->
+                  <button pButton  style="color: black;" label=" {{pres.presence.typePresenceName}}" class="p-button-rounded p-button-text" (click)="EditPresence(pres,cstudent.a)" ></button>
+              </span>
+            </div>
+          </td>
+        </tr>
+      <!-- </div>  -->
+      </ng-template>
+    </p-table>
+  
+  <!-- הציון שלך הוא: {{mark}} -->
+  </div>
+  
+  <button pButton pRipple (click)="back()" type="button" label="חזור" class="p-button-secondary" ></button>
+  
+  </div>
+
+
+  <p-dialog [modal]="true"   [(visible)]="isEditPresence"  >
+    <h5>נוכחות</h5>
+    <div class="p-field-radiobutton" *ngFor="let i of attendanceMarkingService.ListAttendanceMarking">
+      <p-radioButton name="p" value="{{i.idattendanceMarkings}}" [(ngModel)]="selectedTypePresenceId"></p-radioButton>
+      <label>{{i.markingName}}</label>
+    </div>
+
+
+    <button pButton pRipple type="button" icon="pi pi-check"
+      class="p-button-rounded p-button-text p-button-success p-mr-2"
+      (click)="save()"></button>
+
+  </p-dialog>
+  <!-- <p-dialog header="שימי ❤" [(visible)]="displayModal" [modal]="true" dir="rtl" [style]="{width: '30vw'}" [baseZIndex]="10000"
+      [draggable]="false" [resizable]="false">
+      <p class="p-m-0" style="text-align: right;">
+        האם ברצונך להוריד קובץ נוכחות לכל בנות הכיתה?
+      </p>
+          <ng-template pTemplate="footer">
+          <p-button icon="pi pi-check" (click)="export()" label="כן" styleClass="p-button-text"></p-button>
+          <p-button icon="pi pi-times" (click)="displayModal=false" label="לא" styleClass="p-button-text"></p-button>
+  
+          </ng-template>
+  </p-dialog> -->
+  
+  <!-- <p-dialog [(visible)]="DesabledEdit" (keydown.enter)="onRowEditSave(selectDescription)" type='radioButton'>
+  <div *ngFor="let siman of NochechootService.ListPresentPetMosad"  class="p-field-radiobutton" dir="rtl">
+    <p-radioButton name="siman" [value]="siman" [(ngModel)]="selectDescription.siman" [inputId]="siman.Key" (dblclick)="onRowEditSave(selectDescription)"></p-radioButton>
+    <label [for]="siman.Key" (dblclick)="onRowEditSave(selectDescription)">{{siman.Description}}</label>
+  </div>
+  </p-dialog> -->
+  
+  <!-- <ngx-ui-loader></ngx-ui-loader> -->

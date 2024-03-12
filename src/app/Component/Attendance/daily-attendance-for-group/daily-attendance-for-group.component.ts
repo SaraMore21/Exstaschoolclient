@@ -50,6 +50,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
   lLesson: Array<Lesson>
  // presenceList: Array<TypePresence>
   selectedPresence: Presence
+  attendencePerDay:AttendencePerDay
   right="right"
   currDate: string
   edit:boolean=false
@@ -193,9 +194,11 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
       debugger
       this.ListAttendencePerDay = data
       
+      
       for(let i=0; i<this.ListAttendencePerDay.length;i++)
       {
           this.ListAttendencePerDay[i].index=i+1
+          this.ListAttendencePerDay[i].nochecotPerLesson.sort((a,b)=>a.lesson.lessonNumber-b.lesson.lessonNumber)
       }
       
       if(this.ListAttendencePerDay[0].nochecotPerLesson[0])
@@ -268,7 +271,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
   
   selectedTypePresenceId: string
   presence:Presence
-  attendencePerDay:AttendencePerDay
+  
   save() {
     debugger
     this.edit = false
@@ -299,6 +302,7 @@ export class DailyAttendanceForGroupComponent  implements OnInit {
         console.log(e)
     )
   }
+ 
   onRowEditInit(item:AttendancePerLesson,AttendencePerDay:AttendencePerDay){
     debugger
     this.edit = true;

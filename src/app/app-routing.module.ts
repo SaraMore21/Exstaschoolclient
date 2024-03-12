@@ -15,6 +15,7 @@ import { StudentListComponent } from './Component/Student/student-list/student-l
 import { GroupListComponent } from './Component/Group/group-list/group-list.component';
 import { StudentsPerGroupComponent } from './Component/Group/students-per-group/students-per-group.component';
 import { ListCourseComponent } from './Component/Course/list-course/list-course.component'
+import { ListCourseToStudentComponent } from './Component/list-course-to-student/list-course-to-student.component';
 import { DocumentsPerStudentComponent } from './Component/Student/documents-per-student/documents-per-student.component';
 import { UserListComponent } from './Component/users/user-list/user-list.component'
 import { AddOrUpdateUserComponent } from './Component/users/add-or-update-user/add-or-update-user.component';
@@ -55,7 +56,8 @@ const routes: Routes = [
       { path: 'FatherCourseList', component: ListFatherCourseComponent },
       { path: 'ListTask', component: ListTaskComponent },
       { path: 'ListTaskExsist/:id', component: ListTaskExsistComponent },
-      { path: 'ListTaskToStudent/:id', component: ListTaskToStudentComponent },
+      { path: 'ListTaskToStudent/:id/:courseId', component: ListTaskToStudentComponent },
+      { path: 'ListCourseToStudent/:id', component: ListCourseToStudentComponent },
       { path: 'ExportTaskToStudentPdf', component: ExportGradesPerTaskDocumentComponent },
       { path: 'SchoolDetails', component: SchoolDetailsComponent },
       { path: 'StudentsPerGroup/:id', component: StudentsPerGroupComponent },

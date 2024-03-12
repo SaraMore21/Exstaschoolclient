@@ -100,6 +100,9 @@ import { PresencePerGroupComponent } from './Component/Presence/presence-per-gro
 import { GeneralSettingComponent } from './Component/general-setting/general-setting.component';
 import { ReportGeneratorComponent } from './Component/report-generator/report-generator.component';
 import { PrecentByStudentFromDateTODAteComponent } from './Component/precent-by-student-from-date-todate/precent-by-student-from-date-todate.component';
+import { CommonModule } from '@angular/common';
+import { ListCourseToStudentComponent } from './Component/list-course-to-student/list-course-to-student.component';
+import { SafePipePipe } from './Pipes/safe-pipe.pipe';
 
 
 // import { QuillModule } from 'quill';
@@ -107,6 +110,7 @@ import { PrecentByStudentFromDateTODAteComponent } from './Component/precent-by-
 @NgModule({
   imports: [
     BrowserModule,
+    CommonModule,
     BrowserAnimationsModule,
     // PrimeNG
     SidebarModule,
@@ -199,6 +203,8 @@ import { PrecentByStudentFromDateTODAteComponent } from './Component/precent-by-
     GeneralSettingComponent,
     ReportGeneratorComponent,
     PrecentByStudentFromDateTODAteComponent,
+    ListCourseToStudentComponent,
+    SafePipePipe,
   ],
   bootstrap: [AppComponent],
 })

@@ -9,7 +9,8 @@ export class AttendencePerDay extends Indexer
    
     constructor(
     public nochecotPerLesson?:Array<AttendancePerLesson>,
-    public dateTime?:Date ,
+    public date?:Date ,
+    public hebrewDate?:string,
     public nameStudent?:string ,
     public tz?:string ,
     public idStudent?:number){

@@ -114,7 +114,8 @@
 
   <form #form="ngForm" id="form" name="form" dir="rtl">
     <label>תלמידה </label>
-    <p-dropdown appendTo="body" [(ngModel)]="Student" filter="true" filterBy="tz,lastName,firstName"
+    <td>{{CurrentTask.studentName}}</td>
+    <!-- <p-dropdown appendTo="body" [(ngModel)]="Student" filter="true" filterBy="tz,lastName,firstName"
       [options]="studentService.ListStudentPerSY" placeholder="בחר תלמידה" [style]="{ width: '100%' }" name="Student">
       <ng-template let-item pTemplate="selectedItem" filter="true" emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
         {{ item.lastName }} {{ item.firstName }}, {{ item.tz }}
@@ -122,7 +123,11 @@
       <ng-template let-item pTemplate="item">
         {{ item.lastName }} {{ item.firstName }}, {{ item.tz }}
       </ng-template>
-    </p-dropdown>
+    </p-dropdown> -->
+
+
+
+
 
     <!-- <p-multiSelect  filter="true" appendTo="body" [style]="{ width: '100%' }" [showToggleAll]="false" name="Student" [options]="studentService.ListStudent" [(ngModel)]="Student" placeholder="בחר תלמידה" >
       <ng-template let-item pTemplate="selectedItem">

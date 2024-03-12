@@ -58,8 +58,9 @@ export class CourseService {
   AddFatherCourse(FatherCourse: Course): Observable<Course> {
     return this.http.put<Course>(this.Url + "AddFatherCourse", FatherCourse);
   }
-  AddCourse(course: GroupSemesterPerCourse, TeacherId: number): Observable<GroupSemesterPerCourse> {
-    return this.http.put<GroupSemesterPerCourse>(this.Url + "AddCourse/" + TeacherId, course);
+  AddCourse(course: GroupSemesterPerCourse, TeacherId: number,YearbookPerSchool:number): Observable<GroupSemesterPerCourse> {
+    debugger
+    return this.http.put<GroupSemesterPerCourse>(this.Url + "AddCourse/" + TeacherId+"/"+YearbookPerSchool, course);
   }
   //GroupId שליפת הקורסים לקבוצה לפי  
   GetCoursesForGroup(GroupId: number, scheduleDate: string): Observable<Array<GroupSemesterPerCourse>> {

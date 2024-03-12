@@ -75,6 +75,10 @@
             <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
               (click)="DeleteCrouse(course)" class="p-button-rounded p-button-text"></button>
 
+              <button pButton pRipple type="button" icon="pi pi-users" tooltipPosition="top"
+              pTooltip="תלמידות המשוייכות לקורס זה" (click)="GoToListCourseToStudent(course)"
+              class="p-button-rounded p-button-text"></button>
+
             <button pButton pRipple type="button" icon="pi pi-book" tooltipPosition="top" pTooltip="מסמכים"
               (click)="GoToDocumentsPerCourse(course)" class="p-button-rounded p-button-text"></button>
           </td>

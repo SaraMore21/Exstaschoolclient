@@ -1,0 +1,14 @@
+.Input{
+    border: 0px;
+}
+
+.Input:hover{
+    border: 2px;
+}
+
+/* סגנון כדי להסתיר את חצי ההגדלה וההקטנה בדפדפני Chrome */
+.Input::-webkit-inner-spin-button,
+.Input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

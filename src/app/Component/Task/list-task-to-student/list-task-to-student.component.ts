@@ -46,14 +46,14 @@ export class ListTaskToStudentComponent implements OnInit {
   VisibleTable: boolean = true;
   CurrentSchool: any;
   selectedProduct: any;
-
+  courseID:number=0;
   ngOnInit(): void {
     debugger
     if (this.schoolService.ListSchool == null || this.schoolService.ListSchool.length == 0) {
       this.router.navigate(['Login']);
       return;
     }
-    this.active.params.subscribe(c => { this.TaskExsistID = c["id"] })
+    this.active.params.subscribe(c => { this.TaskExsistID = c["id"] ,this.courseID=c["courseId"]})
     debugger;
     this.CurrentSchool = this.schoolService.ListSchool.find(f => f.school.idschool == this.TaskExsistService.listTaskExsist.find(f => f.idexsistTask == this.TaskExsistID).schoolId)
     if (this.CurrentSchool.appYearbookPerSchools.find(f => f.idyearbookPerSchool == this.taskService.ListTask[0].yearBookId).yearbookId != this.schoolService.SelectYearbook.idyearbook)
@@ -63,8 +63,10 @@ export class ListTaskToStudentComponent implements OnInit {
 
   //שליפת כל המטלות
   GetAllTaskToStudentByTaskExsistId() {
-    this.TaskToStudentService.GetAllTaskToStudentByTaskExsistID(this.CurrentSchool.school.idschool, this.CurrentSchool.appYearbookPerSchools.find(f => f.yearbookId == this.schoolService.SelectYearbook.idyearbook).idyearbookPerSchool, this.TaskExsistID)
+    debugger
+    this.TaskToStudentService.GetAllTaskToStudentByTaskExsistID(this.CurrentSchool.school.idschool, this.CurrentSchool.appYearbookPerSchools.find(f => f.yearbookId == this.schoolService.SelectYearbook.idyearbook).idyearbookPerSchool, this.TaskExsistID) 
       .subscribe(data => { this.TaskToStudentService.listTaskToStudent = data
+        debugger
       }, er => { })
   }
 
@@ -109,6 +111,7 @@ export class ListTaskToStudentComponent implements OnInit {
 
   //עריכת מטלה
   EditDetailsTask(task: TaskToStudent) {
+    debugger
     this.CurrentTask = Object.assign({}, task);
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // this.CurrentTask.appScoreStudentPerQuestionsOfTasks = [...task.appScoreStudentPerQuestionsOfTasks];
@@ -118,6 +121,7 @@ export class ListTaskToStudentComponent implements OnInit {
     this.CurrentTask.appScoreStudentPerQuestionsOfTasks = new Array<any>();
     task.appScoreStudentPerQuestionsOfTasks.forEach(val => this.CurrentTask.appScoreStudentPerQuestionsOfTasks.push(Object.assign({}, val)));
     // this.listTaskToStudent;
+    debugger
     Object.assign([], (task.appScoreStudentPerQuestionsOfTasks));
 
     if (this.studentService.ListStudent == null || this.studentService.ListStudent.length == 0 || this.studentService.YearbookIdPerStudent != this.schoolService.SelectYearbook.idyearbook)
@@ -133,7 +137,7 @@ export class ListTaskToStudentComponent implements OnInit {
         this.studentService.ListStudentPerSY = this.studentService.ListStudent.filter(f => f.schoolId == this.CurrentSchool.school.idschool);
       this.Student = this.studentService.ListStudentPerSY.find(f => f.idstudent == this.CurrentTask.studentId);
     }
-
+    
 
     if (this.userService.ListUserByListSchoolAndYerbook == null || this.userService.ListUserByListSchoolAndYerbook.length == 0 || this.userService.YearbookIdPerUser != this.schoolService.SelectYearbook.idyearbook)
       this.userService.GetUsersBySchoolIDAndYearbookId(this.schoolService.ListSchool, this.schoolService.SelectYearbook.idyearbook).subscribe(data => {
@@ -287,23 +291,27 @@ export class ListTaskToStudentComponent implements OnInit {
       if (this.CurrentTask.appScoreStudentPerQuestionsOfTasks != undefined)
         this.CurrentTask.appScoreStudentPerQuestionsOfTasks.forEach(element => {
           sum = sum + (element.score * element.percent / 100);
-        });;
+        });
       this.CurrentTask.grade = sum;
     }
     let date=new Date();
     if (this.CurrentTask.idtaskToStudent != undefined && this.CurrentTask.idtaskToStudent != 0) {
       this.CurrentTask.userUpdatedId = this.CurrentSchool.userId;
+      if (date!=null|| date!=undefined)
       this.CurrentTask.dateUpdated = new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));
     }
     else {
       this.CurrentTask.userCreatedId = this.CurrentSchool.userId;
+      if (date!=null|| date!=undefined)
       this.CurrentTask.dateCreated = new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));
       this.CurrentTask.taskExsistId = this.TaskExsistID;
 
     }
+
     this.CurrentTask.dateNeedSubmit=new Date(Date.UTC(this.CurrentTask.dateNeedSubmit.getFullYear(),this.CurrentTask.dateNeedSubmit.getMonth(),this.CurrentTask.dateNeedSubmit.getDate()));
+    if (this.CurrentTask.dateSubmit!=null|| this.CurrentTask.dateSubmit!=undefined)
     this.CurrentTask.dateSubmit=new Date(Date.UTC(this.CurrentTask.dateSubmit.getFullYear(),this.CurrentTask.dateSubmit.getMonth(),this.CurrentTask.dateSubmit.getDate()));
-    this.TaskToStudentService.AddOrUpdate(this.CurrentSchool.school.idschool, this.CurrentSchool.appYearbookPerSchools.find(f => f.yearbookId == this.schoolService.SelectYearbook.idyearbook).idyearbookPerSchool, this.CurrentTask, this.taskService.CurrentTask.typeOfTaskCalculationId == 2)
+    this.TaskToStudentService.AddOrUpdate(this.CurrentSchool.school.idschool, this.CurrentSchool.appYearbookPerSchools.find(f => f.yearbookId == this.schoolService.SelectYearbook.idyearbook).idyearbookPerSchool, this.CurrentTask, this.taskService.CurrentTask.typeOfTaskCalculationId == 2,this.courseID)
       .subscribe(data => {
         debugger;
         if (this.changeIsActive == true) {

@@ -35,7 +35,24 @@ export class PresenceService {
     return this.http.post<Array<AttendencePerDay>>(this.Url+"GetNochectByDay/"+result+"/"+idGroup,null)
 
   }
+  GetPresenceByRangeDateAndGroup(fromDate:Date,toDate:Date,idGroup:number):Observable<Array<AttendencePerDay>>{
+    debugger;
+    let result = fromDate.getMonth()+1+"."+fromDate.getDate()+"."+fromDate.getFullYear();
+    let result1 = toDate.getMonth()+1+"."+toDate.getDate()+"."+toDate.getFullYear();
+    console.log(this.Url+"GetPresenceByRangeDateAndGroup/"+result+"/"+result1+"/"+idGroup);
 
+    return this.http.post<Array<AttendencePerDay>>(this.Url+"GetPresenceByRangeDateAndGroup/"+result+"/"+result1+"/"+idGroup,null)
+
+  }
+  GetPresenceByRangeDateToAllGroupBySchool(fromDate:Date,toDate:Date,schoolID:number):Observable<Array<AttendencePerDay>>{
+    debugger;
+    let result = fromDate.getMonth()+1+"."+fromDate.getDate()+"."+fromDate.getFullYear();
+    let result1 = toDate.getMonth()+1+"."+toDate.getDate()+"."+toDate.getFullYear();
+    console.log(this.Url+"GetPresenceByRangeDateToAllGroupBySchool/"+result+"/"+result1+"/"+schoolID);
+
+    return this.http.post<Array<AttendencePerDay>>(this.Url+"GetPresenceByRangeDateToAllGroupBySchool/"+result+"/"+result1+"/"+schoolID,null)
+
+  }
  addOrUpdateAttendance(date:Date,userId:number,presence:Array<Presence>):Observable<Presence>{
   debugger
   let result = date.getMonth()+1+"."+date.getDate()+"."+date.getFullYear();

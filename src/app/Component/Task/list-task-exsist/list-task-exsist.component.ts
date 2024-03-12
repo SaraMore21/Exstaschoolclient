@@ -76,7 +76,7 @@ export class ListTaskExsistComponent implements OnInit {
       this.router.navigate(['Login']);
       return;
     }
-    this.active.params.subscribe(c => { this.TaskID = c["id"] })
+    this.active.params.subscribe(c => { this.TaskID = c["id"]})
    
     this.GetAllTaskExsistByTaskId();
     this.CurrentSchool = this.schoolService.ListSchool.find(f => f.school.idschool == this.taskService.ListTask.find(f => f.idtask == this.TaskID).schoolId)
@@ -476,7 +476,7 @@ export class ListTaskExsistComponent implements OnInit {
   }
 
   //מעבר לתלמידות המשוייכות למטלה זו
-  GoToListTaskToStudent(task: TaskExsist) {
+  GoToListTaskToStudent(task: TaskExsist){
     debugger;
     let dates = [];
     task.dateSubmitA = new Date(task.dateSubmitA);
@@ -493,7 +493,7 @@ export class ListTaskExsistComponent implements OnInit {
     dates.push({ moed: 'אחר', date: "" })
     this.TaskExsistService.SubmitedDate = dates;
     this.TaskExsistService.CurrentTaskExsist = task;
-    this.router.navigate(['Home/ListTaskToStudent', task.idexsistTask]);
+    this.router.navigate(['Home/ListTaskToStudent', task.idexsistTask,task.courseId]);
   }
 
   GoToDocumentsPerTaskExsist(task: TaskExsist) {

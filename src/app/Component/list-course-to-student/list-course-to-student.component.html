@@ -1,0 +1,182 @@
+<ngx-ui-loader></ngx-ui-loader>
+<!-- תצוגת הטבלה -->
+<div *ngIf="AddSPC==false">
+<div  class="card row">
+    <!-- <div class="card row"> -->
+    <h1 style="text-align: center"> רשימת התלמידות המשוייכות לקורס {{this.StudentPerCourseService.currentCourse.course.name}}</h1>
+    <div style="text-align-last: center">
+        <p-table  [value]="StudentPerCourseService.listStudentByCourse" dir="rtl" [filterDelay]="0"
+            [scrollable]="true" scrollHeight="100vh" [globalFilterFields]="[
+          'studentName',
+          'grade',
+          'finalScore'
+        ]">
+            <ng-template pTemplate="caption">
+                <div style="margin-left: 72%">
+                    <!-- <button pButton label="הוספת שיוך" (click)="AddTask()"></button> -->
+                    <!-- <button pButton label="חזור" (click)="GenericFunctionService.GoBackToLastPage()"></button> -->
+                </div>
+                <button style="margin-left: 72%;" pButton label="הוספת תלמיד לקבוצה זו"
+                (click)="ShowListStudentToAdd()"></button>
+                <!-- <p-button pRipple type="button" label=" יצוא לקובץ EXCEL" (click)="exportExcel()"
+                    icon="pi pi-file-excel" class=" p-button-outline p-button-success"></p-button>
+                <button type="button" pButton pRipple label="PDF" icon="pi pi-file-pdf" (click)="exportPdf()"
+                    class="p-button-warning p-mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
+
+                <!-- <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="tb.filterGlobal($event.target.value, 'contains')"
+                        placeholder="חיפוש" />
+                </span> -->
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="studentName">
+                        תלמידה <p-sortIcon field="studentName"></p-sortIcon>
+                    </th>
+
+                    <th pSortableColumn="grade">
+                        ציון <p-sortIcon field="grade"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="finalScore">
+                        ציון סופי<p-sortIcon field="finalScore"></p-sortIcon>
+                    </th>
+                   <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-course>
+                <tr>
+                    <td>{{ course.studentName }}</td>
+                    <td>
+                        <input class="Input" type="number" pInputText pattern="[0-9]|[0-9][0-9]{3}" min="0"
+                        [value]="course.grade" name="grade" (blur)="saveGrade(course,$event)"
+                        style="width: 50px; height: 30px;"
+                        />
+                    </td>
+                   
+                    <td>
+                        <input class="Input" type="number" pInputText pattern="[0-9]|[0-9][0-9]{3}" min="0"
+                        [value]="course.finalScore" name="finalScore" [disabled]="schoolService.IsCustomer!=true" (blur)="saveFinalScore(course,$event)"
+                        style="width: 50px; height: 30px;" />
+                    </td>
+       
+                    
+                    <td style="text-align: center">
+                        <button pButton pRipple type="button" icon="pi pi-pencil" tooltipPosition="top" pTooltip="עריכה"
+                            (click)="EditDetailscoursPerStudent(course)" class="p-button-rounded p-button-text"></button>
+                        <!-- <button pButton pRipple type="button" icon="pi pi-bars" tooltipPosition="top"
+                            pTooltip="כל נסיונות המענה למטלה זו של {{task.studentName}}"
+                            (click)="OpenTaskToStudentSpecific(task)" class="p-button-rounded p-button-text"></button> -->
+                        <!-- <button pButton pRipple type="button" icon="pi pi-trash" tooltipPosition="top" pTooltip="מחיקה"
+                            (click)="confirmDeleteFile(task)" class="p-button-rounded p-button-text"></button> -->
+                           
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+
+<!-- עריכת והוספת שיוך מטלה -->
+<p-dialog header="פרטי קורס" [(visible)]="displayModal" [modal]="true" [style]="{ width: '30vw' }" [draggable]="false"
+    [resizable]="false" class="p-rtl" dir="rtl">
+
+    <form #form="ngForm" id="form" name="form" dir="rtl">
+        <!-- <label>תלמידה </label>
+        <p-dropdown appendTo="body" [(ngModel)]="Student" filter="true" filterBy="tz,lastName,firstName"
+            [options]="studentService.ListStudentPerSY" placeholder="בחר תלמידה" [style]="{ width: '100%' }"
+            name="Student">
+            <ng-template let-item pTemplate="selectedItem" filter="true"
+                emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
+                {{ item.lastName }} {{ item.firstName }}, {{ item.tz }}
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+                {{ item.lastName }} {{ item.firstName }}, {{ item.tz }}
+            </ng-template>
+        </p-dropdown> -->
+
+        
+        <label>תלמידה</label>
+        <input class="Input" type="text" [(ngModel)]="CurrentCourse.studentName" name="studentName" disabled="disabled" />
+
+        <!-- <p-multiSelect  filter="true" appendTo="body" [style]="{ width: '100%' }" [showToggleAll]="false" name="Student" [options]="studentService.ListStudent" [(ngModel)]="Student" placeholder="בחר תלמידה" >
+        <ng-template let-item pTemplate="selectedItem">
+          {{ selectedItem.lastName }} {{ selectedItem.firstName }}, {{ selectedItem.tz }}
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          {{ item.lastName }} {{ item.firstName }}, {{ item.tz }}
+        </ng-template>
+    </p-multiSelect> -->
+
+
+
+       <br>
+
+        <label>ציון</label>
+        <input class="Input" type="number" pInputText pattern="[0-9]|[0-9][0-9]{3}" min="0"
+            [(ngModel)]="CurrentCourse.grade" name="grade" />
+        <br>
+        <label> ציון סופי</label>
+        <input class="Input" type="number" pInputText pattern="[0-9]|[0-9][0-9]{3}" min="0"
+            [(ngModel)]="CurrentCourse.finalScore" name="finalScore" [disabled]="schoolService.IsCustomer!=true" />
+        <br> 
+       
+   </form>
+ 
+
+        <button style="width: 100%" pButton icon="pi pi-save" label="שמור" (click)="save()"
+        [disabled]="(CurrentCourse.grade==null||CurrentCourse.finalScore==null)">
+      </button>
+</p-dialog> 
+
+</div>
+<div *ngIf="AddSPC==true">
+    <div class="card row">
+  
+      <div style="text-align-last: center;">
+        <p-table #dt [value]="ListStudentNotInCourse" dataKey="id" dir="rtl" [filterDelay]="0" [scrollable]="true" scrollHeight="100vh"
+          [globalFilterFields]="['student.firstName','student.lastName','student.tz','']">
+          <ng-template pTemplate="caption">
+            <div class="table-header">
+            
+              <button style="margin-left: 72%;" pButton label="חזרה" (click)="genericFunctionService.GoBackToLastPage()"></button>
+  
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                  placeholder="חיפוש" />
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th><button pButton pRipple type="button" icon="pi pi-user-plus" 
+                (click)="AddListStudentToCourse(this.StudentPerCourseService.currentCourse.idgroupSemesterPerCourse)" class="p-button-rounded p-button-text"
+                pTooltip="הוספת תלמידות נבחרות" tooltipPosition="top"></button></th>
+              <th> תלמידה</th>
+              <th>מספר זהות</th>
+              <th></th>
+            </tr>
+  
+          </ng-template>
+          <ng-template pTemplate="body" let-student>
+            <tr>
+              <td><p-checkbox [(ngModel)]="student.checked" [binary]="true"></p-checkbox></td>
+              <td>{{student.studentName}}</td>
+              <td>{{student.studentTz}}</td>
+              <td> <button pButton pRipple type="button" icon="pi pi-user-plus"
+                  (click)="AddStudentPerCourse(student.student.idstudent,this.StudentPerCourseService.currentCourse.idgroupSemesterPerCourse)" class="p-button-rounded p-button-text"
+                  pTooltip="הוספה" tooltipPosition="top"></button></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div style="text-align: center;">
+        <p-toast position="top-center"></p-toast>
+        <p-toast position="top-center" key="tc"></p-toast>
+      
+      </div>
+      
+    </div>
+  
