@@ -1,3 +1,4 @@
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { GenericFunctionService } from 'src/app/Service/generic-function.service';
 import { ConvertDateToStringService } from './../../../Service/convert-date-to-string.service';
 import { CourseService } from './../../../Service/course.service';
@@ -37,9 +38,10 @@ export class ListTaskExsistComponent implements OnInit {
     private messageService: MessageService, public TypeTaskService: TypeTaskService, public TaskExsistService: TaskExsistService,public checkTypeService:CheckTypeService,
     private confirmationService: ConfirmationService, public CourseService: CourseService, public taskToStudentService: TaskToStudentService,
     public convertDateToStringService: ConvertDateToStringService, public GenericFunctionService: GenericFunctionService,
-    private questionsOfTaskService: QuestionsOfTaskService, public statusTaskPerformanceService:StatusTaskPerformanceService) { }
+    private questionsOfTaskService: QuestionsOfTaskService, public statusTaskPerformanceService:StatusTaskPerformanceService,
+    private ngxLoader:NgxUiLoaderService) { }
 
-  
+
   TaskID: number = 0;
   CurrentTask: TaskExsist = new TaskExsist();
   displayModal: boolean = false;
@@ -77,20 +79,20 @@ export class ListTaskExsistComponent implements OnInit {
       return;
     }
     this.active.params.subscribe(c => { this.TaskID = c["id"]})
-   
+
     this.GetAllTaskExsistByTaskId();
     this.CurrentSchool = this.schoolService.ListSchool.find(f => f.school.idschool == this.taskService.ListTask.find(f => f.idtask == this.TaskID).schoolId)
     if (this.CurrentSchool.appYearbookPerSchools.find(f => f.idyearbookPerSchool == this.taskService.ListTask[0].yearBookId).yearbookId != this.schoolService.SelectYearbook.idyearbook)
       this.GenericFunctionService.GoBackToLastPage();
-      
+
 
       this.statusTaskPerformanceService.GetAllStatusTaskPerformanceBySchoolId(this.CurrentSchool.school.idschool)
       .subscribe(data=>{
         this.ListStatusTaskP=data
         debugger
-        
+
       },err=>console.log(err));
-        
+
   }
 
   //שליפת כל המטלות
@@ -549,21 +551,25 @@ export class ListTaskExsistComponent implements OnInit {
   }
   //שמירת ציוני התלמידות במטלה
   SaveEditScoreToStudents() {
+    this.ngxLoader.start()
    debugger
     this.listTaskToStudent.forEach(s=>s.statusTaskPerformanceId=s.statusTaskPerformance.id)
     if (this.CurrentQuestion==null||this.CurrentQuestion.number == 0)
       this.taskToStudentService.EditScoreToStudents(this.listTaskToStudent).subscribe(data => {
         debugger;
+        this.ngxLoader.stop()
         this.messageService.add({ key: "tc", severity: 'success', summary: 'העידכון הצליח', detail: 'ציוני התלמידות עודכנו בהצלחה' });
       }, er => { debugger; })
     else
       this.taskToStudentService.EditScoreQuestionToStudents(this.ListScoreStudent).subscribe(data => {
         debugger;
         if (data != null) {
+          this.ngxLoader.stop()
           this.messageService.add({ key: "tc", severity: 'success', summary: 'העריכה הצליחה', detail: 'ציוני שאלה '+this.CurrentQuestion.number+','+this.CurrentQuestion.name+ ' נערכו בהצלחה ' });
           this.ListScoreStudent = data;
         }
         else{
+          this.ngxLoader.stop()
           this.messageService.add({ key: "tc", severity: 'warn', summary: 'שגיאה', detail: 'ארעה שגיאה ,אנא נסה שנית' });
 
         }

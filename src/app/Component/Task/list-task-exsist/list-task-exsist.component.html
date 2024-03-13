@@ -1,3 +1,4 @@
+<ngx-ui-loader></ngx-ui-loader>
 <!-- תצוגת הטבלה -->
 <div class="card row">
   <h1 style="text-align: center">רשימת מטלות משוייכות למטלה {{taskService.CurrentTask.name}} </h1>
@@ -317,10 +318,10 @@
               </td>
             </ng-template>
 
-           <td> 
+           <td>
 
-         
-            
+
+
             <ng-container *ngIf="schoolService.IsCustomer!=true; else elseTemplate5">
               <td style="min-width:200px">{{taskToStudent.statusTaskPerformance.displayName}}</td>
             </ng-container>
@@ -329,7 +330,7 @@
           <ng-template #elseTemplate5>
             <!-- {{taskToStudent.statusTaskPerformance.displayName}} -->
             <!-- <button pButton type="button" label="לשינוי" class="p-button-text" (click)="show(taskToStudent)"></button> -->
-            <p-dropdown dir="rtl"  class="Input" id="StatusTask" name="StatusTask" #StatusTask="ngModel" [options]="ListStatusTaskP" 
+            <p-dropdown dir="rtl"  class="Input" id="StatusTask" name="StatusTask" #StatusTask="ngModel" [options]="ListStatusTaskP"
              [style]="{ width: '100%' }" [(ngModel)]="taskToStudent.statusTaskPerformance">
              <ng-template let-item pTemplate="selectedItem">
               {{taskToStudent.statusTaskPerformance.displayName}}
@@ -337,10 +338,10 @@
             <ng-template let-item pTemplate="item">
               {{ item.displayName }}
             </ng-template>
-          
+
             </p-dropdown>
           </ng-template>
-            
+
             <!-- <select>
             <option *ngFor="let item of ListStatusTaskP">{{item.status}}</option>
 
