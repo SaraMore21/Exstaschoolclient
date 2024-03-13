@@ -275,6 +275,30 @@ export class UploadExcelComponent implements OnInit,OnDestroy {
 
       switch (f)
       {
+        case "1":
+           var a = document.getElementById(f);
+            a.click();
+           break;
+        case "2":
+            var a = document.getElementById(f);
+             a.click();
+            break;
+        case "3":
+              var a = document.getElementById(f);
+               a.click();
+              break;
+        case "4":
+           var a = document.getElementById(f);
+            a.click();
+           break;
+        case "5":
+           var a = document.getElementById(f);
+            a.click();
+           break;
+        case "6":
+           var a = document.getElementById(f);
+            a.click();
+           break;
         case "7":
           this.ExcelService.downloadFatherCourseExcel(this.CurrentSchool.school.idschool)
          // .subscribe(d=>{alert("הקובץ נשלח בהצלחה למייל שהוזן")})
