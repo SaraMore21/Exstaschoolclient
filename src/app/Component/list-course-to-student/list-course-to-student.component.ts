@@ -6,7 +6,7 @@ import { StudentService } from 'src/app/Service/student.service';
 import { SchoolService } from 'src/app/Service/school.service';
 import { GenericFunctionService } from 'src/app/Service/generic-function.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import {MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 
 import { Course } from 'src/app/Class/course';
@@ -15,14 +15,14 @@ import { Course } from 'src/app/Class/course';
   templateUrl: './list-course-to-student.component.html',
   styleUrls: ['./list-course-to-student.component.css'],
   providers: [
-    [MessageService],
+    [MessageService, ConfirmationService]
   ],
 })
 
 export class ListCourseToStudentComponent implements OnInit {
   [x: string]: any;
 
-  constructor(private active: ActivatedRoute,public StudentPerCourseService:StudentPerCourseService,public studentService:StudentService,public schoolService:SchoolService,  public genericFunctionService: GenericFunctionService,private ngxService: NgxUiLoaderService,private messageService: MessageService) { }
+  constructor(private active: ActivatedRoute,public StudentPerCourseService:StudentPerCourseService,public studentService:StudentService,public schoolService:SchoolService,  public genericFunctionService: GenericFunctionService,private ngxService: NgxUiLoaderService,private messageService: MessageService,private confirmationService: ConfirmationService) { }
   CourseID: number = 0;
   CurrentCourse:StudentPerCourse=new StudentPerCourse();
   CurrentSchool: any;
@@ -192,7 +192,34 @@ AddStudentPerCourse(idStudent,idGroupSemesterPerCourse){
       
     }
   }
-
+  DeleteStudentInCourse(StudentId,courseID) {
+debugger
+    this.confirmationService.confirm({
+      message: 'האם הנך בטוח כי ברצונך למחוק תלמיד זה מהקורס   ?  ',
+      header: 'מחיקת תלמיד',
+      icon: 'pi pi-info-circle',
+      acceptLabel: ' מחק ',
+      rejectLabel: ' ביטול ',
+      accept: () => {
+        this.StudentPerCourseService.DeleteStudentInCourse(StudentId, courseID).subscribe(data => {
+          if (data == null)
+            this.messageService.add({ key: "tc", severity: 'warn', summary: 'המחיקה בוטלה' });
+         
+            else {
+              var i = this.StudentPerCourseService.listStudentByCourse.findIndex(f => f.studentId == StudentId);
+              if (this.ListStudentNotInCourse != null && this.ListStudentNotInCourse.length != 0) this.ListStudentNotInCourse.push(this.StudentPerCourseService.listStudentByCourse[i]);
+              this.StudentPerCourseService.listStudentByCourse.splice(i, 1);
+              this.messageService.add({ severity: 'success', summary: 'המחיקה הצליחה', detail: "התלמיד הוסר מהקורס בהצלחה" })
+            }
+         
+        }, er => {
+          this.messageService.add({ key: 'tc', severity: 'error', summary: 'שגיאה', detail: "ארעה שגיאה ,אנא נסה שנית" });
+        })
+      },
+      reject: () => {
+      }
+    })
+  }
 
 
 }
