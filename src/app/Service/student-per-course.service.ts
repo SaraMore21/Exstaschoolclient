@@ -19,9 +19,7 @@ export class StudentPerCourseService {
   GetAllStudentByCourseId(CourseId: number): Observable<Array<StudentPerCourse>> {
     debugger;
     return this.http.get<Array<StudentPerCourse>>(this.Url + "GetAllStudentByCourseId/"+CourseId) ;
-   
   }
-
   UpdateCoursePerStudent(course:StudentPerCourse):Observable<StudentPerCourse>{
     debugger
     return this.http.post<StudentPerCourse>(this.Url+"UpdateCoursePerStudent",course)
@@ -30,5 +28,8 @@ export class StudentPerCourseService {
     debugger
     return this.http.post<StudentPerCourse>(this.Url+"AddStudentToCourse/"+ idStudent +"/"+idGroupSemesterPerCourse,null)
    }
-   
+   DeleteStudentInCourse(studentId: number, CourseId: number): Observable<boolean> {
+    debugger
+    return this.http.delete<boolean>(this.Url + "DeleteStudentPerCourse/" + studentId + "/" + CourseId);
+   }
 }
