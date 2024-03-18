@@ -559,7 +559,8 @@ export class ListTaskExsistComponent implements OnInit {
         debugger;
         this.ngxLoader.stop()
         this.messageService.add({ key: "tc", severity: 'success', summary: 'העידכון הצליח', detail: 'ציוני התלמידות עודכנו בהצלחה' });
-      }, er => { debugger; })
+      }, er => { this.ngxLoader.stop()
+        this.messageService.add({ key: "tc", severity: 'warn', summary: 'שגיאה', detail: 'ארעה שגיאה ,אנא נסה שנית' }); })
     else
       this.taskToStudentService.EditScoreQuestionToStudents(this.ListScoreStudent).subscribe(data => {
         debugger;
