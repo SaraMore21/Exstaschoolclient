@@ -16,9 +16,13 @@ StreetsPerCity:Array<Street>=new Array<Street>();
 
   constructor(private http:HttpClient) { }
 
-  GetStreetsByCityId(cityId:number):Observable<Array<Street>>{
+  GetStreetsByCityId1(cityId:number):Observable<Array<Street>>{
     debugger;
     console.log("🙄😀")
    return this.http.get<Array<Street>>(this.Url+"GetStreetsByCityId/"+cityId)
   }
+
+  GetStreetsByCityId(cityId:number){
+    return this.http.get<Array<Street>>(`${this.Url}GetStreetsByCityId/${cityId}`)
+   }
 }

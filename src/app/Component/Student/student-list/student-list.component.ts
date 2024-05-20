@@ -7,10 +7,11 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { SelectItem } from 'primeng/api';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
 import { StreetService } from 'src/app/Service/street.service';
 import { GenericFunctionService } from 'src/app/Service/generic-function.service';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-student-list',
@@ -326,7 +327,7 @@ this.detailsOptions[option[option.length-1]] = true
       this.StreetService.GetStreetsByCityId(s.City.value).subscribe(data => { this.StreetService.StreetsPerCity = data }, er => { })
   }
   
-exportExcelAsync()
+exportExcelAsync1()
 {debugger
  return new Promise((resolve, reject) => {
    
@@ -350,11 +351,27 @@ exportExcelAsync()
         }
         let street
         if (city != '') {
-          this.ChangeCity(s);
-           street = this.StreetService.StreetsPerCity.find(
-            (f) => f.idstreet == s.address.streetId
-          );
+          debugger
+          // this.ChangeCity(s);
+          if ((this.StreetService.StreetsPerCity == null || this.StreetService.StreetsPerCity.length == 0 || this.StreetService.StreetsPerCity[0].cityId != s.address.cityId) && (s != null && s.address.cityId != null))
+            this.StreetService.GetStreetsByCityId(s.address.cityId).subscribe(data => {
+              this.StreetService.StreetsPerCity = data
+              debugger
+              street = this.StreetService.StreetsPerCity.find(
+                (f) => f.idstreet == s.address.streetId
+              );
+              console.log("street@@@@@@@@@@@@", street.name)
+
+
+            }, er => { })
+
         }
+        // if (city != '') {
+        //   this.ChangeCity(s);
+        //    street = this.StreetService.StreetsPerCity.find(
+        //     (f) => f.idstreet == s.address.streetId
+        //   );
+        // }
         let citizenship
         let country
         let countryofImmigration
@@ -428,7 +445,6 @@ exportExcelAsync()
         'reason':s.reasonForLeaving,
         'city':city!=null?city.name:'',
         'neighborhood':neigborhood!=null?neigborhood.name:'',
-        
         'street':street!=null?street.name:'',
         'building':s.address!=null?s.address.houseNumber:'',
         'apartment':s.address!=null?s.address.apartmentNumber:'',
@@ -456,6 +472,112 @@ exportExcelAsync()
 });
  
 }
+exportExcelAsync() {
+  return new Promise((resolve, reject) => {
+    let genericListStudent: Array<any> = this.studentService.ListStudent;
+    console.log("genericListStudent------",genericListStudent)
+    let studentDetailsObservables = genericListStudent.map(d => 
+      this.studentService.GetStudentDetailsByIDStudent(d.idstudent)
+    );
+
+    forkJoin(studentDetailsObservables).pipe(
+      switchMap(students => {
+        console.log("student------",students)
+        let streetObservables = students.map(s => {
+          debugger
+          if ((this.StreetService.StreetsPerCity == null || this.StreetService.StreetsPerCity.length == 0 || this.StreetService.StreetsPerCity[0].cityId != s.address.cityId) && (s != null && s.address.cityId != null)) {
+            return this.StreetService.GetStreetsByCityId(s.address.cityId).pipe(
+              switchMap(data => {
+                this.StreetService.StreetsPerCity = data;
+                let street = this.StreetService.StreetsPerCity.find(f => f.idstreet == s.address.streetId);
+                return of({ student: s, street });
+              })
+            );
+          } else {
+            return of({ student: s, street: null });
+          }
+        });
+
+        return forkJoin(streetObservables);
+      })
+    ).subscribe(results => {
+      results.forEach(result => {
+        let s = result.student;
+        let street = result.street;
+        let status = this.schoolService.Status.find(f => f.value == s.statusId);
+        let studentStatus = this.schoolService.StatusStudent.find(f => f.value == s.statusStudentId);
+        let city = s.address ? this.schoolService.Cities.find(f => f.value == s.address.cityId) : null;
+        let neighborhood = s.address ? this.schoolService.Neigborhoods.find(f => f.value == s.address.neighborhoodId) : null;
+        let citizenship = s.birth ? this.schoolService.Countries.find(f => f.value == s.birth.citizenshipId) : null;
+        let country = s.birth ? this.schoolService.Countries.find(f => f.value == s.birth.birthCountryId) : null;
+        let countryofImmigration = s.birth ? this.schoolService.Countries.find(f => f.value == s.birth.countryIdofImmigration) : null;
+        let gender = this.schoolService.Genders.find(f => f.idGender == s.genderId);
+        let typeIdentity = this.schoolService.TypeIdentitys.find(f => f.value == s.typeIdentityId);
+        let fatherTypeIdentity = this.schoolService.TypeIdentitys.find(f => f.value == s.fatherTypeIdentityId);
+        let motherTypeIdentity = this.schoolService.TypeIdentitys.find(f => f.value == s.motherTypeIdentityId);
+        let apotropusTypeIdentity = this.schoolService.TypeIdentitys.find(f => f.value == s.apotropusTypeIdentityId);
+
+        this.excelStudentList.push({
+          'tz': s.tz,
+          'typeTz': typeIdentity ? typeIdentity.name : '',
+          'code': s.code,
+          'fname': s.firstName,
+          'lname': s.lastName,
+          'gender': gender ? gender.name : '',
+          'eBirthdate': s.birth ? s.birth.birthDate : '',
+          'hBirthdate': s.birth ? s.birth.birthHebrewDate : '',
+          'birthCountry': country ? country.name : '',
+          'citizenship': citizenship ? citizenship.name : '',
+          'imigrationDate': s.birth ? s.birth.dateOfImmigration : '',
+          'imigrationCountry': countryofImmigration ? countryofImmigration.name : '',
+          'famStatus': status ? status.name : '',
+          'foreginFname': s.foreignFirstName,
+          'foreginLname': s.foreignLastName,
+          'prevLname': s.previusName,
+          'phone1': s.contactInformation ? s.contactInformation.telephoneNumber1 : '',
+          'phone2': s.contactInformation ? s.contactInformation.telephoneNumber2 : '',
+          'cell1': s.contactInformation ? s.contactInformation.phoneNumber1 : '',
+          'cell2': s.contactInformation ? s.contactInformation.phoneNumber2 : '',
+          'cell3': s.contactInformation ? s.contactInformation.phoneNumber3 : '',
+          'fax': s.contactInformation ? s.contactInformation.faxNumber : '',
+          'email': s.contactInformation ? s.contactInformation.email : '',
+          'fatherTz': s.fatherTz,
+          'typeFatherTz': fatherTypeIdentity ? fatherTypeIdentity.name : '',
+          'motherTz': s.motherTz,
+          'typeMotherTz': motherTypeIdentity ? motherTypeIdentity.name : '',
+          'apotropusTz': s.apotropusTz,
+          'guardianTypeTz': apotropusTypeIdentity ? apotropusTypeIdentity.name : '',
+          'active': s.isActive ? 'פעיל' : 'לא פעיל',
+          'studentStatus': studentStatus ? studentStatus.name : '',
+          'reason': s.reasonForLeaving,
+          'city': city ? city.name : '',
+          'neighborhood': neighborhood ? neighborhood.name : '',
+          'street': street ? street.name : '',
+          'building': s.address ? s.address.houseNumber : '',
+          'apartment': s.address ? s.address.apartmentNumber : '',
+          'poBox': s.address ? s.address.poBox : '',
+          'zip': s.address ? s.address.zipCode : '',
+          'moreDetails': s.anatherDetails,
+          'note': s.note,
+          'fatherPhone1': s.contactPerStudent[0]?.contact?.contactInformation?.phoneNumber1 ?? null,
+          'fPhoneNumber2': s.contactPerStudent[0]?.contact?.contactInformation?.phoneNumber2 ?? null,
+          'fPhoneNumber3': s.contactPerStudent[0]?.contact?.contactInformation?.phoneNumber3 ?? null,
+          'fTelephoneNumber1': s.contactPerStudent[0]?.contact?.contactInformation?.telephoneNumber1 ?? null,
+          'fTelephoneNumber2': s.contactPerStudent[0]?.contact?.contactInformation?.telephoneNumber2 ?? null,
+          'matherPhone': s.contactPerStudent[1]?.contact?.contactInformation?.phoneNumber1 ?? null,
+          'mPhoneNumber2': s.contactPerStudent[1]?.contact?.contactInformation?.phoneNumber2 ?? null,
+          'mPhoneNumber3': s.contactPerStudent[1]?.contact?.contactInformation?.phoneNumber3 ?? null,
+          'mTelephoneNumber1': s.contactPerStudent[1]?.contact?.contactInformation?.telephoneNumber1 ?? null,
+          'mTelephoneNumber2': s.contactPerStudent[1]?.contact?.contactInformation?.telephoneNumber2 ?? null,
+        });
+      });
+      resolve(this.excelStudentList);
+    }, error => {
+      reject(error);
+    });
+  });
+}
+
 
 sendToExportExcel()
 {
