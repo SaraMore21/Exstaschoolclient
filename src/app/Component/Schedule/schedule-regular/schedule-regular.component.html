@@ -12,7 +12,7 @@
 
         <h5>בחר קבוצה</h5>
         <p-dropdown [disabled]="regularScheduleService.schoolId == undefined"
-            [(ngModel)]="regularScheduleService.selectedGroup" filter="true" filterBy="nameGroup"
+            [(ngModel)]="regularScheduleService.selectedGroup" filter="true" filterBy="group.nameGroup"
             [options]="groupService.ListGroupPerSY" placeholder="בחר קבוצה" appendTo="body" [style]="{ width: '30%' }"
             emptyFilterMessage="לא נמצאו נתונים העונים על החיפוש" emptyMessage="אין נתונים קיימים">
             <ng-template let-item pTemplate="selectedItem">
